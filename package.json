@@ -1,0 +1,51 @@
+{
+  "version": "0.0.1",
+  "name": "backend-sdpii-g12",
+  "scripts": {
+    "start": "tsx index.ts",
+    "build": "tsc",
+    "start:dev": "tsx watch --env-file .env --inspect=0.0.0.0:9001 src/index.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@koa/cors": "^5.0.0",
+    "@koa/router": "^13.1.0",
+    "@prisma/client": "^6.4.0",
+    "argon2": "^0.41.1",
+    "config": "^3.3.12",
+    "helmet": "^8.0.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "jwt": "^0.2.0",
+    "koa": "^2.15.4",
+    "koa-bodyparser": "^4.4.1",
+    "koa-helmet": "^8.0.1",
+    "koa2-swagger-ui": "^5.11.0",
+    "prisma": "^6.4.0",
+    "swagger": "^0.7.5",
+    "swagger-jsdoc": "^6.2.8",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "winston": "^3.17.0"
+  },
+  "prisma": {
+    "schema": "src/data/schema.prisma",
+    "seed": "tsx ./src/data/seed.ts"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@faker-js/faker": "^9.5.0",
+    "@stylistic/eslint-plugin": "^4.0.1",
+    "@types/config": "^3.3.5",
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/koa": "^2.15.0",
+    "@types/koa-bodyparser": "^4.3.12",
+    "@types/koa__cors": "^5.0.0",
+    "@types/koa__router": "^12.0.4",
+    "@types/node": "^22.13.4",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "eslint": "^9.20.1",
+    "typescript-eslint": "^8.24.1"
+  }
+}
