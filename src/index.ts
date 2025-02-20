@@ -1,12 +1,21 @@
-import Koa from 'koa'; 
-import { getLogger } from './core/logging';
+import createServer from './createServer';
 
-const app = new Koa();
+async function main() {
+  try {
+    const server = await createServer();
+    await server.start();
 
-app.use(async (ctx) => {
-  ctx.body = 'Hello World from TypeScript';
-});
+    async function onClose() {
+      await server.stop();
+      process.exit(0);
+    }
 
-app.listen(9000, () => {
-    getLogger().info('🚀 Server listening on http://127.0.0.1:9000');
-  });
+    process.on('SIGTERM', onClose);
+    process.on('SIGQUIT', onClose);
+  } catch (error) {
+    console.log('\n', error);
+    process.exit(-1);
+  }
+}
+
+main();

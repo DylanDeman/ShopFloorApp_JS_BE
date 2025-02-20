@@ -33,7 +33,7 @@ enum Onderhoud_Status {
 model Adres {
     @@map("adressen")
 
-    adres_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
     straat String @db.VarChar(255)
     huisnummer String @db.VarChar(50)
     stadsnaam String @db.VarChar(100)
@@ -46,15 +46,15 @@ model Adres {
 model Gebruiker {
     @@map("gebruikers")
 
-    gebruiker_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
 
     adres_id Int @db.UnsignedInt
-    adres Adres @relation(fields:[adres_id], references: [adres_id], onDelete: NoAction, onUpdate: Cascade, map: "fk_adres_gebruiker")
+    adres Adres @relation(fields:[adres_id], references: [id], onDelete: NoAction, onUpdate: Cascade, map: "fk_adres_gebruiker")
 
     naam String @db.VarChar(255)
     voornaam String @db.VarChar(255)
     geboortedatum DateTime @db.DateTime(0)
-    email String @db.VarChar(255)
+    email String @unique @db.VarChar(255)
     wachtwoord String @db.VarChar(255)
     gsm String @db.VarChar(255)
     rol Json
@@ -68,11 +68,11 @@ model Gebruiker {
 model Site {
     @@map("sites")
     
-    site_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
     naam String @db.VarChar(255)
 
     verantwoordelijke_id Int @db.UnsignedInt
-    verantwoordelijke Gebruiker @relation(fields:[verantwoordelijke_id], references:[gebruiker_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
+    verantwoordelijke Gebruiker @relation(fields:[verantwoordelijke_id], references:[id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
 
     Machine Machine[] @relation(map: "fk_site_machine")
 }
@@ -80,7 +80,7 @@ model Site {
 model Product {
     @@map("producten")
 
-    product_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
     naam String @db.VarChar(255)
 
     Machine Machine[] @relation(map: "fk_product_machine")
@@ -89,16 +89,16 @@ model Product {
 model Machine {
     @@map("machines")
 
-    machine_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
 
     site_id Int @db.UnsignedInt
-    site Site @relation(fields:[site_id], references: [site_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
+    site Site @relation(fields:[site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
 
     product_id Int @db.UnsignedInt
-    product Product @relation(fields:[product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
+    product Product @relation(fields:[product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
     
     technieker_gebruiker_id Int @db.UnsignedInt
-    technieker Gebruiker @relation(fields: [technieker_gebruiker_id], references: [gebruiker_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
+    technieker Gebruiker @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
 
     code String @db.VarChar(255)
     locatie String @db.VarChar(255)
@@ -114,10 +114,10 @@ model Onderhoud {
     onderhoud_id Int @id @default(autoincrement()) @db.UnsignedInt
 
     machine_id Int @db.UnsignedInt
-    machine Machine @relation(fields:[machine_id], references: [machine_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
+    machine Machine @relation(fields:[machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
     technieker_gebruiker_id Int @db.UnsignedInt
-    technier Gebruiker @relation(fields: [technieker_gebruiker_id], references: [gebruiker_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
+    technier Gebruiker @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
 
     datum DateTime @db.DateTime(0)
     starttijdstip DateTime @db.DateTime(0)
