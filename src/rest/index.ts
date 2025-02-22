@@ -3,6 +3,8 @@ import installHealthRouter from './health';
 import installSessionRouter from './session';
 import installSiteRouter from './site';
 import type { BudgetAppContext, BudgetAppState, KoaApplication } from '../types/koa';
+import installAdresRoutes from './adres';
+import installUserRoutes from './user';
 
 /**
  * @swagger
@@ -48,6 +50,8 @@ export default (app: KoaApplication) => {
   installSiteRouter(router);
   installHealthRouter(router);
   installSessionRouter(router);
+  installAdresRoutes(router);
+  installUserRoutes(router);
 
   app.use(router.routes())
     .use(router.allowedMethods());

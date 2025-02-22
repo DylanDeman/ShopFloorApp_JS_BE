@@ -4,7 +4,6 @@ import { prisma } from '../data';
 import { hashPassword, verifyPassword } from '../core/password';
 import { generateJWT, verifyJWT } from '../core/jwt';
 import { getLogger } from '../core/logging';
-// import Role from '../core/roles';
 import type { User, UserCreateInput, UserUpdateInput, PublicUser } from '../types/user';
 import type { SessionInfo } from '../types/auth';
 import handleDBError from './_handleDBError';

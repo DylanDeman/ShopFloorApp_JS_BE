@@ -1,6 +1,5 @@
 import type { Prisma, Status } from '@prisma/client';
 import type { Entity, ListResponse } from './common';
-
 export interface User extends Entity {
   voornaam: string,
   naam: string;
@@ -37,11 +36,17 @@ export interface GetUserRequest {
   id: number | 'me';
 }
 export interface RegisterUserRequest {
-  name: string;
+  adres_id: number;
+  naam: string;
+  voornaam: string;
+  geboortedatum: Date;
   email: string;
-  password: string;
+  wachtwoord: string;
+  gsm: string;
+  rol: any;
+  status: Status
 }
-export interface UpdateUserRequest extends Pick<RegisterUserRequest, 'name' | 'email'> {}
+export interface UpdateUserRequest extends Omit<RegisterUserRequest, 'wachtwoord' | 'rol'> {}
 
 export interface GetAllUsersResponse extends ListResponse<PublicUser> {}
 export interface GetUserByIdResponse extends PublicUser {}
