@@ -83,8 +83,6 @@ export const login = async (
     );
   }
 
-  console.log(password, gebruiker.wachtwoord);
-
   const passwordValid = await verifyPassword(password, gebruiker.wachtwoord);
 
   if (!passwordValid) {
