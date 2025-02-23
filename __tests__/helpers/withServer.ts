@@ -12,7 +12,7 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
   beforeAll(async () => {
     server = await createServer();
 
-    const passwordHash = await hashPassword('password123');
+    const passwordHash = await hashPassword('UUBE4UcWvSZNaIw');
 
     await prisma.adres.createMany({
       data: [
@@ -34,10 +34,22 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
           naam: 'Test User',
           voornaam: 'Test',
           geboortedatum: new Date(1990, 1, 1),
-          email: 'test@example.com',
+          email: 'user@test.com',
           wachtwoord: passwordHash,
           gsm: '1234567890',
           rol: JSON.stringify([Role.VERANTWOORDELIJKE]), 
+          status: Status.ACTIEF, 
+          adres_id: 1,
+        },
+        {
+          id: 2,
+          naam: 'Test Admin',
+          voornaam: 'admin',
+          geboortedatum: new Date(1990, 1, 1),
+          email: 'admin@test.com',
+          wachtwoord: passwordHash,
+          gsm: '1234567890',
+          rol: JSON.stringify([Role.MANAGER, Role.ADMINISTRATOR]), 
           status: Status.ACTIEF, 
           adres_id: 1,
         },
