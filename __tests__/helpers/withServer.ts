@@ -4,7 +4,7 @@ import createServer from '../../src/createServer';
 import { prisma } from '../../src/data';
 import { hashPassword } from '../../src/core/password';
 import Role from '../../src/core/roles';
-import Status from '../../src/core/status'; 
+import { Status } from '@prisma/client';
 
 export default function withServer(setter: (s: supertest.Agent) => void): void {
   let server: Server;
@@ -12,19 +12,21 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
   beforeAll(async () => {
     server = await createServer();
 
+    await prisma.site.deleteMany({});
+    await prisma.gebruiker.deleteMany({});
+    await prisma.adres.deleteMany({});
+
     const passwordHash = await hashPassword('UUBE4UcWvSZNaIw');
 
-    await prisma.adres.createMany({
-      data: [
-        {
-          id: 1,
-          straat: 'Teststraat',
-          huisnummer: '1A',
-          stadsnaam: 'Teststad',
-          postcode: '1234',
-          land: 'Testland',
-        },
-      ],
+    await prisma.adres.create({
+      data: {
+        id: 1,
+        straat: 'Teststraat',
+        huisnummer: '1A',
+        stadsnaam: 'Teststad',
+        postcode: '1234AB',
+        land: 'Testland',
+      },
     });
 
     await prisma.gebruiker.createMany({
@@ -37,8 +39,8 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
           email: 'user@test.com',
           wachtwoord: passwordHash,
           gsm: '1234567890',
-          rol: JSON.stringify([Role.VERANTWOORDELIJKE]), 
-          status: Status.ACTIEF, 
+          rol: JSON.stringify([Role.VERANTWOORDELIJKE]),
+          status: Status.ACTIEF,
           adres_id: 1,
         },
         {
@@ -49,31 +51,28 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
           email: 'admin@test.com',
           wachtwoord: passwordHash,
           gsm: '1234567890',
-          rol: JSON.stringify([Role.MANAGER, Role.ADMINISTRATOR]), 
-          status: Status.ACTIEF, 
+          rol: JSON.stringify([Role.MANAGER, Role.ADMINISTRATOR]),
+          status: Status.ACTIEF,
           adres_id: 1,
         },
       ],
     });
 
-    await prisma.site.createMany({
-      data: [
-        {
-          id: 1,
-          naam: 'Test Site',
-          verantwoordelijke_id: 1,
-        },
-      ],
+    await prisma.site.create({
+      data: {
+        id: 1,
+        naam: 'Test Site',
+        verantwoordelijke_id: 2,
+      },
     });
 
     setter(supertest(server.getApp().callback()));
   });
 
   afterAll(async () => {
-    await prisma.site.deleteMany({ where: { id: { in: [1] } } });
-    await prisma.gebruiker.deleteMany({ where: { id: { in: [1] } } });
-    await prisma.adres.deleteMany({ where: { id: { in: [1] } } });
-
+    await prisma.site.deleteMany({});
+    await prisma.gebruiker.deleteMany({});
+    await prisma.adres.deleteMany({});
     await server.stop();
   });
 }
