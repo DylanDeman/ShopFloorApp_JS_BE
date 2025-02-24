@@ -80,7 +80,13 @@ const updateUserById = async (ctx: KoaContext<UpdateUserResponse, IdParams, Upda
 updateUserById.validationScheme = {
   params: { id: Joi.number().integer().positive() },
   body: {
-    name: Joi.string().max(255),
+    voornaam: Joi.string().max(255),
+    geboortedatum: Joi.date(),
+    wachtwoord: Joi.string().min(12).max(255),
+    gsm: Joi.string(),
+    rol: Joi.string(),
+    status: Joi.string(),
+    naam: Joi.string().max(255),
     email: Joi.string().email(),
   },
 };
