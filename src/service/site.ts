@@ -52,9 +52,10 @@ export const getSiteById = async (id: number) => {
       verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
       aantalMachines: site.Machine.length,
       machines: site.Machine.map((machine) => ({
+        id: machine.id,
         locatie: machine.locatie,
         status: machine.status,
-        Productie_Status: machine.productie_status,
+        productieStatus: machine.productie_status,
       })),
     };
   } catch (error) {
