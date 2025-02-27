@@ -1,6 +1,7 @@
 import Router from '@koa/router';
 import installHealthRouter from './health';
 import installSessionRouter from './session';
+import installSiteRouter from './site';
 import type { BudgetAppContext, BudgetAppState, KoaApplication } from '../types/koa';
 import installAdresRoutes from './adres';
 import installUserRoutes from './user';
@@ -46,6 +47,7 @@ export default (app: KoaApplication) => {
     prefix: '/api',
   });
 
+  installSiteRouter(router);
   installHealthRouter(router);
   installSessionRouter(router);
   installAdresRoutes(router);
