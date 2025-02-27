@@ -1,7 +1,7 @@
 import type supertest from 'supertest';
-import withServer from './helpers/withServer';
-import { login, loginAdmin } from './helpers/login';
-import Role from '../src/core/roles';
+import withServer from '../helpers/withServer';
+import { login, loginAdmin } from '../helpers/login';
+import Role from '../../src/core/roles';
 import { Status } from '@prisma/client';
 
 jest.setTimeout(20000);
