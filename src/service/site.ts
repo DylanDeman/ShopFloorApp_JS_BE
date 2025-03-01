@@ -4,25 +4,33 @@ import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { SiteOverview } from '../types/site';
 
-export const getAllSites = async (): Promise<SiteOverview[]> => {
+export const getAllSites = async (page = 1, limit = 10): Promise<{items: SiteOverview[], total: number}> => {
   try {
+    const skip = (page - 1) * limit;
     const sites = await prisma.site.findMany({
+      skip,
+      take: limit,
       include: {
         verantwoordelijke: true,
         Machine: true,
       },
     });
 
+    const total = await prisma.site.count();
+
     if (!sites.length) {
       throw ServiceError.notFound('Geen sites gevonden.');
     }
 
-    return sites.map((site) => ({
-      id: site.id,
-      naam: site.naam,
-      verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-      aantalMachines: site.Machine.length,
-    }));
+    return {
+      items: sites.map((site) => ({
+        id: site.id,
+        naam: site.naam,
+        verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
+        aantalMachines: site.Machine.length,
+      })),
+      total,
+    };
   } catch (error) {
 
     if (error instanceof ServiceError){
