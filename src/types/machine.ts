@@ -1,4 +1,4 @@
-import type { Entity } from './common';
+import type { Entity, ListResponse } from './common';
 
 export interface Machine extends Entity{
   site_id: number;
@@ -8,5 +8,14 @@ export interface Machine extends Entity{
   locatie: string;
   status: string;
   productie_status: string;
-
 }
+
+export interface getAllMachinesResponse extends ListResponse<Machine> {
+  items: Machine[]; 
+  total: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}
+
+export interface getMachineByIdResponse extends Machine {};
