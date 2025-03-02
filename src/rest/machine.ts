@@ -40,6 +40,25 @@ getMachineById.validationScheme = {
   },
 };
 
+const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
+  ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
+};
+
+updateMachineById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body: {
+    site_id: Joi.number().integer().positive(),
+    product_id: Joi.number().integer().positive(),
+    technieker_gebruiker_id: Joi.number().integer().positive(),
+    code: Joi.string(),
+    locatie: Joi.string(),
+    status: Joi.string(),
+    productie_status: Joi.string(),
+  },
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
     prefix: '/machines',
@@ -57,6 +76,12 @@ export default (parent: KoaRouter) => {
     requireAuthentication,
     validate(getMachineById.validationScheme), 
     getMachineById,
+  );
+
+  router.put('/:id', 
+    requireAuthentication,
+    validate(updateMachineById.validationScheme),
+    updateMachineById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());

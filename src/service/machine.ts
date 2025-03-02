@@ -89,3 +89,16 @@ export const getMachineById = async (id: number) => {
     throw handleDBError(error);
   }
 };
+
+export const updateMachineById = async (id: number, 
+  {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}: any) => {
+  try{
+    const machine = prisma.machine.update(
+      {where: { id }, data: {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}},
+    );
+
+    return machine;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
