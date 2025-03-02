@@ -9,23 +9,23 @@ import type { getSiteByIdResponse } from '../types/site';
 import { requireAuthentication } from '../core/auth';
 
 const getAllSites = async (ctx: KoaContext<getAllSitesResponse>) => {
-  const page = parseInt(ctx.query.page as string) || 1;
-  const limit = parseInt(ctx.query.limit as string) || 10;
+  const page = parseInt(ctx.query.page as string) || 0;
+  const limit = parseInt(ctx.query.limit as string) || 0;
 
   const { items, total } = await siteService.getAllSites(page, limit);
 
   ctx.body = {
     items,
     total,
-    totalPages: Math.ceil(total/limit),
+    totalPages: limit === 0 ? total : Math.ceil(total/limit),
     page,
     limit,
   };
 };
 getAllSites.validationScheme = {
   query: {
-    page: Joi.number().positive().optional().default(1),
-    limit: Joi.number().positive().optional().default(10),
+    page: Joi.number().min(0).optional().default(0),
+    limit: Joi.number().min(0).optional().default(0),
   },
 };
 

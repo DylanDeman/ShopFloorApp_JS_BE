@@ -4,17 +4,28 @@ import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { SiteOverview } from '../types/site';
 
-export const getAllSites = async (page = 1, limit = 10): Promise<{items: SiteOverview[], total: number}> => {
+export const getAllSites = async (page = 0, limit = 0): Promise<{items: SiteOverview[], total: number}> => {
   try {
-    const skip = (page - 1) * limit;
-    const sites = await prisma.site.findMany({
-      skip,
-      take: limit,
-      include: {
-        verantwoordelijke: true,
-        Machine: true,
-      },
-    });
+    let sites;
+    if(page === 0 && limit === 0){
+      sites = await prisma.site.findMany(
+        {
+          include: {
+            verantwoordelijke: true,
+            Machine: true,
+          },
+        });
+    } else {
+      const skip = (page - 1) * limit;
+      sites = await prisma.site.findMany({
+        skip: skip,
+        take: limit,
+        include: {
+          verantwoordelijke: true,
+          Machine: true,
+        },
+      });
+    }
 
     const total = await prisma.site.count();
 
