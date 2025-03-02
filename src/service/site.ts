@@ -7,7 +7,7 @@ import type { SiteOverview } from '../types/site';
 export const getAllSites = async (page = 0, limit = 0): Promise<{items: SiteOverview[], total: number}> => {
   try {
     let sites;
-    if(page === 0 && limit === 0){
+    if(page === 0 || limit === 0){
       sites = await prisma.site.findMany(
         {
           include: {
