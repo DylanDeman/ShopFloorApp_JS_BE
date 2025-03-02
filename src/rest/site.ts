@@ -9,11 +9,25 @@ import type { getSiteByIdResponse } from '../types/site';
 import { requireAuthentication } from '../core/auth';
 
 const getAllSites = async (ctx: KoaContext<getAllSitesResponse>) => {
+  const page = parseInt(ctx.query.page as string) || 0;
+  const limit = parseInt(ctx.query.limit as string) || 0;
+
+  const { items, total } = await siteService.getAllSites(page, limit);
+
   ctx.body = {
-    items: await siteService.getAllSites(),
+    items,
+    total,
+    totalPages: limit === 0 ? total : Math.ceil(total/limit),
+    page,
+    limit,
   };
 };
-getAllSites.validationScheme = null;
+getAllSites.validationScheme = {
+  query: {
+    page: Joi.number().min(0).optional().default(0),
+    limit: Joi.number().min(0).optional().default(0),
+  },
+};
 
 const getSiteById = async (ctx: KoaContext<getSiteByIdResponse, IdParams>) => {
   ctx.body = await siteService.getSiteById(
@@ -36,14 +50,14 @@ export default (parent: KoaRouter) => {
     '/', 
     requireAuthentication,
     validate(getAllSites.validationScheme), 
-    getAllSites
+    getAllSites,
   );
 
   router.get(
     '/:id', 
     requireAuthentication,
     validate(getSiteById.validationScheme), 
-    getSiteById
+    getSiteById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());
