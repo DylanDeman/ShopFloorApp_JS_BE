@@ -130,7 +130,9 @@ model Onderhoud {
 model Notificatie {
     @@map("notificaties")
 
-    notificatie_id Int @id @default(autoincrement()) @db.UnsignedInt
+    id Int @id @default(autoincrement()) @db.UnsignedInt
 
+    tijdstip DateTime @default(now())
     bericht String @db.VarChar(510)
+    gelezen Boolean @default(false)
 }

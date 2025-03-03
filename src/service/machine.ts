@@ -93,9 +93,32 @@ export const getMachineById = async (id: number) => {
 export const updateMachineById = async (id: number, 
   {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}: any) => {
   try{
-    const machine = prisma.machine.update(
-      {where: { id }, data: {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}},
+
+    const previousMachine = await prisma.machine.findUnique({
+      where: { id },
+      select: {
+        status: true,
+      },
+    });
+
+    if(!previousMachine){
+      throw ServiceError.notFound('Machine niet gevonden');
+    }
+    
+    const machine = await prisma.machine.update(
+      {
+        where: { id }, 
+        data: {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status},
+      },
     );
+    
+    if (previousMachine.status !== status){
+      await prisma.notificatie.create({
+        data: {
+          bericht: `Machine ${machine.id} ${machine.status}`,
+        },
+      });
+    }
 
     return machine;
   } catch (error) {
