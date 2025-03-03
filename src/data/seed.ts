@@ -1,6 +1,7 @@
 import { PrismaClient, Status, Machine_Status, Productie_Status, Onderhoud_Status } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import Rol from '../core/roles';
+import { hashPassword } from '../core/password';
 
 const prisma = new PrismaClient();
 
@@ -81,16 +82,29 @@ async function seedAdressen(aantal: number) {
 async function seedGebruikers(aantal: number) {
   const gebruikers: any = [];
   const bestaandeAdressen: any = await prisma.adres.findMany();
+  const robert = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    naam: 'Devree',
+    voornaam: 'Robert',
+    geboortedatum: faker.date.birthdate(),
+    email: 'robert.devree@hotmail.com',
+    wachtwoord: await hashPassword('ikbenrobert'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.MANAGER,
+    status: Status.ACTIEF,
+  };
+  gebruikers.push(robert);
   for (let i = 0; i < aantal; i++) {
     const naam = faker.person.lastName();
     const voornaam = faker.person.firstName();
+    const wachtwoord = await hashPassword(faker.internet.password());
     gebruikers.push({
       adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
       naam: String(naam),
       voornaam: String(voornaam),
       geboortedatum: faker.date.birthdate(),
       email: String(faker.internet.email({ firstName: voornaam, lastName: naam })),
-      wachtwoord: String(faker.internet.password()),
+      wachtwoord: wachtwoord,
       gsm: String(faker.phone.number()),
       rol: String(
         i == 0 ? Rol.ADMINISTRATOR : i % 2 == 0 ? Rol.MANAGER : i % 3 == 0 ? Rol.TECHNIEKER : Rol.VERANTWOORDELIJKE,

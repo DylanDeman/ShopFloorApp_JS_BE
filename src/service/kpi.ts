@@ -1,0 +1,40 @@
+import { prisma } from '../data';
+import ServiceError from '../core/serviceError';
+import handleDBError from './_handleDBError';
+import type { KPI } from '../types/kpi';
+
+const KPI_SELECT = {
+  id: true,
+  onderwerp: true,
+};
+
+export const getAll = async (): Promise<KPI[]> => {
+  return prisma.kPI.findMany();
+};
+
+export const getById = async (id: number): Promise<KPI> => {
+  const kpi = await prisma.kPI.findUnique({
+    where: {
+      id,
+    },
+    select: KPI_SELECT,
+  });
+
+  if (!kpi) {
+    throw ServiceError.notFound('No kpi with this id exists');
+  }
+
+  return kpi;
+};
+
+export const deleteById = async (id: number): Promise<void> => {
+  try {
+    await prisma.kPI.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
