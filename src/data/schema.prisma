@@ -126,3 +126,11 @@ model Onderhoud {
     status Onderhoud_Status
     opmerkingen String @db.VarChar(255)
 }
+
+model Notificatie {
+    @@map("notificaties")
+
+    notificatie_id Int @id @default(autoincrement()) @db.UnsignedInt
+
+    bericht String @db.VarChar(510)
+}
