@@ -29,7 +29,7 @@ getDashboardById.validationScheme = {
 
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
-    prefix: '/dashboards',
+    prefix: '/dashboard',
   });
 
   router.get(
