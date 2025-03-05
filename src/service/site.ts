@@ -3,57 +3,60 @@ import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { CreateSiteRequest, CreateSiteResponse, SiteOverview, UpdateSiteRequest, UpdateSiteResponse } from '../types/site';
+import { Status } from '@prisma/client'; 
 
-export const getAllSites = async (page = 0, limit = 0): Promise<{items: SiteOverview[], total: number}> => {
+
+export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOverview[]; total: number }> => {
   try {
-    const sites = await prisma.site.findMany({
-      include: {
-        verantwoordelijke: true,
-        Machine: true,
-      },
-    });
+    let sites;
+    const filters = { status: Status.ACTIEF }; 
 
-    const total = await prisma.site.count();
+    if (page === 0 || limit === 0) {
+      sites = await prisma.site.findMany({
+        where: filters,
+        include: {
+          verantwoordelijke: true,
+          Machine: true,
+        },
+      });
+    } else {
+      const skip = (page - 1) * limit;
+      sites = await prisma.site.findMany({
+        where: filters,
+        skip,
+        take: limit,
+        include: {
+          verantwoordelijke: true,
+          Machine: true,
+        },
+      });
+    }
+
+    const total = await prisma.site.count({ where: filters });
 
     if (!sites.length) {
       throw ServiceError.notFound('Geen sites gevonden.');
     }
 
-    return sites.map((site) => ({
-      id: site.id,
-      naam: site.naam,
-      verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-      aantalMachines: site.Machine.length,
-    }));
+    return {
+      items: sites.map((site) => ({
+        id: site.id,
+        naam: site.naam,
+        verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
+        status: site.status,
+        aantalMachines: site.Machine.length,
+      })),
+      total,
+    };
   } catch (error) {
-
-    if (error instanceof ServiceError){
+    if (error instanceof ServiceError) {
       throw error;
     }
     throw handleDBError(error);
   }
 };
 
-export const getSiteById = async (id: number) => {
-  try {
-    const site = await prisma.site.findUnique({
-      where: { id },
-      include: {
-        verantwoordelijke: true,
-        Machine: true,
-      },
-    });
 
-    if (!site) {
-      throw ServiceError.notFound('Site niet gevonden');
-    }
-    return {
-      id: site.id,
-      naam: site.naam,
-      verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-      aantalMachines: site.Machine.length,
-      machines: site.Machine.map((machine) => ({
-        id: machine.id,
 
 export const getSiteById = async (id: number) => {
   try {
