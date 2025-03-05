@@ -80,6 +80,7 @@ export default (parent: KoaRouter) => {
   router.get(
     '/', 
     requireAuthentication,
+    requireManager,
     validate(getAllSites.validationScheme), 
     getAllSites
   );
@@ -89,6 +90,7 @@ export default (parent: KoaRouter) => {
   router.get(
     '/:id', 
     requireAuthentication,
+    requireManager,
     validate(getSiteById.validationScheme), 
     getSiteById
   );
@@ -98,6 +100,7 @@ export default (parent: KoaRouter) => {
   router.put(
     '/:id',
     requireAuthentication,
+    requireManager,
     validate(updateById.validationScheme),
     updateById
   );
@@ -105,6 +108,7 @@ export default (parent: KoaRouter) => {
   router.post(
     "/",
     requireAuthentication,
+    requireManager,
     validate(createSite.validationScheme),
     createSite
   );
@@ -113,6 +117,7 @@ export default (parent: KoaRouter) => {
   router.put(
     '/:id/delete',
     requireAuthentication,
+    requireManager,
     validate(deleteSiteById.validationScheme),
     deleteSiteById
   );
