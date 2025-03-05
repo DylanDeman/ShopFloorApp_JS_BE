@@ -76,7 +76,6 @@ export default (parent: KoaRouter) => {
     prefix: '/sites',
   });
 
-  //door manager
   router.get(
     '/', 
     requireAuthentication,
@@ -86,7 +85,6 @@ export default (parent: KoaRouter) => {
   );
 
 
-  //door manager
   router.get(
     '/:id', 
     requireAuthentication,
@@ -96,7 +94,6 @@ export default (parent: KoaRouter) => {
   );
 
 
-  //door manager
   router.put(
     '/:id',
     requireAuthentication,
@@ -113,7 +110,6 @@ export default (parent: KoaRouter) => {
     createSite
   );
 
-  //door manager
   router.put(
     '/:id/delete',
     requireAuthentication,
