@@ -6,6 +6,7 @@ import type { BudgetAppContext, BudgetAppState, KoaApplication } from '../types/
 import installAdresRoutes from './adres';
 import installUserRoutes from './user';
 import installKPIRoutes from './kpi';
+import installDashboardRouter from './dashboard';
 
 /**
  * @swagger
@@ -54,6 +55,7 @@ export default (app: KoaApplication) => {
   installAdresRoutes(router);
   installUserRoutes(router);
   installKPIRoutes(router);
+  installDashboardRouter(router);
 
   app.use(router.routes())
     .use(router.allowedMethods());

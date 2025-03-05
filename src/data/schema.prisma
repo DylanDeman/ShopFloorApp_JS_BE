@@ -61,8 +61,7 @@ model Gebruiker {
     Site      Site[]      @relation(map: "fk_gebruiker_site")
     Machine   Machine[]   @relation(map: "fk_gebruiker_machine")
     Onderhoud Onderhoud[] @relation(map: "fk_gebruiker_onderhoud")
-
-    kpis KPI[] @relation("GebruikerKPI")
+    Dashboard Dashboard[] @relation(map: "fk_gebruiker_dashboard")
 
     @@map("gebruikers")
 }
@@ -73,7 +72,7 @@ model KPI {
 
     kpiWaarden KPIWaarde[]
 
-    gebruiker Gebruiker[] @relation("GebruikerKPI")
+    Dashboard Dashboard[] @relation(map: "fk_kpi_dashboard")
 
     @@map("kpis")
 }
@@ -87,6 +86,18 @@ model KPIWaarde {
     kpi    KPI @relation(fields: [kpi_id], references: [id])
 
     @@map("kpiwaarden")
+}
+
+model Dashboard {
+    id           Int @id @default(autoincrement()) @db.UnsignedInt
+    gebruiker_id Int @db.UnsignedInt
+    kpi_id       Int @db.UnsignedInt
+
+    gebruiker Gebruiker @relation(fields: [gebruiker_id], references: [id], onDelete: Cascade, map: "fk_gebruiker_dashboard")
+    kpi       KPI       @relation(fields: [kpi_id], references: [id], onDelete: Cascade, map: "fk_kpi_dashboard")
+
+    @@unique([gebruiker_id, kpi_id])
+    @@map("dashboards")
 }
 
 model Site {

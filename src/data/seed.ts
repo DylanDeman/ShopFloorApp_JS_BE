@@ -30,29 +30,39 @@ async function main() {
   await prisma.kPIWaarde.createMany({
     data: await seedKPIWaarden(100),
   });
+  await prisma.dashboard.createMany({
+    data: await seedDashboards(10),
+  });
 }
 
 async function seedKPIWaarden(aantal: number) {
   const KPIWaarden: any = [];
   const bestaandeKPIs = await prisma.kPI.findMany();
 
-  if (bestaandeKPIs.length === 0) {
-    throw new Error('Geen KPI records gevonden! Seed eerst de KPI\'s.');
-  }
-
-  if (bestaandeKPIs.length === 0) {
-    console.error('Er zijn geen KPI\'s in de database. KPIWaarden kunnen niet worden aangemaakt.');
-    return;
-  }
-
   for (let i = 0; i < aantal; i++) {
     KPIWaarden.push({
       datum: faker.date.past(),
-      waarde: faker.number.int(),
+      waarde: faker.number.int({ min: 0, max: 1000 }),
       kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
     });
   }
   return KPIWaarden;
+}
+
+async function seedDashboards(aantal: number) {
+  const dashboards: any = [];
+
+  const bestaandeKPIs = await prisma.kPI.findMany();
+  const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
+
+  for (let i = 0; i < aantal; i++) {
+    dashboards.push({
+      gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
+      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+    })
+  }
+
+  return dashboards;
 }
 
 async function seedKPIs(aantal: number) {
@@ -88,7 +98,7 @@ async function seedGebruikers(aantal: number) {
     voornaam: 'Robert',
     geboortedatum: faker.date.birthdate(),
     email: 'robert.devree@hotmail.com',
-    wachtwoord: await hashPassword('ikbenrobert'),
+    wachtwoord: await hashPassword('UUBE4UcWvSZNaIw'),
     gsm: String(faker.phone.number()),
     rol: Rol.MANAGER,
     status: Status.ACTIEF,
