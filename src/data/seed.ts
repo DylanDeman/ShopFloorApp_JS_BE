@@ -139,6 +139,7 @@ async function seedSites(aantal: number) {
       naam: String(faker.company.name()),
       verantwoordelijke_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
+        status: Status.ACTIEF,
     });
   }
   return sites;

@@ -103,10 +103,9 @@ model Dashboard {
 model Site {
     id   Int    @id @default(autoincrement()) @db.UnsignedInt
     naam String @db.VarChar(255)
-
-    verantwoordelijke_id Int       @db.UnsignedInt
-    verantwoordelijke    Gebruiker @relation(fields: [verantwoordelijke_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
-
+    verantwoordelijke_id Int @db.UnsignedInt
+    verantwoordelijke Gebruiker @relation(fields:[verantwoordelijke_id], references:[id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
+    status Status
     Machine Machine[] @relation(map: "fk_site_machine")
 
     @@map("sites")
