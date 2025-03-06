@@ -55,6 +55,18 @@ export const getDashboardById = async (id: number) => {
   }
 };
 
+export const deleteById = async (id: number): Promise<void> => {
+  try {
+    await prisma.dashboard.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
 export const getDashboardByUserID = async (gebruiker_id: number) => {
   try {
     const dashboards = await prisma.dashboard.findMany({

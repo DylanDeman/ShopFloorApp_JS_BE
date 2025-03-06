@@ -27,6 +27,16 @@ getDashboardById.validationScheme = {
   },
 };
 
+const deleteDashboard = async (ctx: KoaContext<void, IdParams>) => {
+  await dashboardService.deleteById(ctx.params.id);
+  ctx.status = 204;
+};
+deleteDashboard.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
     prefix: '/dashboard',
@@ -45,6 +55,8 @@ export default (parent: KoaRouter) => {
     validate(getDashboardById.validationScheme),
     getDashboardById,
   );
+
+  router.delete('/:id', validate(deleteDashboard.validationScheme), deleteDashboard);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };
