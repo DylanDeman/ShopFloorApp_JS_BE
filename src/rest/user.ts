@@ -2,7 +2,9 @@ import type { Next } from 'koa';
 import Router from '@koa/router';
 import Joi from 'joi';
 import * as userService from '../service/user';
-import type { BudgetAppContext, BudgetAppState} from '../types/koa';
+import * as dashboardService from '../service/dashboard';
+import type { getAllDashboardsResponse } from '../types/dashboard';
+import type { BudgetAppContext, BudgetAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   RegisterUserRequest,
@@ -101,7 +103,20 @@ deleteUserById.validationScheme = {
   },
 };
 
-export default function installUserRoutes (parent: KoaRouter) {
+const getDashboardByUserID = async (ctx: KoaContext<getAllDashboardsResponse, IdParams>) => {
+  const dashboards = await dashboardService.getDashboardByUserID(ctx.params.id);
+
+  ctx.body = {
+    items: dashboards,
+  };
+};
+getDashboardByUserID.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
+export default function installUserRoutes(parent: KoaRouter) {
   const router = new Router<BudgetAppState, BudgetAppContext>({ prefix: '/users' });
 
   router.post(
@@ -137,6 +152,14 @@ export default function installUserRoutes (parent: KoaRouter) {
     validate(deleteUserById.validationScheme),
     checkUserId,
     deleteUserById,
+  );
+
+  router.get(
+    '/:id/dashboard'
+    , requireAuthentication,
+    validate(getDashboardByUserID.validationScheme),
+    checkUserId,
+    getDashboardByUserID,
   );
 
   parent

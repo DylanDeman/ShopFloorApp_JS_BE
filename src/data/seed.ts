@@ -1,10 +1,11 @@
 import { PrismaClient, Status, Machine_Status, Productie_Status, Onderhoud_Status } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import Rol from '../core/roles';
+import { hashPassword } from '../core/password';
 
 const prisma = new PrismaClient();
 
-async function main () {
+async function main() {
   await prisma.adres.createMany({
     data: await seedAdressen(100),
   });
@@ -23,11 +24,60 @@ async function main () {
   await prisma.onderhoud.createMany({
     data: await seedOnderhouden(100),
   });
+  await prisma.kPI.createMany({
+    data: await seedKPIs(20),
+  });
+  await prisma.kPIWaarde.createMany({
+    data: await seedKPIWaarden(100),
+  });
+  await prisma.dashboard.createMany({
+    data: await seedDashboards(10),
+  });
+}
+
+async function seedKPIWaarden(aantal: number) {
+  const KPIWaarden: any = [];
+  const bestaandeKPIs = await prisma.kPI.findMany();
+
+  for (let i = 0; i < aantal; i++) {
+    KPIWaarden.push({
+      datum: faker.date.past(),
+      waarde: faker.number.int({ min: 0, max: 1000 }),
+      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+    });
+  }
+  return KPIWaarden;
+}
+
+async function seedDashboards(aantal: number) {
+  const dashboards: any = [];
+
+  const bestaandeKPIs = await prisma.kPI.findMany();
+  const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
+
+  for (let i = 0; i < aantal; i++) {
+    dashboards.push({
+      gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
+      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+    });
+  }
+
+  return dashboards;
+}
+
+async function seedKPIs(aantal: number) {
+  const KPIs: any = [];
+  for (let i = 0; i < aantal; i++) {
+    KPIs.push({
+      onderwerp: String(faker.commerce.department()),
+    });
+  }
+  return KPIs;
 }
 
 async function seedAdressen(aantal: number) {
   const adressen: any = [];
-  for(let i = 0; i < aantal; i++){
+  for (let i = 0; i < aantal; i++) {
     adressen.push({
       straat: String(faker.location.street()),
       huisnummer: String(faker.location.buildingNumber()),
@@ -42,16 +92,29 @@ async function seedAdressen(aantal: number) {
 async function seedGebruikers(aantal: number) {
   const gebruikers: any = [];
   const bestaandeAdressen: any = await prisma.adres.findMany();
-  for(let i = 0; i < aantal; i++){
+  const robert = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    naam: 'Devree',
+    voornaam: 'Robert',
+    geboortedatum: faker.date.birthdate(),
+    email: 'robert.devree@hotmail.com',
+    wachtwoord: await hashPassword('123456789'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.MANAGER,
+    status: Status.ACTIEF,
+  };
+  gebruikers.push(robert);
+  for (let i = 0; i < aantal; i++) {
     const naam = faker.person.lastName();
     const voornaam = faker.person.firstName();
+    const wachtwoord = await hashPassword('123456789');
     gebruikers.push({
       adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
       naam: String(naam),
       voornaam: String(voornaam),
       geboortedatum: faker.date.birthdate(),
-      email: String(faker.internet.email({firstName: voornaam, lastName: naam})),
-      wachtwoord: String(faker.internet.password()),
+      email: String(faker.internet.email({ firstName: voornaam, lastName: naam })),
+      wachtwoord: wachtwoord,
       gsm: String(faker.phone.number()),
       rol: String(
         i == 0 ? Rol.ADMINISTRATOR : i % 2 == 0 ? Rol.MANAGER : i % 3 == 0 ? Rol.TECHNIEKER : Rol.VERANTWOORDELIJKE,
@@ -69,11 +132,12 @@ async function seedSites(aantal: number) {
       rol: {
         equals: Rol.VERANTWOORDELIJKE,
       },
-    }});
-  for(let i = 0; i < aantal; i ++){
+    },
+  });
+  for (let i = 0; i < aantal; i++) {
     sites.push({
       naam: String(faker.company.name()),
-      verantwoordelijke_id: 
+      verantwoordelijke_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
     });
   }
@@ -82,7 +146,7 @@ async function seedSites(aantal: number) {
 
 async function seedProducten(aantal: number) {
   const producten: any = [];
-  for(let i = 0; i < aantal; i ++){
+  for (let i = 0; i < aantal; i++) {
     producten.push({
       naam: faker.commerce.product(),
     });
@@ -99,17 +163,18 @@ async function seedMachines(aantal: number) {
       rol: {
         equals: Rol.TECHNIEKER,
       },
-    }});
-  for(let i = 0; i < aantal; i ++){
+    },
+  });
+  for (let i = 0; i < aantal; i++) {
     machines.push({
       site_id: Number(bestaandeSites[Math.floor(Math.random() * bestaandeSites.length)].id),
       product_id: Number(bestaansdeProducten[Math.floor(Math.random() * bestaansdeProducten.length)].id),
-      technieker_gebruiker_id: 
+      technieker_gebruiker_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
       code: String(faker.commerce.isbn()),
       locatie: String(faker.location.street()),
       status: Object.values(Machine_Status)[Math.floor(Math.random() * Object.values(Machine_Status).length)],
-      productie_status: 
+      productie_status:
         Object.values(Productie_Status)[Math.floor(Math.random() * Object.values(Productie_Status).length)],
     });
   }
@@ -126,10 +191,10 @@ async function seedOnderhouden(aantal: number) {
       },
     },
   });
-  for(let i = 0; i < aantal; i ++){
+  for (let i = 0; i < aantal; i++) {
     onderhouden.push({
       machine_id: Number(bestaandeMachines[Math.floor(Math.random() * bestaandeMachines.length)].id),
-      technieker_gebruiker_id: 
+      technieker_gebruiker_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
       datum: faker.date.anytime(),
       starttijdstip: faker.date.past(),
