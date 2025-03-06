@@ -33,6 +33,9 @@ async function main() {
   await prisma.dashboard.createMany({
     data: await seedDashboards(10),
   });
+  await prisma.notificatie.createMany({
+    data: await seedNotificaties(20),
+  });
 }
 
 async function seedKPIWaarden(aantal: number) {
@@ -47,6 +50,18 @@ async function seedKPIWaarden(aantal: number) {
     });
   }
   return KPIWaarden;
+}
+
+async function seedNotificaties(aantal: number) {
+  const notificaties: any = [];
+  for (let i = 0; i < aantal; i++) {
+    notificaties.push({
+      tijdstip: faker.date.recent(),
+      bericht: faker.lorem.sentence(),
+      gelezen: faker.datatype.boolean(),
+    });
+  }
+  return notificaties;
 }
 
 async function seedDashboards(aantal: number) {
@@ -139,7 +154,7 @@ async function seedSites(aantal: number) {
       naam: String(faker.company.name()),
       verantwoordelijke_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
-        status: Status.ACTIEF,
+      status: Status.ACTIEF,
     });
   }
   return sites;
