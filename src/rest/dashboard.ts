@@ -2,8 +2,8 @@ import Router from '@koa/router';
 import * as dashboardService from '../service/dashboard';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
-import type { getAllDashboardsResponse } from '../types/dashboard';
-import type { getDashboardByIdResponse } from '../types/dashboard';
+import type { getAllDashboardsResponse, getDashboardByIdResponse, CreateDashboardRequest, CreateDashboardResponse }
+  from '../types/dashboard';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
@@ -37,6 +37,20 @@ deleteDashboard.validationScheme = {
   },
 };
 
+const createDashboard = async (ctx: KoaContext<CreateDashboardResponse, void, CreateDashboardRequest>) => {
+  console.log(ctx.request.body);
+  const dashboard = await dashboardService.create({ ...ctx.request.body });
+  ctx.status = 201;
+  ctx.body = dashboard;
+};
+
+createDashboard.validationScheme = {
+  body: {
+    gebruiker_id: Joi.number().integer().positive(),
+    kpi_id: Joi.number().integer().positive(),
+  },
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
     prefix: '/dashboard',
@@ -57,6 +71,7 @@ export default (parent: KoaRouter) => {
   );
 
   router.delete('/:id', validate(deleteDashboard.validationScheme), deleteDashboard);
+  router.post('/', validate(createDashboard.validationScheme), createDashboard);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

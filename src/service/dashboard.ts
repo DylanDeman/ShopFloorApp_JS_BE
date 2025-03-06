@@ -2,7 +2,7 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import type { DashboardOverview } from '../types/dashboard';
+import type { DashboardOverview, DashboardCreateInput } from '../types/dashboard';
 
 export const getAllDashboards = async (): Promise<DashboardOverview[]> => {
   try {
@@ -60,6 +60,22 @@ export const deleteById = async (id: number): Promise<void> => {
     await prisma.dashboard.delete({
       where: {
         id,
+      },
+    });
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
+export const create = async ({
+  gebruiker_id,
+  kpi_id,
+}: DashboardCreateInput): Promise<DashboardOverview> => {
+  try {
+    return await prisma.dashboard.create({
+      data: {
+        gebruiker_id,
+        kpi_id,
       },
     });
   } catch (error) {
