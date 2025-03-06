@@ -54,3 +54,23 @@ export const getDashboardById = async (id: number) => {
     throw handleDBError(error);
   }
 };
+
+export const getDashboardByUserID = async (gebruiker_id: number) => {
+  try {
+    const dashboards = await prisma.dashboard.findMany({
+      where: { gebruiker_id },
+      include: {
+        kpi: true,
+      },
+    });
+
+    return dashboards.map((dashboard) => ({
+      id: dashboard.id,
+      gebruiker_id: dashboard.gebruiker_id,
+      kpi_id: dashboard.kpi.id,
+    }));
+
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};

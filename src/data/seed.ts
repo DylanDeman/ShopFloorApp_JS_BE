@@ -59,7 +59,7 @@ async function seedDashboards(aantal: number) {
     dashboards.push({
       gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
       kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
-    })
+    });
   }
 
   return dashboards;
@@ -98,7 +98,7 @@ async function seedGebruikers(aantal: number) {
     voornaam: 'Robert',
     geboortedatum: faker.date.birthdate(),
     email: 'robert.devree@hotmail.com',
-    wachtwoord: await hashPassword('UUBE4UcWvSZNaIw'),
+    wachtwoord: await hashPassword('123456789'),
     gsm: String(faker.phone.number()),
     rol: Rol.MANAGER,
     status: Status.ACTIEF,
@@ -107,7 +107,7 @@ async function seedGebruikers(aantal: number) {
   for (let i = 0; i < aantal; i++) {
     const naam = faker.person.lastName();
     const voornaam = faker.person.firstName();
-    const wachtwoord = await hashPassword(faker.internet.password());
+    const wachtwoord = await hashPassword('123456789');
     gebruikers.push({
       adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
       naam: String(naam),
