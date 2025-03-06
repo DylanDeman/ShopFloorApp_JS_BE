@@ -11,16 +11,67 @@ Inloggegevens testaccounts:
 
 ## Administrator
 alice.admin@example.com
-SecurePassAdmin123!
+123456789
 
 ## Manager
 bob.manager@example.com
-SecurePassManager123!
+123456789
 
 ## Verantwoordelijke
 charlie.verantwoordelijke@example.com
-SecurePassVerantwoordelijke123!
+123456789
 
 ## Technieker
 david.technieker@example.com
-SecurePassTechnieker123!
+123456789
+
+## Requirements
+
+Volgende software moet geïnstalleerd zijn:
+- [NodeJS](https://nodejs.org)
+- [Yarn](https://yarnpkg.com)
+- [MySQL Community Server](https://dev.mysql.com/downloads/mysql/)
+
+## Voordat u het project test of runt
+
+Maak een `.env` (development) or `.env.test` (testing) bestand met het volgende sjabloon.
+Vul de variabelen aan met de nodige gegevens.
+
+# .env bestand
+```bash
+NODE_ENV=production (of testing of development)
+DATABASE_URL="mysql://SDP2-2425-G12:bXaq7e0yoZKvGUI%23NZAFH@vichogent.be:40058/SDP2_2425_DB_G12"
+```
+
+## Start up
+
+### Development
+
+- Enable Corepack: `corepack enable`
+- Installeer alle dependencies: `yarn`
+- Zorg voor een `.env` (zie sjabloon hierboven)
+- Run de migraties: `yarn migrate:dev`
+- Start de development server: `yarn start:dev`
+
+### Productie
+
+- Enable Corepack: `corepack enable`
+- Installeer alle dependencies: `yarn`
+- Zorg voor een `.env` (zie sjabloon hierboven)
+- Run de migraties: `yarn prisma migrate deploy`
+- Build the project: `yarn build`
+- Start de production server: `node build/src/index.js`
+
+## Testing
+
+Deze server zal de gegeven database maken wanneer de server is gestart.
+
+- Enable Corepack: `corepack enable`
+- Installeer alle dependencies: `yarn`
+- Zorg voor een `.env.test` (zie sjabloon hierboven)
+- Run de migraties: `yarn migrate:test`
+- Run de testen: `yarn test`
+  - Dit gaat een nieuwe server starten voor elke test suite die runt, u zal geen output zien omdat logging uitgezet is om de output cleaner te maken.
+- Run de testen met coverage: `yarn test:coverage`
+  - Dit zal een coverage report genereren in de `__tests__/coverage` foler
+  - Open `__tests__/coverage/lcov-report/index.html` in uw browser om het coverage report te zien.
