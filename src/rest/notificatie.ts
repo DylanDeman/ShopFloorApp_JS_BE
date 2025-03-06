@@ -40,6 +40,21 @@ getNotificatieById.validationScheme = {
   },
 };
 
+const updateNotificatieById = async (ctx: KoaContext<getNotificatieByIdResponse, IdParams>) => {
+  ctx.body = await notificatieService.updateNotificatieById(ctx.params.id, ctx.request.body);
+};
+
+updateNotificatieById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body: {
+    tijdstip: Joi.date(),
+    bericht: Joi.string(),
+    gelezen: Joi.bool(),
+  },
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
     prefix: '/notificaties',
@@ -57,6 +72,13 @@ export default (parent: KoaRouter) => {
     requireAuthentication,
     validate(getNotificatieById.validationScheme), 
     getNotificatieById,
+  );
+
+  router.put(
+    '/:id',
+    requireAuthentication,
+    validate(updateNotificatieById.validationScheme),
+    updateNotificatieById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());

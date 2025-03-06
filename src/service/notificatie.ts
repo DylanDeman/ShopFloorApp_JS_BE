@@ -61,3 +61,22 @@ export const getNotificatieById = async (id: number) => {
     throw handleDBError(error);
   }
 };
+
+export const updateNotificatieById = async (id: number, 
+  {tijdstip, bericht, gelezen}: any) => {
+  try{
+
+    const notificatie = await prisma.notificatie.update({
+      where: { id },
+      data: {
+        tijdstip: tijdstip,
+        bericht: bericht,
+        gelezen: gelezen,
+      },
+    });
+
+    return notificatie;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
