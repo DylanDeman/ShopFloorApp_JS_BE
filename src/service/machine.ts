@@ -93,7 +93,6 @@ export const getMachineById = async (id: number) => {
 export const updateMachineById = async (id: number, 
   {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}: any) => {
   try{
-
     const previousMachine = await prisma.machine.findUnique({
       where: { id },
       select: {
