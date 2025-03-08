@@ -25,7 +25,7 @@ async function main() {
     data: await seedOnderhouden(100),
   });
   await prisma.kPI.createMany({
-    data: await seedKPIs(20),
+    data: await seedKPIs(),
   });
   await prisma.kPIWaarde.createMany({
     data: await seedKPIWaarden(100),
@@ -80,13 +80,109 @@ async function seedDashboards(aantal: number) {
   return dashboards;
 }
 
-async function seedKPIs(aantal: number) {
+async function seedKPIs() {
   const KPIs: any = [];
-  for (let i = 0; i < aantal; i++) {
-    KPIs.push({
-      onderwerp: String(faker.commerce.department()),
-    });
-  }
+
+  const MNGR_KPI_1 = {
+    onderwerp: 'Algemene gezondheid alle sites',
+    roles: Rol.MANAGER,
+  };
+
+  const MNGR_KPI_2 = {
+    onderwerp: 'Algemene gezondheid site x',
+    roles: Rol.MANAGER,
+  };
+
+  const MNGR_KPI_3 = {
+    onderwerp: 'Productiegraad alle sites gesorteerd (hoog naar laag)',
+    roles: Rol.MANAGER,
+  };
+
+  const MNGR_KPI_4 = {
+    onderwerp: 'Productiegraad alle sites gesorteerd (laag naar hoog)',
+    roles: Rol.MANAGER,
+  };
+
+  KPIs.push(MNGR_KPI_1);
+  KPIs.push(MNGR_KPI_2);
+  KPIs.push(MNGR_KPI_3);
+  KPIs.push(MNGR_KPI_4);
+
+  const VW_KPI_1 = {
+    onderwerp: 'Mijn machines',
+    roles: Rol.VERANTWOORDELIJKE,
+  };
+
+  const VW_KPI_2 = {
+    onderwerp: 'Top 5 gezonde machines',
+    roles: Rol.VERANTWOORDELIJKE,
+  };
+
+  const VW_KPI_3 = {
+    onderwerp: 'Top 5 falende machines',
+    roles: Rol.VERANTWOORDELIJKE,
+  };
+
+  const VW_KPI_4 = {
+    onderwerp: 'Top 5 machines met nood aan onderhoud',
+    roles: Rol.VERANTWOORDELIJKE,
+  };
+
+  KPIs.push(VW_KPI_1);
+  KPIs.push(VW_KPI_2);
+  KPIs.push(VW_KPI_3);
+  KPIs.push(VW_KPI_4);
+
+  const TECH_KPI_1 = {
+    onderwerp: 'Mijn machines',
+    roles: Rol.TECHNIEKER,
+  };
+
+  const TECH_KPI_2 = {
+    onderwerp: 'Aankomende onderhoudsbeurten',
+    roles: Rol.TECHNIEKER,
+  };
+
+  const TECH_KPI_3 = {
+    onderwerp: 'Laatste 5 onderhoudsbeurten',
+    roles: Rol.TECHNIEKER,
+  };
+
+  KPIs.push(TECH_KPI_1);
+  KPIs.push(TECH_KPI_2);
+  KPIs.push(TECH_KPI_3);
+
+  const VW_TECH_KPI_1 = {
+    onderwerp: 'Draaiende machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+  };
+
+  const VW_TECH_KPI_2 = {
+    onderwerp: 'Manueel gestopte machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+  };
+
+  const VW_TECH_KPI_3 = {
+    onderwerp: 'Automatisch gestopte machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+  };
+
+  const VW_TECH_KPI_4 = {
+    onderwerp: 'Machines in onderhoud',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+  };
+
+  const VW_TECH_KPI_5 = {
+    onderwerp: 'Startbare machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+  };
+
+  KPIs.push(VW_TECH_KPI_1);
+  KPIs.push(VW_TECH_KPI_2);
+  KPIs.push(VW_TECH_KPI_3);
+  KPIs.push(VW_TECH_KPI_4);
+  KPIs.push(VW_TECH_KPI_5);
+
   return KPIs;
 }
 
