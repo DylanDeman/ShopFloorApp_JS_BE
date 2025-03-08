@@ -2,7 +2,12 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 import roles from '../core/roles'; 
-import type { CreateSiteRequest, CreateSiteResponse, SiteOverview, UpdateSiteRequest, UpdateSiteResponse } from '../types/site';
+import type { CreateSiteRequest, 
+  CreateSiteResponse, 
+  SiteOverview, 
+  UpdateSiteRequest, 
+  UpdateSiteResponse, 
+} from '../types/site';
 import { Status } from '@prisma/client'; 
 
 export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOverview[]; total: number }> => {
@@ -130,6 +135,17 @@ export const createSite = async (data: CreateSiteRequest): Promise<CreateSiteRes
 
 export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Promise<UpdateSiteResponse> => {
   try {
+    const previousSite = await prisma.site.findUnique({
+      where: { id },
+      select: {
+        status: true,
+      },
+    });
+
+    if (!previousSite) {
+      throw ServiceError.notFound('Site niet gevonden');
+    }
+
     const site = await prisma.site.update({
       where: {
         id,
@@ -140,14 +156,22 @@ export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Pr
         verantwoordelijke: true,
       },
     });
+    
+    if (previousSite.status !== site.status) {
+      await prisma.notificatie.create({
+        data: {
+          bericht: `Site ${site.id} ${site.status}`,
+        },
+      });
+    }
     const aantalMachines = site.Machine.length;
-
     const response: UpdateSiteResponse = {
       id: site.id,
       naam: site.naam,
       verantwoordelijke: site.verantwoordelijke.naam,
       aantalMachines,
     };
+
     return response;
   } catch (error) {
     throw handleDBError(error);
