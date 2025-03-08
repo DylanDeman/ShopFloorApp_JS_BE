@@ -1,10 +1,9 @@
 import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
-//import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
+import roles from '../core/roles'; 
 import type { CreateSiteRequest, CreateSiteResponse, SiteOverview, UpdateSiteRequest, UpdateSiteResponse } from '../types/site';
 import { Status } from '@prisma/client'; 
-
 
 export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOverview[]; total: number }> => {
   try {
@@ -56,8 +55,6 @@ export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOve
   }
 };
 
-
-
 export const getSiteById = async (id: number) => {
   try {
     const site = await prisma.site.findUnique({
@@ -98,8 +95,11 @@ export const createSite = async (data: CreateSiteRequest): Promise<CreateSiteRes
     if (!verantwoordelijke) {
       throw new Error('Verantwoordelijke not found.');
     }
+    const rollen: string[] = Array.isArray(verantwoordelijke.rol)
+      ? verantwoordelijke.rol as string[]
+      : JSON.parse(verantwoordelijke.rol as string || '[]');
 
-    if (verantwoordelijke.rol !== 'VERANTWOORDELIJKE') {
+    if (!rollen.includes(roles.VERANTWOORDELIJKE)) {
       throw new Error('The user is not a verantwoordelijke.');
     }
 
@@ -128,32 +128,30 @@ export const createSite = async (data: CreateSiteRequest): Promise<CreateSiteRes
   }
 };
 
-
-
 export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Promise<UpdateSiteResponse> => {
-try {
-  const site = await prisma.site.update({
-    where: {
-      id,
-    },
-    data: changes,
-    include: {
-      Machine: true,
-      verantwoordelijke: true,
-    },
-  });
-  const aantalMachines = site.Machine.length;
+  try {
+    const site = await prisma.site.update({
+      where: {
+        id,
+      },
+      data: changes,
+      include: {
+        Machine: true,
+        verantwoordelijke: true,
+      },
+    });
+    const aantalMachines = site.Machine.length;
 
-  const response: UpdateSiteResponse = {
-    id: site.id,
-    naam: site.naam,
-    verantwoordelijke: site.verantwoordelijke.naam,
-    aantalMachines,
+    const response: UpdateSiteResponse = {
+      id: site.id,
+      naam: site.naam,
+      verantwoordelijke: site.verantwoordelijke.naam,
+      aantalMachines,
+    };
+    return response;
+  } catch (error) {
+    throw handleDBError(error);
   };
-  return response
-} catch (error) {
-  throw handleDBError(error);
-};
 };
 
 export const deleteSiteById = async (id: number): Promise<void> => {
@@ -161,18 +159,16 @@ export const deleteSiteById = async (id: number): Promise<void> => {
     const site = await prisma.site.update({
       where: {id},
       data: {
-        status: 'INACTIEF'
+        status: 'INACTIEF',
       },
     });
 
     if (!site){
-      throw new Error("Site niet gevonden!");
+      throw new Error('Site niet gevonden!');
     }
   } catch (error) {
     handleDBError(error);
     throw new Error('An error occurred while deleting the user, please try again.');
   }
 };
-
-
 

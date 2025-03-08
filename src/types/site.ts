@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { Entity, ListResponse } from './common';
 
 export interface SiteOverview extends Entity{
