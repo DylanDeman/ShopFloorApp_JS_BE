@@ -6,6 +6,8 @@ import type { KPI } from '../types/kpi';
 const KPI_SELECT = {
   id: true,
   onderwerp: true,
+  roles: true,
+  grafiek: true,
 };
 
 export const getAll = async (): Promise<KPI[]> => {
