@@ -1,21 +1,33 @@
 /*
   Warnings:
 
-  - You are about to drop the `_gebruikerkpi` table. If the table is not empty, all the data it contains will be lost.
   - Added the required column `status` to the `sites` table without a default value. This is not possible if the table is not empty.
 
 */
--- DropForeignKey
-ALTER TABLE `_gebruikerkpi` DROP FOREIGN KEY `_GebruikerKPI_A_fkey`;
-
--- DropForeignKey
-ALTER TABLE `_gebruikerkpi` DROP FOREIGN KEY `_GebruikerKPI_B_fkey`;
+-- AlterTable
+ALTER TABLE `machines` MODIFY `status` ENUM('DRAAIT', 'MANUEEL_GESTOPT', 'AUTOMATISCH_GESTOPT', 'IN_ONDERHOUD', 'STARTBAAR') NOT NULL;
 
 -- AlterTable
 ALTER TABLE `sites` ADD COLUMN `status` ENUM('ACTIEF', 'INACTIEF') NOT NULL;
 
--- DropTable
-DROP TABLE `_gebruikerkpi`;
+-- CreateTable
+CREATE TABLE `kpis` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `onderwerp` VARCHAR(191) NOT NULL,
+    `roles` JSON NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `kpiwaarden` (
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `datum` DATETIME(3) NOT NULL,
+    `waarde` JSON NOT NULL,
+    `kpi_id` INTEGER UNSIGNED NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `dashboards` (
@@ -36,6 +48,9 @@ CREATE TABLE `notificaties` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `kpiwaarden` ADD CONSTRAINT `kpiwaarden_kpi_id_fkey` FOREIGN KEY (`kpi_id`) REFERENCES `kpis`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `dashboards` ADD CONSTRAINT `fk_gebruiker_dashboard` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruikers`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
