@@ -32,6 +32,12 @@ enum Onderhoud_Status {
     INGEPLAND
 }
 
+enum Grafiek {
+    LINE
+    BAR
+    NONE
+}
+
 model Adres {
     id         Int    @id @default(autoincrement()) @db.UnsignedInt
     straat     String @db.VarChar(255)
@@ -69,9 +75,10 @@ model Gebruiker {
 }
 
 model KPI {
-    id        Int    @id @default(autoincrement()) @db.UnsignedInt
+    id        Int     @id @default(autoincrement()) @db.UnsignedInt
     onderwerp String
     roles     Json
+    grafiek   Grafiek
 
     kpiWaarden KPIWaarde[]
 
