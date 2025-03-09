@@ -118,7 +118,57 @@ async function seedGebruikers(aantal: number) {
     rol: Rol.MANAGER,
     status: Status.ACTIEF,
   };
+  const alice = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    voornaam: 'Alice',
+    naam: 'Johnson',
+    geboortedatum: faker.date.birthdate(),
+    email: 'alice.admin@example.com',
+    wachtwoord: await hashPassword('123456789'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.ADMINISTRATOR,
+    status: Status.ACTIEF,
+  };
+  const bob = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    naam: 'Smith',
+    voornaam: 'Bob',
+    geboortedatum: faker.date.birthdate(),
+    email: 'bob.manager@example.com',
+    wachtwoord: await hashPassword('123456789'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.MANAGER,
+    status: Status.ACTIEF,
+  };
+  const charlie = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    naam: 'Davis',
+    voornaam: 'Charlie',
+    geboortedatum: faker.date.birthdate(),
+    email: 'charlie.verantwoordelijke@example.com',
+    wachtwoord: await hashPassword('123456789'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.VERANTWOORDELIJKE,
+    status: Status.ACTIEF,
+  };
+  const david = {
+    adres_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
+    naam: 'Williams',
+    voornaam: 'David',
+    geboortedatum: faker.date.birthdate(),
+    email: 'david.technieker@example.com',
+    wachtwoord: await hashPassword('123456789'),
+    gsm: String(faker.phone.number()),
+    rol: Rol.TECHNIEKER,
+    status: Status.ACTIEF,
+  };
+
   gebruikers.push(robert);
+  gebruikers.push(alice);
+  gebruikers.push(bob);
+  gebruikers.push(charlie);
+  gebruikers.push(david);
+
   for (let i = 0; i < aantal; i++) {
     const naam = faker.person.lastName();
     const voornaam = faker.person.firstName();

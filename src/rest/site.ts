@@ -2,7 +2,13 @@ import Router from '@koa/router';
 import * as siteService from '../service/site';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
-import type { getAllSitesResponse, UpdateSiteRequest, UpdateSiteResponse ,getSiteByIdResponse, CreateSiteResponse, CreateSiteRequest } from '../types/site';
+import type { getAllSitesResponse, 
+  UpdateSiteRequest, 
+  UpdateSiteResponse,
+  getSiteByIdResponse, 
+  CreateSiteResponse, 
+  CreateSiteRequest, 
+} from '../types/site';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { makeRequireRole, requireAuthentication } from '../core/auth';
@@ -46,15 +52,17 @@ const updateById = async (ctx: KoaContext<UpdateSiteResponse, IdParams, UpdateSi
 
   const updatedSite = await siteService.updateSiteById(id, data);
   ctx.status = 200;
-  ctx.body = updatedSite
+  ctx.body = updatedSite;
 };
+
 updateById.validationScheme = {
   params: {
     id: Joi.number().integer().positive().required(),
   },
   body: {
-    naam: Joi.string().max(255).required(),
+    naam: Joi.string().max(255),
     verantwoordelijke_id: Joi.number().integer().positive().required(),
+    status: Joi.string().valid('ACTIEF', 'INACTIEF').required(),
   },
 };
 
@@ -67,23 +75,23 @@ createSite.validationScheme = {
   body: {
     naam: Joi.string().max(255).required(),
     verantwoordelijke_id: Joi.number().integer().positive().required(),
+    status: Joi.string().valid('ACTIEF', 'INACTIEF').required(),
   },
 };
 
-
- const deleteSiteById = async (ctx: KoaContext<void, IdParams>) => {
+const deleteSiteById = async (ctx: KoaContext<void, IdParams>) => {
   const {id} = ctx.params;
   const deletedSite = await siteService.deleteSiteById(Number(id));
   ctx.status = 200;
   ctx.body = deletedSite;
- };
- deleteSiteById.validationScheme = {
-    params: {
-      id: Joi.number().integer().positive().required(),
-    },
- };
+};
+deleteSiteById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive().required(),
+  },
+};
 
- const requireManager = makeRequireRole(roles.MANAGER);
+const requireManager = makeRequireRole(roles.MANAGER);
 
 export default (parent: KoaRouter) => {
   const router = new Router<BudgetAppState, BudgetAppContext>({
@@ -98,7 +106,6 @@ export default (parent: KoaRouter) => {
     getAllSites,
   );
 
-
   router.get(
     '/:id', 
     requireAuthentication,
@@ -107,29 +114,28 @@ export default (parent: KoaRouter) => {
     getSiteById,
   );
 
-
   router.put(
     '/:id',
     requireAuthentication,
     requireManager,
     validate(updateById.validationScheme),
-    updateById
+    updateById,
   );
 
   router.post(
-    "/",
+    '/',
     requireAuthentication,
     requireManager,
     validate(createSite.validationScheme),
-    createSite
+    createSite,
   );
 
-  router.put(
-    '/:id/delete',
+  router.delete(
+    '/:id',
     requireAuthentication,
     requireManager,
     validate(deleteSiteById.validationScheme),
-    deleteSiteById
+    deleteSiteById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());
