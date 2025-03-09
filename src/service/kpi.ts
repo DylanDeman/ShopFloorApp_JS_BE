@@ -40,3 +40,16 @@ export const deleteById = async (id: number): Promise<void> => {
     throw handleDBError(error);
   }
 };
+
+export const getKPIByRole = async (role: string): Promise<KPI[]> => {
+  const kpis = await prisma.kPI.findMany({
+    where: {
+      OR: [
+        { roles: { equals: role } },
+        { roles: { array_contains: role } },
+      ],
+    },
+  });
+
+  return kpis;
+};
