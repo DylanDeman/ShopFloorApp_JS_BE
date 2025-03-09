@@ -110,50 +110,38 @@ async function seedKPIs() {
   KPIs.push(MNGR_KPI_1, MNGR_KPI_2, MNGR_KPI_3, MNGR_KPI_4);
 
   const VW_KPI_1 = {
-    onderwerp: 'Mijn machines',
-    roles: Rol.VERANTWOORDELIJKE,
-    grafiek: Grafiek.LIST,
-  };
-
-  const VW_KPI_2 = {
     onderwerp: 'Top 5 gezonde machines',
     roles: Rol.VERANTWOORDELIJKE,
     grafiek: Grafiek.LIST,
   };
 
-  const VW_KPI_3 = {
+  const VW_KPI_2 = {
     onderwerp: 'Top 5 falende machines',
     roles: Rol.VERANTWOORDELIJKE,
     grafiek: Grafiek.LIST,
   };
 
-  const VW_KPI_4 = {
+  const VW_KPI_3 = {
     onderwerp: 'Top 5 machines met nood aan onderhoud',
     roles: Rol.VERANTWOORDELIJKE,
     grafiek: Grafiek.LIST,
   };
 
-  KPIs.push(VW_KPI_1, VW_KPI_2, VW_KPI_3, VW_KPI_4);
+  KPIs.push(VW_KPI_1, VW_KPI_2, VW_KPI_3);
 
   const TECH_KPI_1 = {
-    onderwerp: 'Mijn machines',
-    roles: Rol.TECHNIEKER,
-    grafiek: Grafiek.LIST,
-  };
-
-  const TECH_KPI_2 = {
     onderwerp: 'Aankomende onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
     grafiek: Grafiek.LIST,
   };
 
-  const TECH_KPI_3 = {
+  const TECH_KPI_2 = {
     onderwerp: 'Laatste 5 onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
     grafiek: Grafiek.LIST,
   };
 
-  KPIs.push(TECH_KPI_1, TECH_KPI_2, TECH_KPI_3);
+  KPIs.push(TECH_KPI_1, TECH_KPI_2);
 
   const VW_TECH_KPI_1 = {
     onderwerp: 'Draaiende machines',
@@ -185,12 +173,19 @@ async function seedKPIs() {
     grafiek: Grafiek.SINGLE,
   };
 
+  const VW_TECH_KPI_6 = {
+    onderwerp: 'Mijn machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.LIST,
+  };
+
   KPIs.push(
     VW_TECH_KPI_1,
     VW_TECH_KPI_2,
     VW_TECH_KPI_3,
     VW_TECH_KPI_4,
     VW_TECH_KPI_5,
+    VW_TECH_KPI_6,
   );
 
   return KPIs;

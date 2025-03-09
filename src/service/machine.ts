@@ -3,7 +3,7 @@ import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { Machine } from '../types/machine';
-import { getKPIidPerStatus } from './kpi';
+import { getKPIidPerStatus, getKPIidPerProductieStatus } from './kpi';
 
 export const getAllMachines = async (page = 0, limit = 0): Promise<{ items: Machine[], total: number }> => {
   try {
@@ -138,17 +138,48 @@ export const updateMachineKPIs = async () => {
       _count: { id: true },
     });
 
+    const machinesPerProductieStatus = await prisma.machine.findMany({
+      select: {
+        productie_status: true,
+        id: true,
+      },
+      orderBy: {
+        status: 'asc',
+      },
+    });
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const KPI_data = machinesPerStatus.map((statusgroep) => ({
+    const KPI_data_machinesPerStatus = machinesPerStatus.map((statusgroep) => ({
       kpi_id: getKPIidPerStatus(statusgroep.status),
       datum: today,
       waarde: statusgroep._count.id.toString(),
     }));
 
+    const machinesPerProductieStatusGrouped = machinesPerProductieStatus.reduce((acc, machine) => {
+      if (!acc[machine.productie_status]) {
+        acc[machine.productie_status] = [];
+      }
+      acc[machine.productie_status].push(machine.id);
+      return acc;
+    }, {} as Record<string, number[]>);
+
+    const KPI_data_machinesPerProductieStatus = Object.entries(machinesPerProductieStatusGrouped).map(
+      ([productieStatus, ids]) => ({
+        kpi_id: getKPIidPerProductieStatus(productieStatus),
+        datum: today,
+        waarde: ids.join(','),
+      }),
+    );
+
     await prisma.kPIWaarde.createMany({
-      data: KPI_data,
+      data: KPI_data_machinesPerStatus,
+      skipDuplicates: true,
+    });
+
+    await prisma.kPIWaarde.createMany({
+      data: KPI_data_machinesPerProductieStatus,
       skipDuplicates: true,
     });
 
