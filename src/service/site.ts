@@ -135,17 +135,6 @@ export const createSite = async (data: CreateSiteRequest): Promise<CreateSiteRes
 
 export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Promise<UpdateSiteResponse> => {
   try {
-    const previousSite = await prisma.site.findUnique({
-      where: { id },
-      select: {
-        status: true,
-      },
-    });
-
-    if (!previousSite) {
-      throw ServiceError.notFound('Site niet gevonden');
-    }
-
     const site = await prisma.site.update({
       where: {
         id,
@@ -156,15 +145,8 @@ export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Pr
         verantwoordelijke: true,
       },
     });
-    
-    if (previousSite.status !== site.status) {
-      await prisma.notificatie.create({
-        data: {
-          bericht: `Site ${site.id} ${site.status}`,
-        },
-      });
-    }
     const aantalMachines = site.Machine.length;
+
     const response: UpdateSiteResponse = {
       id: site.id,
       naam: site.naam,
@@ -173,9 +155,9 @@ export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Pr
     };
 
     return response;
-  } catch (error) {
+  } catch(error){
     throw handleDBError(error);
-  };
+  }
 };
 
 export const deleteSiteById = async (id: number): Promise<void> => {

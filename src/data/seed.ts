@@ -46,7 +46,7 @@ async function seedKPIWaarden(aantal: number) {
     KPIWaarden.push({
       datum: faker.date.past(),
       waarde: faker.number.int({ min: 0, max: 1000 }),
-      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)]?.id,
     });
   }
   return KPIWaarden;
@@ -73,7 +73,7 @@ async function seedDashboards(aantal: number) {
   for (let i = 0; i < aantal; i++) {
     dashboards.push({
       gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
-      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)]?.id,
     });
   }
 
