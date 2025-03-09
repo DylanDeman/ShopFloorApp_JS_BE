@@ -53,3 +53,14 @@ export const getKPIByRole = async (role: string): Promise<KPI[]> => {
 
   return kpis;
 };
+
+export const getKPIidPerStatus = (status: string): number => {
+  const kpiMap: Record<string, number> = {
+    'DRAAIT': 12,
+    'MANUEEL_GESTOPT': 13,
+    'AUTOMATISCH_GESTOPT': 14,
+    'IN_ONDERHOUD': 15,
+    'STARTBAAR': 16,
+  };
+  return kpiMap[status] || 0;
+};

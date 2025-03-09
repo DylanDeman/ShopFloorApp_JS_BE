@@ -3,11 +3,12 @@ import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { Machine } from '../types/machine';
+import { getKPIidPerStatus } from './kpi';
 
-export const getAllMachines = async (page = 0, limit = 0): Promise<{items: Machine[], total: number}> => {
+export const getAllMachines = async (page = 0, limit = 0): Promise<{ items: Machine[], total: number }> => {
   try {
     let machines;
-    if(page === 0 || limit === 0){
+    if (page === 0 || limit === 0) {
       machines = await prisma.machine.findMany(
         {
           include: {
@@ -52,7 +53,7 @@ export const getAllMachines = async (page = 0, limit = 0): Promise<{items: Machi
     };
   } catch (error) {
 
-    if (error instanceof ServiceError){
+    if (error instanceof ServiceError) {
       throw error;
     }
     throw handleDBError(error);
@@ -60,6 +61,7 @@ export const getAllMachines = async (page = 0, limit = 0): Promise<{items: Machi
 };
 
 export const getMachineById = async (id: number) => {
+
   try {
     const machine = await prisma.machine.findUnique({
       where: { id },
@@ -90,9 +92,12 @@ export const getMachineById = async (id: number) => {
   }
 };
 
-export const updateMachineById = async (id: number, 
-  {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status}: any) => {
-  try{
+export const updateMachineById = async (id: number,
+  { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status }: any) => {
+
+  updateMachineKPIs();
+
+  try {
 
     const previousMachine = await prisma.machine.findUnique({
       where: { id },
@@ -101,18 +106,18 @@ export const updateMachineById = async (id: number,
       },
     });
 
-    if(!previousMachine){
+    if (!previousMachine) {
       throw ServiceError.notFound('Machine niet gevonden');
     }
-    
+
     const machine = await prisma.machine.update(
       {
-        where: { id }, 
-        data: {site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status},
+        where: { id },
+        data: { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status },
       },
     );
-    
-    if (previousMachine.status !== status){
+
+    if (previousMachine.status !== status) {
       await prisma.notificatie.create({
         data: {
           bericht: `Machine ${machine.id} ${machine.status}`,
@@ -125,3 +130,30 @@ export const updateMachineById = async (id: number,
     throw handleDBError(error);
   }
 };
+
+export const updateMachineKPIs = async () => {
+  try {
+    const machinesPerStatus = await prisma.machine.groupBy({
+      by: ['status'],
+      _count: { id: true },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const KPI_data = machinesPerStatus.map((statusgroep) => ({
+      kpi_id: getKPIidPerStatus(statusgroep.status),
+      datum: today,
+      waarde: statusgroep._count.id.toString(),
+    }));
+
+    await prisma.kPIWaarde.createMany({
+      data: KPI_data,
+      skipDuplicates: true,
+    });
+
+  } catch (error) {
+    console.error(`Fout bij het updaten van machine KPI's: ${error}`);
+  }
+};
+

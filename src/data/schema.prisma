@@ -35,7 +35,8 @@ enum Onderhoud_Status {
 enum Grafiek {
     LINE
     BAR
-    NONE
+    SINGLE
+    LIST
 }
 
 model Adres {
@@ -95,6 +96,7 @@ model KPIWaarde {
     kpi_id Int @db.UnsignedInt
     kpi    KPI @relation(fields: [kpi_id], references: [id])
 
+    @@unique([kpi_id, datum])
     @@map("kpiwaarden")
 }
 

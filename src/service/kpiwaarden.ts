@@ -1,6 +1,7 @@
 import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import type { KPIWaarde } from '../types/kpiwaarden';
+import { updateMachineKPIs } from './machine';
 
 const KPIWAARDE_SELECT = {
   id: true,
@@ -28,6 +29,9 @@ export const getById = async (id: number): Promise<KPIWaarde> => {
 };
 
 export const getKPIWaardenByKPIid = async (kpi_id: number): Promise<KPIWaarde[]> => {
+
+  updateMachineKPIs();
+
   return await prisma.kPIWaarde.findMany({
     where: {
       kpi_id,
