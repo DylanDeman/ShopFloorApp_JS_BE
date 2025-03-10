@@ -25,7 +25,7 @@ const getAllSites = async (ctx: KoaContext<getAllSitesResponse>) => {
     total,
   };
 };
-getAllSites.validationScheme = undefined;
+getAllSites.validationScheme = null;
 
 const getSiteById = async (ctx: KoaContext<getSiteByIdResponse, IdParams>) => {
   ctx.body = await siteService.getSiteById(
@@ -94,6 +94,7 @@ export default (parent: KoaRouter) => {
     '/', 
     requireAuthentication,
     requireManager,
+    validate(getAllSites.validationScheme),
     getAllSites,
   );
 

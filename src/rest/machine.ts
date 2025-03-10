@@ -18,7 +18,7 @@ const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
     total,
   };
 };
-getAllMachines.validationScheme = undefined;
+getAllMachines.validationScheme = null;
 
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.getMachineById(
@@ -59,6 +59,7 @@ export default (parent: KoaRouter) => {
   router.get(
     '/', 
     requireAuthentication, 
+    validate(getAllMachines.validationScheme),
     getAllMachines,
   );
 
