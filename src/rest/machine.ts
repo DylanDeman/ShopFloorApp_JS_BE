@@ -8,24 +8,15 @@ import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
-  const page = parseInt(ctx.query.page as string) || 0;
-  const limit = parseInt(ctx.query.limit as string) || 0;
-
-  const { items, total } = await machineService.getAllMachines(page, limit);
-
   ctx.body = {
-    items,
-    total,
+    items: await machineService.getAllMachines(),
   };
 };
 getAllMachines.validationScheme = null;
 
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.getMachineById(
-    ctx.params.id,
-  );
+  ctx.body = await machineService.getMachineById(ctx.params.id);
 };
-
 getMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
@@ -35,7 +26,6 @@ getMachineById.validationScheme = {
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
 };
-
 updateMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),

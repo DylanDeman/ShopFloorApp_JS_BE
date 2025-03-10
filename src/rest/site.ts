@@ -2,10 +2,11 @@ import Router from '@koa/router';
 import * as siteService from '../service/site';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
-import type { getAllSitesResponse, 
+import type { 
+  GetAllSitesResponse, 
   UpdateSiteRequest, 
   UpdateSiteResponse,
-  getSiteByIdResponse, 
+  GetSiteByIdResponse, 
   CreateSiteResponse, 
   CreateSiteRequest, 
 } from '../types/site';
@@ -14,20 +15,14 @@ import Joi from 'joi';
 import { makeRequireRole, requireAuthentication } from '../core/auth';
 import roles from '../core/roles';
 
-const getAllSites = async (ctx: KoaContext<getAllSitesResponse>) => {
-  const page = parseInt(ctx.query.page as string) || 0;
-  const limit = parseInt(ctx.query.limit as string) || 0;
-
-  const { items, total } = await siteService.getAllSites(page, limit);
-
+const getAllSites = async (ctx: KoaContext<GetAllSitesResponse>) => {
   ctx.body = {
-    items,
-    total,
+    items: await siteService.getAllSites(),
   };
 };
 getAllSites.validationScheme = null;
 
-const getSiteById = async (ctx: KoaContext<getSiteByIdResponse, IdParams>) => {
+const getSiteById = async (ctx: KoaContext<GetSiteByIdResponse, IdParams>) => {
   ctx.body = await siteService.getSiteById(
     ctx.params.id,
   );
@@ -46,7 +41,6 @@ const updateById = async (ctx: KoaContext<UpdateSiteResponse, IdParams, UpdateSi
   ctx.status = 200;
   ctx.body = updatedSite;
 };
-
 updateById.validationScheme = {
   params: {
     id: Joi.number().integer().positive().required(),
