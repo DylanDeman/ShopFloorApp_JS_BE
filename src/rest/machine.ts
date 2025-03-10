@@ -16,17 +16,9 @@ const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
   ctx.body = {
     items,
     total,
-    totalPages: limit === 0 ? total : Math.ceil(total/limit),
-    page,
-    limit,
   };
 };
-getAllMachines.validationScheme = {
-  query: {
-    page: Joi.number().min(0).optional().default(0),
-    limit: Joi.number().min(0).optional().default(0),
-  },
-};
+getAllMachines.validationScheme = undefined;
 
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.getMachineById(
@@ -66,8 +58,7 @@ export default (parent: KoaRouter) => {
 
   router.get(
     '/', 
-    requireAuthentication,
-    validate(getAllMachines.validationScheme), 
+    requireAuthentication, 
     getAllMachines,
   );
 

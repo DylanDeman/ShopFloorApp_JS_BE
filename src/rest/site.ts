@@ -23,17 +23,9 @@ const getAllSites = async (ctx: KoaContext<getAllSitesResponse>) => {
   ctx.body = {
     items,
     total,
-    totalPages: limit === 0 ? total : Math.ceil(total/limit),
-    page,
-    limit,
   };
 };
-getAllSites.validationScheme = {
-  query: {
-    page: Joi.number().min(0).optional().default(0),
-    limit: Joi.number().min(0).optional().default(0),
-  },
-};
+getAllSites.validationScheme = undefined;
 
 const getSiteById = async (ctx: KoaContext<getSiteByIdResponse, IdParams>) => {
   ctx.body = await siteService.getSiteById(
@@ -102,7 +94,6 @@ export default (parent: KoaRouter) => {
     '/', 
     requireAuthentication,
     requireManager,
-    validate(getAllSites.validationScheme), 
     getAllSites,
   );
 

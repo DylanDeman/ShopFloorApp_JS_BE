@@ -10,9 +10,6 @@ export interface SiteOverview extends Entity{
 export interface getAllSitesResponse extends ListResponse<SiteOverview> {
   items: SiteOverview[]; 
   total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
 }
 export interface getSiteByIdResponse extends SiteOverview {}
 

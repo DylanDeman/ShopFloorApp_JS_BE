@@ -13,9 +13,6 @@ export interface Machine extends Entity{
 export interface getAllMachinesResponse extends ListResponse<Machine> {
   items: Machine[]; 
   total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
 }
 
 export interface getMachineByIdResponse extends Machine {};
