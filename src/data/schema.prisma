@@ -38,7 +38,7 @@ model Adres {
     postcode   String @db.VarChar(10)
     land       String @db.VarChar(255)
 
-    Gebruiker Gebruiker[] @relation(map: "fk_adres_gebruiker")
+    gebruikers Gebruiker[] @relation(map: "fk_adres_gebruiker")
 
     @@map("adressen")
 }
@@ -58,9 +58,9 @@ model Gebruiker {
     rol           Json
     status        Status
 
-    Site      Site[]      @relation(map: "fk_gebruiker_site")
-    Machine   Machine[]   @relation(map: "fk_gebruiker_machine")
-    Onderhoud Onderhoud[] @relation(map: "fk_gebruiker_onderhoud")
+    sites      Site[]      @relation(map: "fk_gebruiker_site")
+    machines   Machine[]   @relation(map: "fk_gebruiker_machine")
+    onderhouden Onderhoud[] @relation(map: "fk_gebruiker_onderhoud")
     Dashboard Dashboard[] @relation(map: "fk_gebruiker_dashboard")
 
     @@map("gebruikers")
@@ -106,7 +106,7 @@ model Site {
     verantwoordelijke_id Int @db.UnsignedInt
     verantwoordelijke Gebruiker @relation(fields:[verantwoordelijke_id], references:[id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
     status Status
-    Machine Machine[] @relation(map: "fk_site_machine")
+    machines Machine[] @relation(map: "fk_site_machine")
 
     @@map("sites")
 }
@@ -115,7 +115,7 @@ model Product {
     id   Int    @id @default(autoincrement()) @db.UnsignedInt
     naam String @db.VarChar(255)
 
-    Machine Machine[] @relation(map: "fk_product_machine")
+    machines Machine[] @relation(map: "fk_product_machine")
 
     @@map("producten")
 }
@@ -134,10 +134,11 @@ model Machine {
 
     code             String           @db.VarChar(255)
     locatie          String           @db.VarChar(255)
+    product_informatie String         @db.VarChar(512)
     status           Machine_Status
     productie_status Productie_Status
 
-    Onderhoud Onderhoud[] @relation(map: "fk_machine_onderhoud")
+    onderhouden Onderhoud[] @relation(map: "fk_machine_onderhoud")
 
     @@map("machines")
 }

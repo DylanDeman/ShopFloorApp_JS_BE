@@ -4,55 +4,44 @@ import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { Machine } from '../types/machine';
 
-export const getAllMachines = async (page = 0, limit = 0): Promise<{items: Machine[], total: number}> => {
-  try {
-    let machines;
-    if(page === 0 || limit === 0){
-      machines = await prisma.machine.findMany(
-        {
-          include: {
-            Onderhoud: true,
-            product: true,
-            site: true,
-            technieker: true,
-          },
-        });
-    } else {
-      const skip = (page - 1) * limit;
-      machines = await prisma.machine.findMany({
-        skip: skip,
-        take: limit,
-        include: {
-          Onderhoud: true,
-          product: true,
-          site: true,
-          technieker: true,
-        },
-      });
-    }
+// Wat je wilt dat je krijgt als je een machine
+const SELECT_MACHINE = {
+  id: true,
+  product_id: true,
+  code: true,
+  locatie: true,
+  status: true,
+  product_informatie: true,
+  productie_status: true,
+  technieker: {
+    select: {
+      id: true,
+      voornaam: true,
+      naam: true,
+    },
+  },
+  site : {
+    select : {
+      id: true,
+      naam: true,
+      verantwoordelijke: true,
+    },
+  },
+};
 
-    const total = await prisma.machine.count();
+export const getAllMachines = async (): Promise<Machine[]> => {
+  try {
+    const machines = await prisma.machine.findMany({
+      select: SELECT_MACHINE,
+    });
 
     if (!machines.length) {
       throw ServiceError.notFound('Geen machines gevonden.');
     }
 
-    return {
-      items: machines.map((machine) => ({
-        id: machine.id,
-        site_id: machine.site.id,
-        product_id: machine.product.id,
-        technieker_gebruiker_id: machine.technieker.id,
-        code: machine.code,
-        locatie: machine.locatie,
-        status: machine.status,
-        productie_status: machine.productie_status,
-      })),
-      total,
-    };
+    return machines;
   } catch (error) {
-
-    if (error instanceof ServiceError){
+    if (error instanceof ServiceError) {
       throw error;
     }
     throw handleDBError(error);
@@ -63,28 +52,14 @@ export const getMachineById = async (id: number) => {
   try {
     const machine = await prisma.machine.findUnique({
       where: { id },
-      include: {
-        Onderhoud: true,
-        product: true,
-        site: true,
-        technieker: true,
-      },
+      select: SELECT_MACHINE,
     });
 
     if (!machine) {
       throw ServiceError.notFound('Machine niet gevonden');
     }
 
-    return {
-      id: machine.id,
-      site_id: machine.site.id,
-      product_id: machine.product.id,
-      technieker_gebruiker_id: machine.technieker.id,
-      code: machine.code,
-      locatie: machine.locatie,
-      status: machine.status,
-      productie_status: machine.productie_status,
-    };
+    return machine;
   } catch (error) {
     throw handleDBError(error);
   }
