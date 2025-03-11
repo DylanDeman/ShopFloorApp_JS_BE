@@ -2,12 +2,13 @@ import Router from '@koa/router';
 import * as notificatieService from '../service/notificatie';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
-import type {getAllNotificatiesResponse, getNotificatieByIdResponse} from '../types/notificatie';
+import type {GetAllNotificatiesResponse, GetNotificatieByIdResponse, 
+  CreateNotificatieRequest, CreateNotificatieResponse} from '../types/notificatie';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
-const getAllNotificaties = async (ctx: KoaContext<getAllNotificatiesResponse>) => {
+const getAllNotificaties = async (ctx: KoaContext<GetAllNotificatiesResponse>) => {
   const page = parseInt(ctx.query.page as string) || 0;
   const limit = parseInt(ctx.query.limit as string) || 0;
 
@@ -16,22 +17,27 @@ const getAllNotificaties = async (ctx: KoaContext<getAllNotificatiesResponse>) =
   ctx.body = {
     items,
     total,
-    totalPages: limit === 0 ? total : Math.ceil(total/limit),
-    page,
-    limit,
   };
 };
-getAllNotificaties.validationScheme = {
-  query: {
-    page: Joi.number().min(0).optional().default(0),
-    limit: Joi.number().min(0).optional().default(0),
-  },
-};
+getAllNotificaties.validationScheme = null;
 
-const getNotificatieById = async (ctx: KoaContext<getNotificatieByIdResponse, IdParams>) => {
+const getNotificatieById = async (ctx: KoaContext<GetNotificatieByIdResponse, IdParams>) => {
   ctx.body = await notificatieService.getNotificatieById(
     ctx.params.id,
   );
+};
+
+const createNotificatie = async (ctx: KoaContext<CreateNotificatieResponse, void, CreateNotificatieRequest>) => {
+  const newNotificatie = await notificatieService.createNotificatie(ctx.request.body);
+  ctx.status = 201;
+  ctx.body = newNotificatie;
+};
+createNotificatie.validationScheme = {
+  body: {
+    bericht: Joi.string(),
+    tijdstip: Joi.date(),
+    gelezen: Joi.bool().optional().default(false),
+  },
 };
 
 getNotificatieById.validationScheme = {
@@ -40,7 +46,7 @@ getNotificatieById.validationScheme = {
   },
 };
 
-const updateNotificatieById = async (ctx: KoaContext<getNotificatieByIdResponse, IdParams>) => {
+const updateNotificatieById = async (ctx: KoaContext<GetNotificatieByIdResponse, IdParams>) => {
   ctx.body = await notificatieService.updateNotificatieById(ctx.params.id, ctx.request.body);
 };
 
@@ -79,6 +85,13 @@ export default (parent: KoaRouter) => {
     requireAuthentication,
     validate(updateNotificatieById.validationScheme),
     updateNotificatieById,
+  );
+
+  router.post(
+    '/',
+    requireAuthentication,
+    validate(createNotificatie.validationScheme),
+    createNotificatie,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());

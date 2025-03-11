@@ -6,12 +6,18 @@ export interface Notificatie extends Entity {
   gelezen: boolean;
 }
 
-export interface getAllNotificatiesResponse extends ListResponse<Notificatie> {
+export interface GetAllNotificatiesResponse extends ListResponse<Notificatie> {
   items: Notificatie[];
   total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
 }
 
-export interface getNotificatieByIdResponse extends Notificatie {};
+export interface NotificatieCreateInput {
+  bericht: string;
+  tijdstip: Date;
+  gelezen: boolean;
+}
+
+export interface GetNotificatieByIdResponse extends Notificatie {};
+
+export interface CreateNotificatieRequest extends NotificatieCreateInput {};
+export interface CreateNotificatieResponse extends GetNotificatieByIdResponse{};
