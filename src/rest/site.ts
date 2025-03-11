@@ -49,6 +49,7 @@ updateById.validationScheme = {
     naam: Joi.string().max(255),
     verantwoordelijke_id: Joi.number().integer().positive().required(),
     status: Joi.string().valid('ACTIEF', 'INACTIEF').required(),
+    machines_ids: Joi.array().items(Joi.number().integer().positive()),
   },
 };
 
