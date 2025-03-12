@@ -8,32 +8,15 @@ import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
-  const page = parseInt(ctx.query.page as string) || 0;
-  const limit = parseInt(ctx.query.limit as string) || 0;
-
-  const { items, total } = await machineService.getAllMachines(page, limit);
-
   ctx.body = {
-    items,
-    total,
-    totalPages: limit === 0 ? total : Math.ceil(total/limit),
-    page,
-    limit,
+    items: await machineService.getAllMachines(),
   };
 };
-getAllMachines.validationScheme = {
-  query: {
-    page: Joi.number().min(0).optional().default(0),
-    limit: Joi.number().min(0).optional().default(0),
-  },
-};
+getAllMachines.validationScheme = null;
 
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.getMachineById(
-    ctx.params.id,
-  );
+  ctx.body = await machineService.getMachineById(ctx.params.id);
 };
-
 getMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
@@ -43,7 +26,6 @@ getMachineById.validationScheme = {
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
 };
-
 updateMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
@@ -66,8 +48,8 @@ export default (parent: KoaRouter) => {
 
   router.get(
     '/', 
-    requireAuthentication,
-    validate(getAllMachines.validationScheme), 
+    requireAuthentication, 
+    validate(getAllMachines.validationScheme),
     getAllMachines,
   );
 

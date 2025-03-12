@@ -1,10 +1,10 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 enum Status {
@@ -43,39 +43,36 @@ enum Grafiek {
 }
 
 model Adres {
-    id         Int    @id @default(autoincrement()) @db.UnsignedInt
-    straat     String @db.VarChar(255)
-    huisnummer String @db.VarChar(50)
-    stadsnaam  String @db.VarChar(100)
-    postcode   String @db.VarChar(10)
-    land       String @db.VarChar(255)
+  id         Int         @id @default(autoincrement()) @db.UnsignedInt
+  straat     String      @db.VarChar(255)
+  huisnummer String      @db.VarChar(50)
+  stadsnaam  String      @db.VarChar(100)
+  postcode   String      @db.VarChar(10)
+  land       String      @db.VarChar(255)
+  gebruikers Gebruiker[]
 
-    Gebruiker Gebruiker[] @relation(map: "fk_adres_gebruiker")
-
-    @@map("adressen")
+  @@map("adressen")
 }
 
 model Gebruiker {
-    id Int @id @default(autoincrement()) @db.UnsignedInt
+  id            Int         @id @default(autoincrement()) @db.UnsignedInt
+  adres_id      Int         @db.UnsignedInt
+  naam          String      @db.VarChar(255)
+  voornaam      String      @db.VarChar(255)
+  geboortedatum DateTime    @db.DateTime(0)
+  email         String      @unique @db.VarChar(255)
+  wachtwoord    String      @db.VarChar(255)
+  gsm           String      @db.VarChar(255)
+  rol           String      @db.LongText
+  status        Status
+  Dashboard     Dashboard[]
+  adres         Adres       @relation(fields: [adres_id], references: [id], onDelete: NoAction, map: "fk_adres_gebruiker")
+  machines      Machine[]
+  onderhouden   Onderhoud[]
+  sites         Site[]
 
-    adres_id Int   @db.UnsignedInt
-    adres    Adres @relation(fields: [adres_id], references: [id], onDelete: NoAction, onUpdate: Cascade, map: "fk_adres_gebruiker")
-
-    naam          String   @db.VarChar(255)
-    voornaam      String   @db.VarChar(255)
-    geboortedatum DateTime @db.DateTime(0)
-    email         String   @unique @db.VarChar(255)
-    wachtwoord    String   @db.VarChar(255)
-    gsm           String   @db.VarChar(255)
-    rol           Json
-    status        Status
-
-    Site      Site[]      @relation(map: "fk_gebruiker_site")
-    Machine   Machine[]   @relation(map: "fk_gebruiker_machine")
-    Onderhoud Onderhoud[] @relation(map: "fk_gebruiker_onderhoud")
-    Dashboard Dashboard[] @relation(map: "fk_gebruiker_dashboard")
-
-    @@map("gebruikers")
+  @@index([adres_id], map: "fk_adres_gebruiker")
+  @@map("gebruikers")
 }
 
 model KPI {
@@ -84,11 +81,7 @@ model KPI {
     roles     Json
     grafiek   Grafiek
 
-    kpiWaarden KPIWaarde[]
-
-    Dashboard Dashboard[] @relation(map: "fk_kpi_dashboard")
-
-    @@map("kpis")
+  @@map("kpis")
 }
 
 model KPIWaarde {
@@ -105,84 +98,96 @@ model KPIWaarde {
 }
 
 model Dashboard {
-    id           Int @id @default(autoincrement()) @db.UnsignedInt
-    gebruiker_id Int @db.UnsignedInt
-    kpi_id       Int @db.UnsignedInt
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  gebruiker_id Int       @db.UnsignedInt
+  kpi_id       Int       @db.UnsignedInt
+  gebruiker    Gebruiker @relation(fields: [gebruiker_id], references: [id], onDelete: Cascade, map: "fk_gebruiker_dashboard")
+  kpi          KPI       @relation(fields: [kpi_id], references: [id], onDelete: Cascade, map: "fk_kpi_dashboard")
 
-    gebruiker Gebruiker @relation(fields: [gebruiker_id], references: [id], onDelete: Cascade, map: "fk_gebruiker_dashboard")
-    kpi       KPI       @relation(fields: [kpi_id], references: [id], onDelete: Cascade, map: "fk_kpi_dashboard")
-
-    @@unique([gebruiker_id, kpi_id])
-    @@map("dashboards")
+  @@unique([gebruiker_id, kpi_id])
+  @@index([kpi_id], map: "fk_kpi_dashboard")
+  @@map("dashboards")
 }
 
 model Site {
-    id                   Int       @id @default(autoincrement()) @db.UnsignedInt
-    naam                 String    @db.VarChar(255)
-    verantwoordelijke_id Int       @db.UnsignedInt
-    verantwoordelijke    Gebruiker @relation(fields: [verantwoordelijke_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
-    status               Status
-    Machine              Machine[] @relation(map: "fk_site_machine")
+  id                   Int       @id @default(autoincrement()) @db.UnsignedInt
+  naam                 String    @db.VarChar(255)
+  verantwoordelijke_id Int       @db.UnsignedInt
+  status               Status
+  machines             Machine[]
+  verantwoordelijke    Gebruiker @relation(fields: [verantwoordelijke_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
 
-    @@map("sites")
+  @@index([verantwoordelijke_id], map: "fk_gebruiker_site")
+  @@map("sites")
 }
 
 model Product {
-    id   Int    @id @default(autoincrement()) @db.UnsignedInt
-    naam String @db.VarChar(255)
+  id       Int       @id @default(autoincrement()) @db.UnsignedInt
+  naam     String    @db.VarChar(255)
+  machines Machine[]
 
-    Machine Machine[] @relation(map: "fk_product_machine")
-
-    @@map("producten")
+  @@map("producten")
 }
 
 model Machine {
-    id Int @id @default(autoincrement()) @db.UnsignedInt
+  id                      Int              @id @default(autoincrement()) @db.UnsignedInt
+  site_id                 Int              @db.UnsignedInt
+  product_id              Int              @db.UnsignedInt
+  technieker_gebruiker_id Int              @db.UnsignedInt
+  code                    String           @db.VarChar(255)
+  locatie                 String           @db.VarChar(255)
+  product_informatie      String           @db.VarChar(512)
+  status                  Machine_Status
+  productie_status        Productie_Status
+  technieker              Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
+  product                 Product          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
+  site                    Site             @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
+  onderhouden             Onderhoud[]
 
-    site_id Int  @db.UnsignedInt
-    site    Site @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
-
-    product_id Int     @db.UnsignedInt
-    product    Product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
-
-    technieker_gebruiker_id Int       @db.UnsignedInt
-    technieker              Gebruiker @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
-
-    code             String           @db.VarChar(255)
-    locatie          String           @db.VarChar(255)
-    status           Machine_Status
-    productie_status Productie_Status
-
-    Onderhoud Onderhoud[] @relation(map: "fk_machine_onderhoud")
-
-    @@map("machines")
+  @@index([technieker_gebruiker_id], map: "fk_gebruiker_machine")
+  @@index([product_id], map: "fk_product_machine")
+  @@index([site_id], map: "fk_site_machine")
+  @@map("machines")
 }
 
 model Onderhoud {
-    onderhoud_id Int @id @default(autoincrement()) @db.UnsignedInt
+  onderhoud_id            Int              @id @default(autoincrement()) @db.UnsignedInt
+  machine_id              Int              @db.UnsignedInt
+  technieker_gebruiker_id Int              @db.UnsignedInt
+  datum                   DateTime         @db.DateTime(0)
+  starttijdstip           DateTime         @db.DateTime(0)
+  eindtijdstip            DateTime         @db.DateTime(0)
+  reden                   String           @db.VarChar(255)
+  status                  Onderhoud_Status
+  opmerkingen             String           @db.VarChar(255)
+  technier                Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
+  machine                 Machine          @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
-    machine_id Int     @db.UnsignedInt
-    machine    Machine @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
-
-    technieker_gebruiker_id Int       @db.UnsignedInt
-    technier                Gebruiker @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
-
-    datum         DateTime         @db.DateTime(0)
-    starttijdstip DateTime         @db.DateTime(0)
-    eindtijdstip  DateTime         @db.DateTime(0)
-    reden         String           @db.VarChar(255)
-    status        Onderhoud_Status
-    opmerkingen   String           @db.VarChar(255)
-
-    @@map("onderhouden")
+  @@index([technieker_gebruiker_id], map: "fk_gebruiker_onderhoud")
+  @@index([machine_id], map: "fk_machine_onderhoud")
+  @@map("onderhouden")
 }
 
 model Notificatie {
+  id       Int      @id @default(autoincrement()) @db.UnsignedInt
+  tijdstip DateTime @default(now())
+  bericht  String   @db.VarChar(510)
+  gelezen  Boolean  @default(false)
+
+  @@map("notificaties")
+}
+
+enum Status {
+  ACTIEF
+  INACTIEF
+}
+
+model Notificatie {
+    @@map("notificaties")
+
     id Int @id @default(autoincrement()) @db.UnsignedInt
 
     tijdstip DateTime @default(now())
-    bericht  String   @db.VarChar(510)
-    gelezen  Boolean  @default(false)
-
-    @@map("notificaties")
+    bericht String @db.VarChar(510)
+    gelezen Boolean @default(false)
 }

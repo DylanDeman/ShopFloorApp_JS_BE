@@ -341,6 +341,7 @@ async function seedMachines(aantal: number) {
       code: String(faker.commerce.isbn()),
       locatie: String(faker.location.street()),
       status: Object.values(Machine_Status)[Math.floor(Math.random() * Object.values(Machine_Status).length)],
+      product_informatie: faker.lorem.sentence(),
       productie_status:
         Object.values(Productie_Status)[Math.floor(Math.random() * Object.values(Productie_Status).length)],
     });

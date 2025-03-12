@@ -2,7 +2,14 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import type { Notificatie } from '../types/notificatie';
+import type { Notificatie, NotificatieCreateInput } from '../types/notificatie';
+
+const NOTIFICATIE_SELECT = {
+  id: true,
+  bericht: true,
+  tijdstip: true,
+  gelezen: true,
+};
 
 export const getAllNotificaties = async (page = 0, limit = 0): Promise<{items: Notificatie[], total: number}> => {
   try{
@@ -59,5 +66,42 @@ export const getNotificatieById = async (id: number) => {
       throw error;
     }
     throw handleDBError(error);
+  }
+};
+
+export const updateNotificatieById = async (id: number, 
+  {tijdstip, bericht, gelezen}: any) => {
+  try{
+
+    const notificatie = await prisma.notificatie.update({
+      where: { id },
+      data: {
+        tijdstip: tijdstip,
+        bericht: bericht,
+        gelezen: gelezen,
+      },
+    });
+
+    return notificatie;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
+export const createNotificatie = async (data: NotificatieCreateInput): Promise<Notificatie> => {
+  try {
+
+    const notificatie = await prisma.notificatie.create({
+      data: {
+        bericht: data.bericht,
+        tijdstip: data.tijdstip,
+        gelezen: data.gelezen,
+      },
+      select: NOTIFICATIE_SELECT,
+    });
+
+    return notificatie;
+  } catch (error) {
+    throw handleDBError(error); 
   }
 };

@@ -51,7 +51,7 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
           email: 'admin@test.com',
           wachtwoord: passwordHash,
           gsm: '1234567890',
-          rol: JSON.stringify([Role.MANAGER, Role.ADMINISTRATOR]),
+          rol: JSON.stringify([Role.MANAGER, Role.ADMINISTRATOR, Role.VERANTWOORDELIJKE]),
           status: Status.ACTIEF,
           adres_id: 1,
         },
@@ -63,6 +63,7 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
         id: 1,
         naam: 'Test Site',
         verantwoordelijke_id: 2,
+        status: Status.ACTIEF,
       },
     });
 

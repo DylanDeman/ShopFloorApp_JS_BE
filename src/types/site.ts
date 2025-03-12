@@ -1,35 +1,29 @@
-import { Prisma } from '@prisma/client';
 import type { Entity, ListResponse } from './common';
+import type { Machine } from './machine';
+import type { User } from './user';
 
-export interface SiteOverview extends Entity{
+// Types voor de REST laag
+export interface Site extends Entity {
   naam: string;
-  verantwoordelijke: string;
-  aantalMachines: number;
-}
-
-export interface getAllSitesResponse extends ListResponse<SiteOverview> {
-  items: SiteOverview[]; 
-  total: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-}
-export interface getSiteByIdResponse extends SiteOverview {}
-
-export interface UpdateSiteRequest extends Omit<Prisma.SiteUpdateInput, 'aantalMachines'> {}
-
-export interface UpdateSiteResponse extends getSiteByIdResponse{}
-
-export interface CreateSiteRequest{
-  naam: string;
-  verantwoordelijke_id: number;
-
-}
-
-export interface CreateSiteResponse {
-  id: number;
-  naam: string;
-  verantwoordelijke: string;
   status: string;
-  aantalMachines: number
+  verantwoordelijke: Pick<User, 'voornaam' | 'naam'>;
+  machines: Pick<Machine, 'id' | 'locatie' | 'status' | 'productie_status' | 'technieker'>[];
 }
+
+export interface SiteCreateInput {
+  naam: string;
+  status: string;
+  verantwoordelijke_id: number;
+  machines_ids: number[];
+}
+
+export interface SiteUpdateInput extends SiteCreateInput {}
+
+// Types voor de service laag
+export interface CreateSiteRequest extends SiteCreateInput {};
+export interface UpdateSiteRequest extends SiteUpdateInput {};
+
+export interface GetAllSitesResponse extends ListResponse<Site> {};
+export interface GetSiteByIdResponse extends Site {};
+export interface CreateSiteResponse extends GetSiteByIdResponse{};
+export interface UpdateSiteResponse extends GetSiteByIdResponse{};

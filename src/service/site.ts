@@ -1,53 +1,56 @@
 import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
-//import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import type { CreateSiteRequest, CreateSiteResponse, SiteOverview, UpdateSiteRequest, UpdateSiteResponse } from '../types/site';
+import roles from '../core/roles'; 
+import type { 
+  SiteCreateInput,
+  Site,
+  SiteUpdateInput, 
+  UpdateSiteResponse, 
+} from '../types/site';
 import { Status } from '@prisma/client'; 
 
+// Wat je wilt dat je krijgt als je een site opvraagt:
+const SITE_SELECT = {
+  id: true,
+  naam: true,
+  status: true,
+  verantwoordelijke: {
+    select: {
+      voornaam: true,
+      naam: true,
+    },
+  },
+  machines: {
+    select: {
+      id: true,
+      locatie: true,
+      status: true,
+      productie_status : true,
+      technieker : {
+        select: {
+          voornaam: true,
+          naam: true,
+        },
+      },
+    },
+  },
+};
 
-export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOverview[]; total: number }> => {
+export const getAllSites = async(): Promise<Site[]> => {
   try {
-    let sites;
+    // We gaan enkel actieve sites ophalen
     const filters = { status: Status.ACTIEF }; 
-
-    if (page === 0 || limit === 0) {
-      sites = await prisma.site.findMany({
-        where: filters,
-        include: {
-          verantwoordelijke: true,
-          Machine: true,
-        },
-      });
-    } else {
-      const skip = (page - 1) * limit;
-      sites = await prisma.site.findMany({
-        where: filters,
-        skip,
-        take: limit,
-        include: {
-          verantwoordelijke: true,
-          Machine: true,
-        },
-      });
-    }
-
-    const total = await prisma.site.count({ where: filters });
+    const sites = await prisma.site.findMany({
+      where: filters,
+      select: SITE_SELECT,
+    });
 
     if (!sites.length) {
       throw ServiceError.notFound('Geen sites gevonden.');
     }
 
-    return {
-      items: sites.map((site) => ({
-        id: site.id,
-        naam: site.naam,
-        verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-        status: site.status,
-        aantalMachines: site.Machine.length,
-      })),
-      total,
-    };
+    return sites;
   } catch (error) {
     if (error instanceof ServiceError) {
       throw error;
@@ -56,104 +59,95 @@ export const getAllSites = async (page = 0, limit = 0): Promise<{ items: SiteOve
   }
 };
 
-
-
-export const getSiteById = async (id: number) => {
+export const getSiteById = async (id: number): Promise<Site> => {
   try {
     const site = await prisma.site.findUnique({
       where: { id },
-      include: {
-        verantwoordelijke: true,
-        Machine: true,
-      },
+      select: SITE_SELECT,
     });
 
     if (!site) {
-      throw ServiceError.notFound('Site niet gevonden');
+      throw ServiceError.notFound('Site niet gevonden.');
     }
-    return {
-      id: site.id,
-      naam: site.naam,
-      verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-      aantalMachines: site.Machine.length,
-      machines: site.Machine.map((machine) => ({
-        id: machine.id,
-        locatie: machine.locatie,
-        status: machine.status,
-        productieStatus: machine.productie_status,
-      })),
-    };
+
+    return site;
   } catch (error) {
+    if (error instanceof ServiceError) {
+      throw error;
+    }
     throw handleDBError(error);
-  };
+  }
 };
 
-export const createSite = async (data: CreateSiteRequest): Promise<CreateSiteResponse> => {
+export const createSite = async (data: SiteCreateInput): Promise<Site> => {
   try {
+    // Vind gebruiker met verantwoordelijke_id
     const verantwoordelijke = await prisma.gebruiker.findUnique({
       where: { id: data.verantwoordelijke_id },
       select: { rol: true }, 
     });
 
+    // Als de gebruiker niet bestaat, gooi een error
     if (!verantwoordelijke) {
       throw new Error('Verantwoordelijke not found.');
     }
 
-    if (verantwoordelijke.rol !== 'VERANTWOORDELIJKE') {
+    // Als de gebruiker geen verantwoordelijke is, gooi een error
+    const rol = verantwoordelijke.rol as string;
+    if (!rol.includes(roles.VERANTWOORDELIJKE)) {
       throw new Error('The user is not a verantwoordelijke.');
+    }
+
+    // Check of Status een geldige waarde is
+    if (!Object.values(Status).includes(data.status as Status)) {
+      throw new Error('Invalid status');
     }
 
     const site = await prisma.site.create({
       data: {
         naam: data.naam,
         verantwoordelijke_id: data.verantwoordelijke_id,
-        status: 'ACTIEF',
+        status: data.status as Status,
+        machines: {
+          connect: data.machines_ids.map((machineId) => ({ id: machineId })),
+        },
       },
-      include: {
-        verantwoordelijke: true,
-        Machine: true,
-      },
+      select: SITE_SELECT,
     });
 
-    return {
-      id: site.id,
-      naam: site.naam,
-      status: site.status,
-      verantwoordelijke: `${site.verantwoordelijke.voornaam} ${site.verantwoordelijke.naam}`,
-      aantalMachines: site.Machine.length,
-    };
-
+    return site;
   } catch (error) {
     throw handleDBError(error); 
   }
 };
 
+export const updateSiteById = async (id: number, changes: SiteUpdateInput): Promise<UpdateSiteResponse> => {
+  try {
+    // Check of Status een geldige waarde is
+    if (!Object.values(Status).includes(changes.status as Status)) {
+      throw new Error('Invalid status');
+    }
 
-
-export const updateSiteById = async (id: number, changes: UpdateSiteRequest): Promise<UpdateSiteResponse> => {
-try {
-  const site = await prisma.site.update({
-    where: {
-      id,
-    },
-    data: changes,
-    include: {
-      Machine: true,
-      verantwoordelijke: true,
-    },
-  });
-  const aantalMachines = site.Machine.length;
-
-  const response: UpdateSiteResponse = {
-    id: site.id,
-    naam: site.naam,
-    verantwoordelijke: site.verantwoordelijke.naam,
-    aantalMachines,
-  };
-  return response
-} catch (error) {
-  throw handleDBError(error);
-};
+    // Site updaten:
+    const site = await prisma.site.update({
+      where: {
+        id,
+      },
+      data: {
+        naam: changes.naam,
+        verantwoordelijke_id: changes.verantwoordelijke_id,
+        status: changes.status as Status, 
+        machines: {
+          set: changes.machines_ids.map((machineId) => ({ id: machineId })),
+        },
+      },
+      select: SITE_SELECT,
+    });
+    
+    return site;
+  } catch(error) {
+    throw handleDBError(error);
+  }
 };
 
 export const deleteSiteById = async (id: number): Promise<void> => {
@@ -161,18 +155,16 @@ export const deleteSiteById = async (id: number): Promise<void> => {
     const site = await prisma.site.update({
       where: {id},
       data: {
-        status: 'INACTIEF'
+        status: 'INACTIEF',
       },
     });
 
     if (!site){
-      throw new Error("Site niet gevonden!");
+      throw new Error('Site niet gevonden!');
     }
   } catch (error) {
     handleDBError(error);
     throw new Error('An error occurred while deleting the user, please try again.');
   }
 };
-
-
 
