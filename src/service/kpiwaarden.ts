@@ -7,6 +7,7 @@ const KPIWAARDE_SELECT = {
   id: true,
   datum: true,
   waarde: true,
+  site_id: true,
 };
 
 export const getAll = async (): Promise<KPIWaarde[]> => {

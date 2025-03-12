@@ -137,6 +137,8 @@ export const updateMachineKPIs = async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Laatste 5 onderhoudsbeurten
+
     //Algemene gezondheid per site
     const machinesPerSite = await prisma.machine.groupBy({
       by: ['site_id', 'productie_status'],
@@ -160,7 +162,7 @@ export const updateMachineKPIs = async () => {
     const kpiDataPerSite = Object.entries(siteHealthData).map(([site_id, { gezond, falend }]) => ({
       kpi_id: getKPIidPerStatus('SITE_GEZONDHEID'),
       datum: today,
-      waarde: falend === 0 ? '1' : (gezond / falend).toFixed(2),
+      waarde: falend === 0 ? '1' : (gezond / falend),
       site_id: site_id,
     }));
 
@@ -202,6 +204,31 @@ export const updateMachineKPIs = async () => {
 
     await prisma.kPIWaarde.createMany({
       data: KPI_data_machinesPerStatus,
+      skipDuplicates: true,
+    });
+
+    // Aankomende onderhoudsbeurten
+    const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
+      select: {
+        onderhoud_id: true,
+      },
+      where: {
+        datum: {
+          gt: today,
+        },
+      },
+    });
+
+    const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.onderhoud_id);
+
+    const aankomendeOnderhoudsbeurtenKPIData = [{
+      kpi_id: getKPIidPerStatus('AANKOMEND_ONDERHOUD'),
+      datum: today,
+      waarde: onderhoudIds.join(','),
+    }];
+
+    await prisma.kPIWaarde.createMany({
+      data: aankomendeOnderhoudsbeurtenKPIData,
       skipDuplicates: true,
     });
 

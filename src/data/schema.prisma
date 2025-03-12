@@ -38,6 +38,8 @@ enum Grafiek {
     SINGLE
     LIST
     TOP5
+    SITES
+    TOP5OND
 }
 
 model Adres {

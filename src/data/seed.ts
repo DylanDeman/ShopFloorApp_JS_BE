@@ -30,9 +30,9 @@ async function main() {
   // await prisma.kPIWaarde.createMany({
   //   data: await seedKPIWaarden(100),
   // });
-  await prisma.dashboard.createMany({
-    data: await seedDashboards(10),
-  });
+  // await prisma.dashboard.createMany({
+  //   data: await seedDashboards(10),
+  // });
   await prisma.notificatie.createMany({
     data: await seedNotificaties(20),
   });
@@ -64,21 +64,21 @@ async function seedNotificaties(aantal: number) {
   return notificaties;
 }
 
-async function seedDashboards(aantal: number) {
-  const dashboards: any = [];
+// async function seedDashboards(aantal: number) {
+//   const dashboards: any = [];
 
-  const bestaandeKPIs = await prisma.kPI.findMany();
-  const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
+//   const bestaandeKPIs = await prisma.kPI.findMany();
+//   const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
 
-  for (let i = 0; i < aantal; i++) {
-    dashboards.push({
-      gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
-      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
-    });
-  }
+//   for (let i = 0; i < aantal; i++) {
+//     dashboards.push({
+//       gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
+//       kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+//     });
+//   }
 
-  return dashboards;
-}
+//   return dashboards;
+// }
 
 async function seedKPIs() {
   const KPIs: any = [];
@@ -86,13 +86,13 @@ async function seedKPIs() {
   const MNGR_KPI_1 = {
     onderwerp: 'Algemene gezondheid alle sites',
     roles: Rol.MANAGER,
-    grafiek: Grafiek.LINE,
+    grafiek: Grafiek.SINGLE,
   };
 
   const MNGR_KPI_2 = {
     onderwerp: 'Algemene gezondheid site x',
     roles: Rol.MANAGER,
-    grafiek: Grafiek.LINE,
+    grafiek: Grafiek.SITES,
   };
 
   const MNGR_KPI_3 = {
@@ -132,13 +132,13 @@ async function seedKPIs() {
   const TECH_KPI_1 = {
     onderwerp: 'Aankomende onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.TOP5OND,
   };
 
   const TECH_KPI_2 = {
     onderwerp: 'Laatste 5 onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
-    grafiek: Grafiek.TOP5,
+    grafiek: Grafiek.TOP5OND,
   };
 
   KPIs.push(TECH_KPI_1, TECH_KPI_2);
