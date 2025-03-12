@@ -9,6 +9,7 @@ import installMachineRoutes from './machine';
 import installNotificatieRoutes from './notificatie';
 import installKPIRoutes from './kpi';
 import installDashboardRouter from './dashboard';
+import installOnderhoudRoutes from './onderhoud';
 
 /**
  * @swagger
@@ -60,6 +61,7 @@ export default (app: KoaApplication) => {
   installNotificatieRoutes(router);
   installKPIRoutes(router);
   installDashboardRouter(router);
+  installOnderhoudRoutes(router);
 
   app.use(router.routes())
     .use(router.allowedMethods());

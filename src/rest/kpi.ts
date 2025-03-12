@@ -11,7 +11,7 @@ import type {
 import type {
   GetAllKPIWaardenReponse,
 } from '../types/kpiwaarden';
-import type { IdParams } from '../types/common';
+import type { IdParams, RoleParams } from '../types/common';
 import validate from '../core/validation';
 import { requireAuthentication } from '../core/auth';
 
@@ -56,6 +56,18 @@ getKPIWaardenByKPIid.validationScheme = {
   },
 };
 
+const getKPIByRole = async (ctx: KoaContext<GetAllKPIsReponse, RoleParams>) => {
+  const kpis = await kpiService.getKPIByRole(ctx.params.role);
+  ctx.body = {
+    items: kpis,
+  };
+};
+getKPIByRole.validationScheme = {
+  params: {
+    role: Joi.string().valid('ADMINISTRATOR', 'MANAGER', 'VERANTWOORDELIJKE', 'TECHNIEKER').required(),
+  },
+};
+
 export default function installKPIRoutes(parent: KoaRouter) {
   const router = new Router<BudgetAppState, BudgetAppContext>({
     prefix: '/kpi',
@@ -67,6 +79,7 @@ export default function installKPIRoutes(parent: KoaRouter) {
   router.get('/:id', validate(getKPIById.validationScheme), getKPIById);
   router.get('/:id/kpiwaarden', validate(getKPIWaardenByKPIid.validationScheme), getKPIWaardenByKPIid);
   router.delete('/:id', validate(deleteKPI.validationScheme), deleteKPI);
+  router.get('/rol/:role', validate(getKPIByRole.validationScheme), getKPIByRole);
 
   parent.use(router.routes())
     .use(router.allowedMethods());

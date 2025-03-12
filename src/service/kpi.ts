@@ -6,6 +6,8 @@ import type { KPI } from '../types/kpi';
 const KPI_SELECT = {
   id: true,
   onderwerp: true,
+  roles: true,
+  grafiek: true,
 };
 
 export const getAll = async (): Promise<KPI[]> => {
@@ -37,4 +39,34 @@ export const deleteById = async (id: number): Promise<void> => {
   } catch (error) {
     throw handleDBError(error);
   }
+};
+
+export const getKPIByRole = async (role: string): Promise<KPI[]> => {
+  const kpis = await prisma.kPI.findMany({
+    where: {
+      OR: [
+        { roles: { equals: role } },
+        { roles: { array_contains: role } },
+      ],
+    },
+  });
+
+  return kpis;
+};
+
+export const getKPIidPerStatus = (status: string): number => {
+  const kpiMap: Record<string, number> = {
+    'ALGEMENE_GEZONDHEID': 1,
+    'SITE_GEZONDHEID': 2,
+    'GEZOND': 5,
+    'FALEND': 6,
+    'NOOD_ONDERHOUD': 7,
+    'AANKOMEND_ONDERHOUD': 8,
+    'DRAAIT': 10,
+    'MANUEEL_GESTOPT': 11,
+    'AUTOMATISCH_GESTOPT': 12,
+    'IN_ONDERHOUD': 13,
+    'STARTBAAR': 14,
+  };
+  return kpiMap[status] || 0;
 };

@@ -1,4 +1,4 @@
-import { PrismaClient, Status, Machine_Status, Productie_Status, Onderhoud_Status } from '@prisma/client';
+import { PrismaClient, Grafiek, Status, Machine_Status, Productie_Status, Onderhoud_Status } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import Rol from '../core/roles';
 import { hashPassword } from '../core/password';
@@ -25,32 +25,32 @@ async function main() {
     data: await seedOnderhouden(100),
   });
   await prisma.kPI.createMany({
-    data: await seedKPIs(20),
+    data: await seedKPIs(),
   });
-  await prisma.kPIWaarde.createMany({
-    data: await seedKPIWaarden(100),
-  });
-  await prisma.dashboard.createMany({
-    data: await seedDashboards(10),
-  });
+  // await prisma.kPIWaarde.createMany({
+  //   data: await seedKPIWaarden(100),
+  // });
+  // await prisma.dashboard.createMany({
+  //   data: await seedDashboards(10),
+  // });
   await prisma.notificatie.createMany({
     data: await seedNotificaties(20),
   });
 }
 
-async function seedKPIWaarden(aantal: number) {
-  const KPIWaarden: any = [];
-  const bestaandeKPIs = await prisma.kPI.findMany();
+// async function seedKPIWaarden(aantal: number) {
+//   const KPIWaarden: any = [];
+//   const bestaandeKPIs = await prisma.kPI.findMany();
 
-  for (let i = 0; i < aantal; i++) {
-    KPIWaarden.push({
-      datum: faker.date.past(),
-      waarde: faker.number.int({ min: 0, max: 1000 }),
-      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
-    });
-  }
-  return KPIWaarden;
-}
+//   for (let i = 0; i < aantal; i++) {
+//     KPIWaarden.push({
+//       datum: faker.date.past(),
+//       waarde: faker.number.int({ min: 0, max: 1000 }),
+//       kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+//     });
+//   }
+//   return KPIWaarden;
+// }
 
 async function seedNotificaties(aantal: number) {
   const notificaties: any = [];
@@ -64,29 +64,130 @@ async function seedNotificaties(aantal: number) {
   return notificaties;
 }
 
-async function seedDashboards(aantal: number) {
-  const dashboards: any = [];
+// async function seedDashboards(aantal: number) {
+//   const dashboards: any = [];
 
-  const bestaandeKPIs = await prisma.kPI.findMany();
-  const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
+//   const bestaandeKPIs = await prisma.kPI.findMany();
+//   const bestaandeGebruikers: any = await prisma.gebruiker.findMany();
 
-  for (let i = 0; i < aantal; i++) {
-    dashboards.push({
-      gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
-      kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
-    });
-  }
+//   for (let i = 0; i < aantal; i++) {
+//     dashboards.push({
+//       gebruiker_id: bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id,
+//       kpi_id: bestaandeKPIs[Math.floor(Math.random() * bestaandeKPIs.length)].id,
+//     });
+//   }
 
-  return dashboards;
-}
+//   return dashboards;
+// }
 
-async function seedKPIs(aantal: number) {
+async function seedKPIs() {
   const KPIs: any = [];
-  for (let i = 0; i < aantal; i++) {
-    KPIs.push({
-      onderwerp: String(faker.commerce.department()),
-    });
-  }
+
+  const MNGR_KPI_1 = {
+    onderwerp: 'Algemene gezondheid alle sites',
+    roles: Rol.MANAGER,
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const MNGR_KPI_2 = {
+    onderwerp: 'Algemene gezondheid site x',
+    roles: Rol.MANAGER,
+    grafiek: Grafiek.SITES,
+  };
+
+  const MNGR_KPI_3 = {
+    onderwerp: 'Productiegraad alle sites gesorteerd (hoog naar laag)',
+    roles: Rol.MANAGER,
+    grafiek: Grafiek.BAR,
+  };
+
+  const MNGR_KPI_4 = {
+    onderwerp: 'Productiegraad alle sites gesorteerd (laag naar hoog)',
+    roles: Rol.MANAGER,
+    grafiek: Grafiek.BAR,
+  };
+
+  KPIs.push(MNGR_KPI_1, MNGR_KPI_2, MNGR_KPI_3, MNGR_KPI_4);
+
+  const VW_KPI_1 = {
+    onderwerp: 'Top 5 gezonde machines',
+    roles: Rol.VERANTWOORDELIJKE,
+    grafiek: Grafiek.TOP5,
+  };
+
+  const VW_KPI_2 = {
+    onderwerp: 'Top 5 falende machines',
+    roles: Rol.VERANTWOORDELIJKE,
+    grafiek: Grafiek.TOP5,
+  };
+
+  const VW_KPI_3 = {
+    onderwerp: 'Top 5 machines met nood aan onderhoud',
+    roles: Rol.VERANTWOORDELIJKE,
+    grafiek: Grafiek.TOP5,
+  };
+
+  KPIs.push(VW_KPI_1, VW_KPI_2, VW_KPI_3);
+
+  const TECH_KPI_1 = {
+    onderwerp: 'Aankomende onderhoudsbeurten',
+    roles: Rol.TECHNIEKER,
+    grafiek: Grafiek.TOP5OND,
+  };
+
+  const TECH_KPI_2 = {
+    onderwerp: 'Laatste 5 onderhoudsbeurten',
+    roles: Rol.TECHNIEKER,
+    grafiek: Grafiek.TOP5OND,
+  };
+
+  KPIs.push(TECH_KPI_1, TECH_KPI_2);
+
+  const VW_TECH_KPI_1 = {
+    onderwerp: 'Draaiende machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const VW_TECH_KPI_2 = {
+    onderwerp: 'Manueel gestopte machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const VW_TECH_KPI_3 = {
+    onderwerp: 'Automatisch gestopte machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const VW_TECH_KPI_4 = {
+    onderwerp: 'Machines in onderhoud',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const VW_TECH_KPI_5 = {
+    onderwerp: 'Startbare machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.SINGLE,
+  };
+
+  const VW_TECH_KPI_6 = {
+    onderwerp: 'Mijn machines',
+    roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
+    grafiek: Grafiek.LIST,
+  };
+
+  KPIs.push(
+    VW_TECH_KPI_1,
+    VW_TECH_KPI_2,
+    VW_TECH_KPI_3,
+    VW_TECH_KPI_4,
+    VW_TECH_KPI_5,
+    VW_TECH_KPI_6,
+  );
+
   return KPIs;
 }
 
