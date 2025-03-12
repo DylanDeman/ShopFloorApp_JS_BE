@@ -8,38 +8,38 @@ datasource db {
 }
 
 enum Status {
-    ACTIEF
-    INACTIEF
+  ACTIEF
+  INACTIEF
 }
 
 enum Machine_Status {
-    DRAAIT
-    MANUEEL_GESTOPT
-    AUTOMATISCH_GESTOPT
-    IN_ONDERHOUD
-    STARTBAAR
+  DRAAIT
+  MANUEEL_GESTOPT
+  AUTOMATISCH_GESTOPT
+  IN_ONDERHOUD
+  STARTBAAR
 }
 
 enum Productie_Status {
-    GEZOND
-    NOOD_ONDERHOUD
-    FALEND
+  GEZOND
+  NOOD_ONDERHOUD
+  FALEND
 }
 
 enum Onderhoud_Status {
-    VOLTOOID
-    IN_UITVOERING
-    INGEPLAND
+  VOLTOOID
+  IN_UITVOERING
+  INGEPLAND
 }
 
 enum Grafiek {
-    LINE
-    BAR
-    SINGLE
-    LIST
-    TOP5
-    SITES
-    TOP5OND
+  LINE
+  BAR
+  SINGLE
+  LIST
+  TOP5
+  SITES
+  TOP5OND
 }
 
 model Adres {
@@ -76,36 +76,38 @@ model Gebruiker {
 }
 
 model KPI {
-    id        Int     @id @default(autoincrement()) @db.UnsignedInt
-    onderwerp String
-    roles     Json
-    grafiek   Grafiek
+  id         Int         @id @default(autoincrement()) @db.UnsignedInt
+  onderwerp  String
+  roles      Json
+  grafiek    Grafiek
+  kpiwaarden KPIWaarde[]
+
+  dashboards Dashboard[]
 
   @@map("kpis")
 }
 
 model KPIWaarde {
-    id      Int      @id @default(autoincrement()) @db.UnsignedInt
-    datum   DateTime
-    waarde  Json
-    site_id String?  @db.VarChar(50)
+  id      Int      @id @default(autoincrement()) @db.UnsignedInt
+  datum   DateTime
+  waarde  Json
+  site_id String?  @db.VarChar(50)
 
-    kpi_id Int @db.UnsignedInt
-    kpi    KPI @relation(fields: [kpi_id], references: [id])
+  kpi_id Int @db.UnsignedInt
+  kpi    KPI @relation(fields: [kpi_id], references: [id])
 
-    @@unique([kpi_id, datum, site_id])
-    @@map("kpiwaarden")
+  @@unique([kpi_id, datum, site_id])
+  @@map("kpiwaarden")
 }
 
 model Dashboard {
   id           Int       @id @default(autoincrement()) @db.UnsignedInt
   gebruiker_id Int       @db.UnsignedInt
-  kpi_id       Int       @db.UnsignedInt
   gebruiker    Gebruiker @relation(fields: [gebruiker_id], references: [id], onDelete: Cascade, map: "fk_gebruiker_dashboard")
-  kpi          KPI       @relation(fields: [kpi_id], references: [id], onDelete: Cascade, map: "fk_kpi_dashboard")
 
-  @@unique([gebruiker_id, kpi_id])
-  @@index([kpi_id], map: "fk_kpi_dashboard")
+  kpi_id Int @db.UnsignedInt
+  kpi    KPI @relation(fields: [kpi_id], references: [id], onDelete: Cascade)
+
   @@map("dashboards")
 }
 
@@ -175,19 +177,4 @@ model Notificatie {
   gelezen  Boolean  @default(false)
 
   @@map("notificaties")
-}
-
-enum Status {
-  ACTIEF
-  INACTIEF
-}
-
-model Notificatie {
-    @@map("notificaties")
-
-    id Int @id @default(autoincrement()) @db.UnsignedInt
-
-    tijdstip DateTime @default(now())
-    bericht String @db.VarChar(510)
-    gelezen Boolean @default(false)
 }

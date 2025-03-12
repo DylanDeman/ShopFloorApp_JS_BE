@@ -1,11 +1,16 @@
 /*
   Warnings:
 
+  - Added the required column `product_informatie` to the `machines` table without a default value. This is not possible if the table is not empty.
   - Added the required column `status` to the `sites` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterTable
-ALTER TABLE `machines` MODIFY `status` ENUM('DRAAIT', 'MANUEEL_GESTOPT', 'AUTOMATISCH_GESTOPT', 'IN_ONDERHOUD', 'STARTBAAR') NOT NULL;
+ALTER TABLE `gebruikers` MODIFY `rol` LONGTEXT NOT NULL;
+
+-- AlterTable
+ALTER TABLE `machines` ADD COLUMN `product_informatie` VARCHAR(512) NOT NULL,
+    MODIFY `status` ENUM('DRAAIT', 'MANUEEL_GESTOPT', 'AUTOMATISCH_GESTOPT', 'IN_ONDERHOUD', 'STARTBAAR') NOT NULL;
 
 -- AlterTable
 ALTER TABLE `sites` ADD COLUMN `status` ENUM('ACTIEF', 'INACTIEF') NOT NULL;
@@ -38,7 +43,6 @@ CREATE TABLE `dashboards` (
     `gebruiker_id` INTEGER UNSIGNED NOT NULL,
     `kpi_id` INTEGER UNSIGNED NOT NULL,
 
-    UNIQUE INDEX `dashboards_gebruiker_id_kpi_id_key`(`gebruiker_id`, `kpi_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -59,4 +63,4 @@ ALTER TABLE `kpiwaarden` ADD CONSTRAINT `kpiwaarden_kpi_id_fkey` FOREIGN KEY (`k
 ALTER TABLE `dashboards` ADD CONSTRAINT `fk_gebruiker_dashboard` FOREIGN KEY (`gebruiker_id`) REFERENCES `gebruikers`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `dashboards` ADD CONSTRAINT `fk_kpi_dashboard` FOREIGN KEY (`kpi_id`) REFERENCES `kpis`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `dashboards` ADD CONSTRAINT `dashboards_kpi_id_fkey` FOREIGN KEY (`kpi_id`) REFERENCES `kpis`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

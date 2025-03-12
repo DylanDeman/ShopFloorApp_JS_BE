@@ -21,8 +21,8 @@ const SELECT_MACHINE = {
       naam: true,
     },
   },
-  site : {
-    select : {
+  site: {
+    select: {
       id: true,
       naam: true,
       verantwoordelijke: true,
