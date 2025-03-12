@@ -112,19 +112,19 @@ async function seedKPIs() {
   const VW_KPI_1 = {
     onderwerp: 'Top 5 gezonde machines',
     roles: Rol.VERANTWOORDELIJKE,
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.TOP5,
   };
 
   const VW_KPI_2 = {
     onderwerp: 'Top 5 falende machines',
     roles: Rol.VERANTWOORDELIJKE,
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.TOP5,
   };
 
   const VW_KPI_3 = {
     onderwerp: 'Top 5 machines met nood aan onderhoud',
     roles: Rol.VERANTWOORDELIJKE,
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.TOP5,
   };
 
   KPIs.push(VW_KPI_1, VW_KPI_2, VW_KPI_3);
@@ -138,7 +138,7 @@ async function seedKPIs() {
   const TECH_KPI_2 = {
     onderwerp: 'Laatste 5 onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.TOP5,
   };
 
   KPIs.push(TECH_KPI_1, TECH_KPI_2);

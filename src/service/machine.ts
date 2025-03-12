@@ -3,7 +3,7 @@ import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { Machine } from '../types/machine';
-import { getKPIidPerStatus, getKPIidPerProductieStatus } from './kpi';
+import { getKPIidPerStatus } from './kpi';
 
 export const getAllMachines = async (page = 0, limit = 0): Promise<{ items: Machine[], total: number }> => {
   try {
@@ -133,11 +133,79 @@ export const updateMachineById = async (id: number,
 
 export const updateMachineKPIs = async () => {
   try {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    //Algemene gezondheid per site
+    const machinesPerSite = await prisma.machine.groupBy({
+      by: ['site_id', 'productie_status'],
+      _count: { id: true },
+    });
+
+    const siteHealthData: Record<number, { gezond: number; falend: number }> = {};
+
+    machinesPerSite.forEach(({ site_id, productie_status, _count }) => {
+      if (!siteHealthData[site_id]) {
+        siteHealthData[site_id] = { gezond: 0, falend: 0 };
+      }
+
+      if (productie_status === 'GEZOND') {
+        siteHealthData[site_id].gezond += _count.id;
+      } else if (productie_status === 'FALEND' || productie_status === 'NOOD_ONDERHOUD') {
+        siteHealthData[site_id].falend += _count.id;
+      }
+    });
+
+    const kpiDataPerSite = Object.entries(siteHealthData).map(([site_id, { gezond, falend }]) => ({
+      kpi_id: getKPIidPerStatus('SITE_GEZONDHEID'),
+      datum: today,
+      waarde: falend === 0 ? '1' : (gezond / falend).toFixed(2),
+      site_id: site_id,
+    }));
+
+    await prisma.kPIWaarde.createMany({
+      data: kpiDataPerSite,
+      skipDuplicates: true,
+    });
+
+    // Algemene gezondheid alle sites
+    const totaalGezond = kpiDataPerSite.reduce((sum, { waarde }) => sum + parseFloat(waarde), 0);
+    const totaalSites = kpiDataPerSite.length;
+    const algemeneGezondheid = totaalSites === 0 ? '0' : (totaalGezond / totaalSites).toFixed(2);
+
+    await prisma.kPIWaarde.create({
+      data: {
+        kpi: {
+          connect: {
+            id: getKPIidPerStatus('ALGEMENE_GEZONDHEID'),
+          },
+        },
+        datum: today,
+        waarde: algemeneGezondheid,
+        site_id: null,
+      },
+    });
+
+    // Machines per status
     const machinesPerStatus = await prisma.machine.groupBy({
       by: ['status'],
       _count: { id: true },
     });
 
+    const KPI_data_machinesPerStatus = machinesPerStatus.map((statusgroep) => ({
+      kpi_id: getKPIidPerStatus(statusgroep.status),
+      datum: today,
+      waarde: statusgroep._count.id.toString(),
+      site_id: null,
+    }));
+
+    await prisma.kPIWaarde.createMany({
+      data: KPI_data_machinesPerStatus,
+      skipDuplicates: true,
+    });
+
+    //Machines per productiestatus
     const machinesPerProductieStatus = await prisma.machine.findMany({
       select: {
         productie_status: true,
@@ -147,15 +215,6 @@ export const updateMachineKPIs = async () => {
         status: 'asc',
       },
     });
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const KPI_data_machinesPerStatus = machinesPerStatus.map((statusgroep) => ({
-      kpi_id: getKPIidPerStatus(statusgroep.status),
-      datum: today,
-      waarde: statusgroep._count.id.toString(),
-    }));
 
     const machinesPerProductieStatusGrouped = machinesPerProductieStatus.reduce((acc, machine) => {
       if (!acc[machine.productie_status]) {
@@ -167,16 +226,12 @@ export const updateMachineKPIs = async () => {
 
     const KPI_data_machinesPerProductieStatus = Object.entries(machinesPerProductieStatusGrouped).map(
       ([productieStatus, ids]) => ({
-        kpi_id: getKPIidPerProductieStatus(productieStatus),
+        kpi_id: getKPIidPerStatus(productieStatus),
         datum: today,
         waarde: ids.join(','),
+        site_id: null,
       }),
     );
-
-    await prisma.kPIWaarde.createMany({
-      data: KPI_data_machinesPerStatus,
-      skipDuplicates: true,
-    });
 
     await prisma.kPIWaarde.createMany({
       data: KPI_data_machinesPerProductieStatus,

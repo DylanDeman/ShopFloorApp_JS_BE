@@ -37,6 +37,7 @@ enum Grafiek {
     BAR
     SINGLE
     LIST
+    TOP5
 }
 
 model Adres {
@@ -89,14 +90,15 @@ model KPI {
 }
 
 model KPIWaarde {
-    id     Int      @id @default(autoincrement()) @db.UnsignedInt
-    datum  DateTime
-    waarde Json
+    id      Int      @id @default(autoincrement()) @db.UnsignedInt
+    datum   DateTime
+    waarde  Json
+    site_id String?  @db.VarChar(50)
 
     kpi_id Int @db.UnsignedInt
     kpi    KPI @relation(fields: [kpi_id], references: [id])
 
-    @@unique([kpi_id, datum])
+    @@unique([kpi_id, datum, site_id])
     @@map("kpiwaarden")
 }
 

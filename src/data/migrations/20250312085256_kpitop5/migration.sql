@@ -15,7 +15,7 @@ CREATE TABLE `kpis` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `onderwerp` VARCHAR(191) NOT NULL,
     `roles` JSON NOT NULL,
-    `grafiek` ENUM('LINE', 'BAR', 'SINGLE', 'LIST') NOT NULL,
+    `grafiek` ENUM('LINE', 'BAR', 'SINGLE', 'LIST', 'TOP5') NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -25,9 +25,10 @@ CREATE TABLE `kpiwaarden` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `datum` DATETIME(3) NOT NULL,
     `waarde` JSON NOT NULL,
+    `site_id` VARCHAR(50) NULL,
     `kpi_id` INTEGER UNSIGNED NOT NULL,
 
-    UNIQUE INDEX `kpiwaarden_kpi_id_datum_key`(`kpi_id`, `datum`),
+    UNIQUE INDEX `kpiwaarden_kpi_id_datum_site_id_key`(`kpi_id`, `datum`, `site_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
