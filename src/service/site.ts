@@ -17,6 +17,7 @@ const SITE_SELECT = {
   status: true,
   verantwoordelijke: {
     select: {
+      id: true,
       voornaam: true,
       naam: true,
     },
@@ -29,6 +30,7 @@ const SITE_SELECT = {
       productie_status : true,
       technieker : {
         select: {
+          id: true,
           voornaam: true,
           naam: true,
         },

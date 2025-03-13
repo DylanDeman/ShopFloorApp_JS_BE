@@ -6,7 +6,7 @@ import type { User } from './user';
 export interface Site extends Entity {
   naam: string;
   status: string;
-  verantwoordelijke: Pick<User, 'voornaam' | 'naam'>;
+  verantwoordelijke: Pick<User, 'id' | 'voornaam' | 'naam'>;
   machines: Pick<Machine, 'id' | 'locatie' | 'status' | 'productie_status' | 'technieker'>[];
 }
 
