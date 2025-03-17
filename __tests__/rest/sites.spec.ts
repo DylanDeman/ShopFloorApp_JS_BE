@@ -40,7 +40,7 @@ describe('Sites API', () => {
     await prisma.gebruiker.createMany({
       data: [
         { id: 1, naam: 'Test User', voornaam: 'Test', geboortedatum: new Date(1990, 1, 1), email: 'user@test.com',
-          wachtwoord: 'password', gsm: '1234567890', rol: [Role.VERANTWOORDELIJKE], 
+          wachtwoord: 'password', gsm: '1234567890', rol: Role.VERANTWOORDELIJKE, 
           status: Status.ACTIEF, adres_id: 1 },
       ],
     });

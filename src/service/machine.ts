@@ -90,6 +90,7 @@ export const updateMachineById = async (id: number,
       {
         where: { id },
         data: { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status },
+        select: SELECT_MACHINE,
       },
     );
 
@@ -148,7 +149,7 @@ export const updateMachineKPIs = async () => {
     });
 
     // Algemene gezondheid alle sites
-    const totaalGezond = kpiDataPerSite.reduce((sum, { waarde }) => sum + parseFloat(waarde), 0);
+    const totaalGezond = kpiDataPerSite.reduce((sum, { waarde }) => sum + parseFloat(waarde.toString()), 0);
     const totaalSites = kpiDataPerSite.length;
     const algemeneGezondheid = totaalSites === 0 ? '0' : (totaalGezond / totaalSites).toFixed(2);
 
@@ -223,7 +224,7 @@ export const updateMachineKPIs = async () => {
       if (!acc[machine.productie_status]) {
         acc[machine.productie_status] = [];
       }
-      acc[machine.productie_status].push(machine.id);
+      acc[machine.productie_status]?.push(machine.id);
       return acc;
     }, {} as Record<string, number[]>);
 
