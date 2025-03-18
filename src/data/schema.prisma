@@ -126,7 +126,7 @@ model Onderhoud {
   reden                   String           @db.VarChar(255)
   status                  Onderhoud_Status
   opmerkingen             String           @db.VarChar(255)
-  technier                Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
+  technieker              Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
   machine                 Machine          @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
   @@index([technieker_gebruiker_id], map: "fk_gebruiker_onderhoud")

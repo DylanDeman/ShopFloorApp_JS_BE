@@ -31,7 +31,13 @@ const SELECT_MACHINE = {
   onderhouden: {
     select: {
       id: true,
-      technieker_gebruiker_id: true,
+      technieker: {
+        select: {
+          id: true,
+          voornaam: true,
+          naam: true,
+        },
+      },
       datum: true,
       starttijdstip: true,
       eindtijdstip: true,
