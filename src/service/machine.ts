@@ -28,12 +28,24 @@ const SELECT_MACHINE = {
       verantwoordelijke: true,
     },
   },
+  onderhouden: {
+    select: {
+      id: true,
+      technieker_gebruiker_id: true,
+      datum: true,
+      starttijdstip: true,
+      eindtijdstip: true,
+      reden: true,
+      status: true,
+      opmerkingen: true,
+    },
+  },
 };
 
 export const getAllMachines = async (): Promise<Machine[]> => {
   try {
     const machines = await prisma.machine.findMany({
-      select: {...SELECT_MACHINE, onderhouden: true},
+      select: {...SELECT_MACHINE},
     });
 
     if (!machines.length) {
