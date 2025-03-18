@@ -45,7 +45,7 @@ const SELECT_MACHINE = {
 export const getAllMachines = async (): Promise<Machine[]> => {
   try {
     const machines = await prisma.machine.findMany({
-      select: {...SELECT_MACHINE},
+      select: { ...SELECT_MACHINE },
     });
 
     if (!machines.length) {
