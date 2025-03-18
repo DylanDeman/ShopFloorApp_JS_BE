@@ -124,7 +124,7 @@ export default function installUserRoutes(parent: KoaRouter) {
     authDelay,
     validate(registerUser.validationScheme),
     registerUser,
-  );;
+  );
 
   router.get(
     '/',

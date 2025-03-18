@@ -45,7 +45,7 @@ const SELECT_MACHINE = {
 export const getAllMachines = async (): Promise<Machine[]> => {
   try {
     const machines = await prisma.machine.findMany({
-      select: {...SELECT_MACHINE},
+      select: { ...SELECT_MACHINE },
     });
 
     if (!machines.length) {
@@ -198,7 +198,7 @@ export const updateMachineKPIs = async () => {
     // Aankomende onderhoudsbeurten
     const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
       select: {
-        onderhoud_id: true,
+        id: true,
       },
       where: {
         datum: {
@@ -207,7 +207,7 @@ export const updateMachineKPIs = async () => {
       },
     });
 
-    const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.onderhoud_id);
+    const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.id);
 
     const aankomendeOnderhoudsbeurtenKPIData = [{
       kpi_id: getKPIidPerStatus('AANKOMEND_ONDERHOUD'),
