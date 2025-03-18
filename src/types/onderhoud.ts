@@ -9,7 +9,14 @@ export interface Onderhoud extends Entity {
   eindtijdstip: Date;
   reden: string;
   status: Onderhoud_Status;
-  opmerking: string;
+  opmerkingen: string;
 }
 
+export interface OnderhoudCreateInput extends Omit<Onderhoud, 'id'> {};
+
 export interface GetAllOnderhoudenReponse extends ListResponse<Onderhoud> { }
+
+export interface GetOnderhoudByIdResponse extends Onderhoud {};
+
+export interface CreateOnderhoudRequest extends OnderhoudCreateInput{};
+export interface CreateOnderhoudResponse extends GetOnderhoudByIdResponse{};

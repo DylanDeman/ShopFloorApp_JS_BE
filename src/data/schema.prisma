@@ -117,7 +117,7 @@ model Machine {
 }
 
 model Onderhoud {
-  onderhoud_id            Int              @id @default(autoincrement()) @db.UnsignedInt
+  id            Int              @id @default(autoincrement()) @db.UnsignedInt
   machine_id              Int              @db.UnsignedInt
   technieker_gebruiker_id Int              @db.UnsignedInt
   datum                   DateTime         @db.DateTime(0)
