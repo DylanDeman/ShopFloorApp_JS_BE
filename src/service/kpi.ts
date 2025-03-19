@@ -11,7 +11,9 @@ const KPI_SELECT = {
 };
 
 export const getAll = async (): Promise<KPI[]> => {
-  return prisma.kPI.findMany();
+  return prisma.kPI.findMany({
+    select: KPI_SELECT,
+  });
 };
 
 export const getById = async (id: number): Promise<KPI> => {

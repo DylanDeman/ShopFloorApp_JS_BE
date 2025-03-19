@@ -11,7 +11,9 @@ const KPIWAARDE_SELECT = {
 };
 
 export const getAll = async (): Promise<KPIWaarde[]> => {
-  return prisma.kPIWaarde.findMany();
+  return prisma.kPIWaarde.findMany({
+    select: KPIWAARDE_SELECT,
+  });
 };
 
 export const getById = async (id: number): Promise<KPIWaarde> => {

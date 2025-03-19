@@ -2,7 +2,7 @@ import type supertest from 'supertest';
 import withServer from '../helpers/withServer';
 import { prisma } from '../../src/data';
 import Role from '../../src/core/roles';
-import { Status  } from '@prisma/client';
+import { Status, Machine_Status, Productie_Status } from '@prisma/client';
 import { loginAdmin } from '../helpers/login';
 
 jest.setTimeout(20000);
@@ -15,23 +15,17 @@ describe('Sites API', () => {
 
   beforeAll(async () => {
     adminAuthHeader = await loginAdmin(request);
-  });
 
-  const url = '/api/sites';
-
-  const newSite = {
-    naam: 'New Site',
-    verantwoordelijke_id: 1,
-    status: Status.ACTIEF,
-  };
-
-  beforeAll(async () => {
+    // Clean the database
     await prisma.machine.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
+    await prisma.product.deleteMany({});
+    await prisma.machine.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
 
+    // Set up initial data
     await prisma.adres.createMany({
       data: [
         { id: 1, straat: 'Teststraat', huisnummer: '1A', stadsnaam: 'Teststad', postcode: '1234', land: 'Testland' },
@@ -40,22 +34,53 @@ describe('Sites API', () => {
     await prisma.gebruiker.createMany({
       data: [
         { id: 1, naam: 'Test User', voornaam: 'Test', geboortedatum: new Date(1990, 1, 1), email: 'user@test.com',
-          wachtwoord: 'password', gsm: '1234567890', rol: [Role.VERANTWOORDELIJKE], 
+          wachtwoord: 'password', gsm: '1234567890', rol: Role.VERANTWOORDELIJKE, 
           status: Status.ACTIEF, adres_id: 1 },
       ],
     });
     await prisma.site.createMany({
       data: [{ id: 1, naam: 'Test Site', verantwoordelijke_id: 1, status: Status.ACTIEF }],
     });
+
+    await prisma.product.create({
+      data: {
+        id: 1,
+        naam: 'Test Product',
+      },
+    });
+    
+    await prisma.machine.create({
+      data: {
+        id: 1,
+        code: 'MACHINE123',
+        locatie: 'Test Location',
+        product_informatie: 'Product info for machine',
+        status: Machine_Status.DRAAIT,
+        productie_status: Productie_Status.GEZOND,
+        site_id: 1,
+        product_id: 1,
+        technieker_gebruiker_id: 1,
+      },
+    });
   });
 
   afterAll(async () => {
+    // Clean up after tests
     await prisma.machine.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
   });
+
+  const url = '/api/sites';
+
+  const newSite = {
+    naam: 'New Site',
+    verantwoordelijke_id: 1,
+    status: Status.ACTIEF,
+    machines_ids: [1],
+  };
 
   describe('GET /api/sites', () => {
     it('should return all sites', async () => {
@@ -83,7 +108,7 @@ describe('Sites API', () => {
 
   describe('PUT /api/sites/:id', () => {
     it('should update a site', async () => {
-      const updateData = { naam: 'Updated Site', verantwoordelijke_id: 1 , status: 'ACTIEF' };
+      const updateData = { naam: 'Updated Site', verantwoordelijke_id: 1 , status: 'ACTIEF', machines_ids: [1] };
       const response = await request.put(`${url}/1`).set('Authorization', adminAuthHeader).send(updateData);
       expect(response.status).toBe(200);
       expect(response.body.naam).toBe(updateData.naam);

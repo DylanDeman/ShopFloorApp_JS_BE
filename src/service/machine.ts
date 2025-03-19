@@ -108,6 +108,7 @@ export const updateMachineById = async (id: number,
       {
         where: { id },
         data: { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status },
+        select: SELECT_MACHINE,
       },
     );
 
@@ -203,9 +204,6 @@ export const updateMachineKPIs = async () => {
 
     // Aankomende onderhoudsbeurten
     const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
-      select: {
-        id: true,
-      },
       where: {
         datum: {
           gt: today,

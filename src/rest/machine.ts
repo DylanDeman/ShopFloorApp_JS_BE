@@ -1,5 +1,6 @@
 import Router from '@koa/router';
 import * as machineService from '../service/machine';
+import * as onderhoudService from '../service/onderhoud';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
 import type { getMachineByIdResponse, getAllMachinesResponse } from '../types/machine';
@@ -8,8 +9,11 @@ import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
+  const machines = await machineService.getAllMachines();
+  const onderhoud = await onderhoudService.getAllOnderhouden();
   ctx.body = {
-    items: await machineService.getAllMachines(),
+    items: machines,
+    onderhoud: onderhoud.items,
   };
 };
 getAllMachines.validationScheme = null;

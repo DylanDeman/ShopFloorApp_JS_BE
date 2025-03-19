@@ -40,7 +40,7 @@ export const getAllOnderhouden = async (): Promise<{items: Onderhoud[]}> => {
 export const getOnderhoudById = async (id: number) => {
   try{
     const onderhoud = await prisma.onderhoud.findUnique({
-      where: {id},
+      where: { id: id },
     });
   
     if(!onderhoud){
