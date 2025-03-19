@@ -145,7 +145,6 @@ export const updateMachineById = async (id: number,
   updateMachineKPIs();
 
   try {
-
     const previousMachine = await prisma.machine.findUnique({
       where: { id },
       select: {
@@ -157,13 +156,24 @@ export const updateMachineById = async (id: number,
       throw ServiceError.notFound('Machine niet gevonden');
     }
 
-    const machine = await prisma.machine.update(
-      {
-        where: { id },
-        data: { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status },
-        select: SELECT_MACHINE,
-      },
-    );
+    // Remove site_id from update data if it shouldn't be updated
+    const updateData: any = {
+      product_id,
+      technieker_gebruiker_id,
+      code,
+      locatie,
+      status,
+      productie_status,
+    };
+
+    if (site_id !== undefined) {
+      updateData.site_id = site_id;  // Only include site_id if it's provided
+    }
+
+    const machine = await prisma.machine.update({
+      where: { id },
+      data: updateData,
+    });
 
     if (previousMachine.status !== status) {
       await prisma.notificatie.create({
@@ -178,6 +188,7 @@ export const updateMachineById = async (id: number,
     throw handleDBError(error);
   }
 };
+
 
 export const updateMachineKPIs = async () => {
   try {

@@ -35,13 +35,14 @@ updateMachineById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
   body: {
-    site_id: Joi.number().integer().positive(),
+   // site_id: Joi.number().integer().positive(),
     product_id: Joi.number().integer().positive(),
     technieker_gebruiker_id: Joi.number().integer().positive(),
     code: Joi.string(),
     locatie: Joi.string(),
     status: Joi.string(),
     productie_status: Joi.string(),
+    product_informatie: Joi.string().allow('').optional(), 
   },
 };
 
