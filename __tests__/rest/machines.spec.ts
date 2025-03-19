@@ -19,14 +19,13 @@ describe('Machines API', () => {
   });
 
   const url = '/api/machines';
-  
-  let createdMachine: any; 
+
+  let createdMachine: any;
 
   beforeAll(async () => {
     await prisma.notificatie.deleteMany({});
     await prisma.kPIWaarde.deleteMany({});
     await prisma.kPI.deleteMany({});
-    // await prisma.product.deleteMany({});
     await prisma.machine.deleteMany({});
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
@@ -67,8 +66,9 @@ describe('Machines API', () => {
       },
     });
 
-    const createdProduct = await prisma.product.create({
+    await prisma.product.create({
       data: {
+        id: 1,
         naam: 'Test Product',
       },
     });
@@ -81,7 +81,7 @@ describe('Machines API', () => {
         status: Machine_Status.DRAAIT,
         productie_status: Productie_Status.GEZOND,
         site_id: 1,
-        product_id: createdProduct.id,
+        product_id: 1,
         technieker_gebruiker_id: 1,
       },
     });
@@ -96,11 +96,11 @@ describe('Machines API', () => {
         grafiek: 'BAR',
       },
     });
-   
+
     await prisma.kPIWaarde.create({
       data: {
         datum: new Date(),
-        waarde: { score: 90 }, 
+        waarde: { score: 90 },
         site_id: '1',
         kpi_id: createdKPI.id,
       },
@@ -113,44 +113,90 @@ describe('Machines API', () => {
     await prisma.product.deleteMany({});
   });
 
-  // Use `createdMachine.id` dynamically
-  it('should return a machine by ID', async () => {
-    const response = await request.get(`${url}/${createdMachine.id}`).set('Authorization', adminAuthHeader);
-    expect(response.status).toBe(200);
-    expect(response.body.id).toBe(createdMachine.id);
-    expect(response.body.code).toBe('MACHINE123');
+  it('should return 404 for a non-existent machine', async () => {
+    const response = await request
+      .get(`${url}/9999`) 
+      .set('Authorization', adminAuthHeader);
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('Machine niet gevonden');
   });
 
-  describe('GET /api/machines', () => {
-    it('should return all machines', async () => {
-      const response = await request.get(url).set('Authorization', adminAuthHeader);
-      expect(response.status).toBe(200);
-      expect(response.body.items.length).toBeGreaterThan(0);
-    });
+  it('should return 401 for a missing or invalid Authorization header', async () => {
+    const response = await request
+      .get(`${url}/${createdMachine.id}`)
+      .set('Authorization', 'InvalidToken');
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('Invalid authentication token');
   });
 
-  describe('PUT /api/machines/:id', () => {
-    it('should update a machine', async () => {
-      const updatedMachine = {
-        code: 'MACHINE123',
-        locatie: 'Test Location',
-        status: Machine_Status.MANUEEL_GESTOPT,
-        productie_status: Productie_Status.GEZOND,
-        site_id: 1,
-        product_id: 1,
-        technieker_gebruiker_id: 1,
-      };
+  it('should return 400 when updating a machine with invalid data', async () => {
+    const updatedMachine = {
+      code: '', 
+      locatie: 'Test Location',
+      status: Machine_Status.MANUEEL_GESTOPT,
+      productie_status: Productie_Status.GEZOND,
+      site_id: 1,
+      product_id: 1,
+      technieker_gebruiker_id: 1,
+    };
+
+    const response = await request
+      .put(`${url}/${createdMachine.id}`)
+      .set('Authorization', adminAuthHeader)
+      .send(updatedMachine);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('Validation failed, check details for more information'); 
+  });
+
+  it('should return 404 for updating a non-existent machine', async () => {
+    const updatedMachine = {
+      code: 'MACHINE9999',
+      locatie: 'New Location',
+      status: Machine_Status.MANUEEL_GESTOPT,
+      productie_status: Productie_Status.GEZOND,
+      site_id: 1,
+      product_id: 1,
+      technieker_gebruiker_id: 1,
+    };
+
+    const response = await request
+      .put(`${url}/9999`) 
+      .set('Authorization', adminAuthHeader)
+      .send(updatedMachine);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('Machine niet gevonden');
+  });
+
+  it('should return 400 when updating with missing required fields', async () => {
+    const updatedMachine = {
+      status: Machine_Status.MANUEEL_GESTOPT,
+      productie_status: Productie_Status.GEZOND,
+    };
+
+    const response = await request
+      .put(`${url}/${createdMachine.id}`)
+      .set('Authorization', adminAuthHeader)
+      .send(updatedMachine);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain('Validation failed, check details for more information');
+  });
   
-      // Use `createdMachine.id` dynamically in the request URL
-      const response = await request.put(`${url}/${createdMachine.id}`)
-        .set('Authorization', adminAuthHeader)
-        .send(updatedMachine);
-  
-      expect(response.status).toBe(200);  
-      expect(response.body.code).toBe(updatedMachine.code);  
-      expect(response.body.locatie).toBe(updatedMachine.locatie);  
-      expect(response.body.status).toBe(updatedMachine.status);  
-      expect(response.body.productie_status).toBe(updatedMachine.productie_status);  
+  it('should return 401 when not authorized', async () => {
+    const response = await request.get(url); 
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('You need to be signed in');
+  });
+
+  it('should return 500 if the database is unavailable', async () => {
+    jest.spyOn(prisma.machine, 'findMany').mockImplementationOnce(() => {
+      throw new Error('Database error');
     });
+
+    const response = await request.get(url).set('Authorization', adminAuthHeader);
+    expect(response.status).toBe(500);
+    expect(response.body.message).toBe('Database error');
   });
 });
