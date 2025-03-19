@@ -19,3 +19,15 @@ export interface getAllMachinesResponse extends ListResponse<Machine> {
   onderhoud: Onderhoud[]
 };
 export interface getMachineByIdResponse extends Machine {};
+
+export interface CreateMachineResponse extends getMachineByIdResponse {};
+export interface CreateMachineRequest {
+  site_id: number;
+  product_id: number;
+  technieker_gebruiker_id: number;
+  code: string;
+  locatie: string;
+  status: 'DRAAIT' | 'MANUEEL_GESTOPT' | 'AUTOMATISCH_GESTOPT' | 'IN_ONDERHOUD' | 'STARTBAAR';
+  productie_status: 'GEZOND' | 'NOOD_ONDERHOUD' | 'FALEND';
+  product_informatie: string;
+}
