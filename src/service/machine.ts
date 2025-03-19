@@ -2,8 +2,9 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import type { Machine } from '../types/machine';
+import type { CreateMachineRequest, Machine } from '../types/machine';
 import { getKPIidPerStatus } from './kpi';
+import { Machine_Status, Productie_Status } from '@prisma/client';
 
 // Wat je wilt dat je krijgt als je een machine
 const SELECT_MACHINE = {
@@ -64,6 +65,58 @@ export const getAllMachines = async (): Promise<Machine[]> => {
     if (error instanceof ServiceError) {
       throw error;
     }
+    throw handleDBError(error);
+  }
+};
+
+
+export const createMachine = async (data: CreateMachineRequest): Promise<Machine> => {
+  try {
+    // Check if the technieker exists
+    const technieker = await prisma.gebruiker.findUnique({
+      where: { id: data.technieker_gebruiker_id },
+      select: { rol: true },
+    });
+
+    if (!technieker) {
+      throw new Error('Technieker does not exist.');
+    }
+
+    if (technieker.rol !== 'TECHNIEKER') {
+      throw new Error('The gebruiker is not a valid TECHNIEKER.');
+    }
+
+    // Create the machine
+    const machine = await prisma.machine.create({
+      data: {
+        site_id: data.site_id,
+        product_id: data.product_id,
+        technieker_gebruiker_id: data.technieker_gebruiker_id,
+        code: data.code,
+        locatie: data.locatie,
+        status: data.status as Machine_Status,
+        productie_status: data.productie_status as Productie_Status,
+        product_informatie: data.product_informatie,
+      },
+      include: {
+        site: {
+          include: {
+            verantwoordelijke: true, // Ensure this field is included
+          },
+        },
+        technieker: {
+          select: {
+            id: true,
+            naam: true,
+            voornaam: true,
+          },
+        },
+        product: true,
+      },
+    });
+
+    return machine;
+  } catch (error) {
     throw handleDBError(error);
   }
 };
