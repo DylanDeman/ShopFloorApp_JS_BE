@@ -12,7 +12,7 @@ export interface Machine extends Entity {
   status: string;
   product_informatie: string;
   productie_status: string;
-  product: Pick<Product, 'id' | 'product_informatie'>;
+  product: Pick<Product, 'id' | 'productie_informatie'>;
   technieker: Pick<User, 'id' |'voornaam' | 'naam'>;
   site: Pick<Site, 'id' | 'naam' | 'verantwoordelijke'>;
 }
