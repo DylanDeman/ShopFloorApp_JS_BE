@@ -9,10 +9,8 @@ import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
 const getAllNotificaties = async (ctx: KoaContext<GetAllNotificatiesResponse>) => {
-  const page = parseInt(ctx.query.page as string) || 0;
-  const limit = parseInt(ctx.query.limit as string) || 0;
 
-  const { items, total } = await notificatieService.getAllNotificaties(page, limit);
+  const { items, total } = await notificatieService.getAllNotificaties();
 
   ctx.body = {
     items,
@@ -27,6 +25,12 @@ const getNotificatieById = async (ctx: KoaContext<GetNotificatieByIdResponse, Id
   );
 };
 
+getNotificatieById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
 const createNotificatie = async (ctx: KoaContext<CreateNotificatieResponse, void, CreateNotificatieRequest>) => {
   const newNotificatie = await notificatieService.createNotificatie(ctx.request.body);
   ctx.status = 201;
@@ -37,12 +41,6 @@ createNotificatie.validationScheme = {
     bericht: Joi.string(),
     tijdstip: Joi.date(),
     gelezen: Joi.bool().optional().default(false),
-  },
-};
-
-getNotificatieById.validationScheme = {
-  params: {
-    id: Joi.number().integer().positive(),
   },
 };
 

@@ -28,12 +28,30 @@ const SELECT_MACHINE = {
       verantwoordelijke: true,
     },
   },
+  onderhouden: {
+    select: {
+      id: true,
+      technieker: {
+        select: {
+          id: true,
+          voornaam: true,
+          naam: true,
+        },
+      },
+      datum: true,
+      starttijdstip: true,
+      eindtijdstip: true,
+      reden: true,
+      status: true,
+      opmerkingen: true,
+    },
+  },
 };
 
 export const getAllMachines = async (): Promise<Machine[]> => {
   try {
     const machines = await prisma.machine.findMany({
-      select: SELECT_MACHINE,
+      select: { ...SELECT_MACHINE },
     });
 
     if (!machines.length) {
@@ -149,7 +167,7 @@ export const updateMachineKPIs = async () => {
     });
 
     // Algemene gezondheid alle sites
-    const totaalGezond = kpiDataPerSite.reduce((sum, { waarde }) => sum + parseFloat(waarde.toString()), 0);
+    const totaalGezond = kpiDataPerSite.reduce((sum, { waarde }) => sum + parseFloat(String(waarde)), 0);
     const totaalSites = kpiDataPerSite.length;
     const algemeneGezondheid = totaalSites === 0 ? '0' : (totaalGezond / totaalSites).toFixed(2);
 
@@ -187,7 +205,7 @@ export const updateMachineKPIs = async () => {
     // Aankomende onderhoudsbeurten
     const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
       select: {
-        onderhoud_id: true,
+        id: true,
       },
       where: {
         datum: {
@@ -196,7 +214,7 @@ export const updateMachineKPIs = async () => {
       },
     });
 
-    const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.onderhoud_id);
+    const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.id);
 
     const aankomendeOnderhoudsbeurtenKPIData = [{
       kpi_id: getKPIidPerStatus('AANKOMEND_ONDERHOUD'),
