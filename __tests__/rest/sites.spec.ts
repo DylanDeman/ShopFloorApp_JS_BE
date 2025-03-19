@@ -4,6 +4,7 @@ import { prisma } from '../../src/data';
 import Role from '../../src/core/roles';
 import { Status  } from '@prisma/client';
 import { loginAdmin } from '../helpers/login';
+import { machine } from 'node:os';
 
 jest.setTimeout(20000);
 
@@ -23,6 +24,7 @@ describe('Sites API', () => {
     naam: 'New Site',
     verantwoordelijke_id: 1,
     status: Status.ACTIEF,
+    machines_ids: [1],
   };
 
   beforeAll(async () => {

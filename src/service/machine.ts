@@ -204,9 +204,6 @@ export const updateMachineKPIs = async () => {
 
     // Aankomende onderhoudsbeurten
     const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
-      select: {
-        id: true,
-      },
       where: {
         datum: {
           gt: today,
