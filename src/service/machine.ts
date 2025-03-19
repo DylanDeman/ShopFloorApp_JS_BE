@@ -4,7 +4,7 @@ import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import type { CreateMachineRequest, Machine } from '../types/machine';
 import { getKPIidPerStatus } from './kpi';
-import { Machine_Status, Productie_Status } from '@prisma/client';
+import type { Machine_Status, Productie_Status } from '@prisma/client';
 
 // Wat je wilt dat je krijgt als je een machine
 const SELECT_MACHINE = {
@@ -27,6 +27,12 @@ const SELECT_MACHINE = {
       id: true,
       naam: true,
       verantwoordelijke: true,
+    },
+  },
+  product: {
+    select: {
+      id: true,
+      product_informatie: true,
     },
   },
   onderhouden: {
@@ -69,7 +75,6 @@ export const getAllMachines = async (): Promise<Machine[]> => {
   }
 };
 
-
 export const createMachine = async (data: CreateMachineRequest): Promise<Machine> => {
   try {
     // Check if the technieker exists
@@ -90,29 +95,18 @@ export const createMachine = async (data: CreateMachineRequest): Promise<Machine
     const machine = await prisma.machine.create({
       data: {
         site_id: data.site_id,
+        status_sinds: new Date(),
         product_id: data.product_id,
-        technieker_gebruiker_id: data.technieker_gebruiker_id,
+        technieker_id: data.technieker_gebruiker_id,
         code: data.code,
         locatie: data.locatie,
         status: data.status as Machine_Status,
         productie_status: data.productie_status as Productie_Status,
-        product_informatie: data.product_informatie,
+        aantal_goede_producten: 0,
+        aantal_slechte_producten: 0,
+        limit_voor_onderhoud: data.limit_voor_onderhoud,
       },
-      include: {
-        site: {
-          include: {
-            verantwoordelijke: true, // Ensure this field is included
-          },
-        },
-        technieker: {
-          select: {
-            id: true,
-            naam: true,
-            voornaam: true,
-          },
-        },
-        product: true,
-      },
+      select: SELECT_MACHINE,
     });
 
     return machine;
@@ -140,10 +134,8 @@ export const getMachineById = async (id: number) => {
 };
 
 export const updateMachineById = async (id: number,
-  { site_id, product_id, technieker_gebruiker_id, code, locatie, status, productie_status }: any) => {
-
+  { site_id, product_id, technieker_id, code, locatie, status, productie_status }: any) => {
   updateMachineKPIs();
-
   try {
     const previousMachine = await prisma.machine.findUnique({
       where: { id },
@@ -156,15 +148,13 @@ export const updateMachineById = async (id: number,
       throw ServiceError.notFound('Machine niet gevonden');
     }
 
-    // Remove site_id from update data if it shouldn't be updated
-    const updateData: any = {
-      product_id,
-      technieker_gebruiker_id,
-      code,
-      locatie,
-      status,
-      productie_status,
-    };
+    const machine = await prisma.machine.update(
+      {
+        where: { id },
+        data: { site_id, product_id, technieker_id, code, locatie, status, productie_status },
+        select: SELECT_MACHINE,
+      },
+    );
 
     if (site_id !== undefined) {
       updateData.site_id = site_id;  // Only include site_id if it's provided

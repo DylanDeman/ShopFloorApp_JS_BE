@@ -2,6 +2,8 @@ import type { Entity, ListResponse } from './common';
 import type { User } from './user';
 import type { Site } from './site';
 import type { Onderhoud } from './onderhoud';
+import type { Product } from './product';
+
 // Types voor REST LAAG
 export interface Machine extends Entity {
   product_id: number;
@@ -10,6 +12,7 @@ export interface Machine extends Entity {
   status: string;
   product_informatie: string;
   productie_status: string;
+  product: Pick<Product, 'id' | 'product_informatie'>;
   technieker: Pick<User, 'id' |'voornaam' | 'naam'>;
   site: Pick<Site, 'id' | 'naam' | 'verantwoordelijke'>;
 }
@@ -30,4 +33,5 @@ export interface CreateMachineRequest {
   status: 'DRAAIT' | 'MANUEEL_GESTOPT' | 'AUTOMATISCH_GESTOPT' | 'IN_ONDERHOUD' | 'STARTBAAR';
   productie_status: 'GEZOND' | 'NOOD_ONDERHOUD' | 'FALEND';
   product_informatie: string;
+  limit_voor_onderhoud: number;
 }

@@ -4,7 +4,7 @@ import Joi from 'joi';
 import * as userService from '../service/user';
 import * as dashboardService from '../service/dashboard';
 import type { getAllDashboardsResponse } from '../types/dashboard';
-import type { BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   RegisterUserRequest,
@@ -117,7 +117,7 @@ getDashboardByUserID.validationScheme = {
 };
 
 export default function installUserRoutes(parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({ prefix: '/users' });
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({ prefix: '/users' });
 
   router.post(
     '/',

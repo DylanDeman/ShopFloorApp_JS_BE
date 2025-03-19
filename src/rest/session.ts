@@ -6,8 +6,8 @@ import { authDelay } from '../core/auth';
 import type {
   KoaContext,
   KoaRouter,
-  BudgetAppState,
-  BudgetAppContext,
+  ShopfloorAppState,
+  ShopfloorAppContext,
 } from '../types/koa';
 import type {
   LoginResponse,
@@ -71,7 +71,7 @@ login.validationScheme = {
 };
 
 export default function installSessionRoutes(parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/sessions',
   });
 

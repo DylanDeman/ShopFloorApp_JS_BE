@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as healthService from '../service/health';
-import type { BudgetAppContext, BudgetAppState} from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState} from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type { PingResponse, VersionResponse } from '../types/health';
 import validate from '../core/validation';
@@ -75,7 +75,7 @@ const getVersion = async (ctx: KoaContext<VersionResponse>) => {
 getVersion.validationScheme = null;
 
 export default function installPlacesRoutes(parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({ prefix: '/health' });
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({ prefix: '/health' });
 
   router.get('/ping', validate(ping.validationScheme), ping);
   router.get('/version', validate(getVersion.validationScheme), getVersion);

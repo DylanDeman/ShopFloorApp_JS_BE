@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import installHealthRouter from './health';
 import installSessionRouter from './session';
 import installSiteRouter from './site';
-import type { BudgetAppContext, BudgetAppState, KoaApplication } from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState, KoaApplication } from '../types/koa';
 import installAdresRoutes from './adres';
 import installUserRoutes from './user';
 import installMachineRoutes from './machine';
@@ -49,7 +49,7 @@ import installProductRoutes from './product';
  */
 
 export default (app: KoaApplication) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/api',
   });
 
@@ -64,7 +64,6 @@ export default (app: KoaApplication) => {
   installDashboardRouter(router);
   installOnderhoudRoutes(router);
   installProductRoutes(router);
-  
 
   app.use(router.routes())
     .use(router.allowedMethods());

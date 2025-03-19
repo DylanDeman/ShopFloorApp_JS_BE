@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import Joi from 'joi';
 import * as adresService from '../service/adres';
-import type { BudgetAppContext, BudgetAppState} from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState} from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   CreateAdresRequest,
@@ -80,7 +80,7 @@ deleteAdres.validationScheme = {
 };
 
 export default function installAdresRoutes (parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/adres',
   });
 

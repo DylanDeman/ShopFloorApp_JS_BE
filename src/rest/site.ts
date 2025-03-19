@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as siteService from '../service/site';
-import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import validate from '../core/validation';
 import type { 
   GetAllSitesResponse, 
@@ -82,7 +82,7 @@ deleteSiteById.validationScheme = {
 const requireManager = makeRequireRole(roles.MANAGER);
 
 export default (parent: KoaRouter) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/sites',
   });
 
