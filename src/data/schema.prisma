@@ -176,4 +176,6 @@ enum Grafiek {
   TOP5
   SITES
   TOP5OND
+  AANKOND
+  GEZONDHEID
 }

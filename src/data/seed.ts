@@ -86,7 +86,7 @@ async function seedKPIs() {
   const MNGR_KPI_1 = {
     onderwerp: 'Algemene gezondheid alle sites',
     roles: Rol.MANAGER,
-    grafiek: Grafiek.SINGLE,
+    grafiek: Grafiek.GEZONDHEID,
   };
 
   const MNGR_KPI_2 = {
@@ -132,7 +132,7 @@ async function seedKPIs() {
   const TECH_KPI_1 = {
     onderwerp: 'Aankomende onderhoudsbeurten',
     roles: Rol.TECHNIEKER,
-    grafiek: Grafiek.TOP5OND,
+    grafiek: Grafiek.AANKOND,
   };
 
   const TECH_KPI_2 = {

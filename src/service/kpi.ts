@@ -62,6 +62,7 @@ export const getKPIidPerStatus = (status: string): number => {
     'FALEND': 6,
     'NOOD_ONDERHOUD': 7,
     'AANKOMEND_ONDERHOUD': 8,
+    'LAATSTEONDERHOUDEN': 9,
     'DRAAIT': 10,
     'MANUEEL_GESTOPT': 11,
     'AUTOMATISCH_GESTOPT': 12,
