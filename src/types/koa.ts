@@ -3,11 +3,11 @@ import type Application from 'koa';
 import type Router from '@koa/router';
 import type { SessionInfo } from './auth';
 
-export interface BudgetAppState {
+export interface ShopfloorAppState {
   session: SessionInfo;
 }
 
-export interface BudgetAppContext<
+export interface ShopfloorAppContext<
   Params = unknown,
   RequestBody = unknown,
   Query = unknown,
@@ -26,11 +26,11 @@ export type KoaContext<
   Query = unknown,
 > =
   ParameterizedContext<
-    BudgetAppState,
-    BudgetAppContext<Params, RequestBody, Query>,
+    ShopfloorAppState,
+    ShopfloorAppContext<Params, RequestBody, Query>,
     ResponseBody
   >;
 
-export interface KoaApplication extends Application<BudgetAppState, BudgetAppContext> {}
+export interface KoaApplication extends Application<ShopfloorAppState, ShopfloorAppContext> {}
 
-export interface KoaRouter extends Router<BudgetAppState, BudgetAppContext> {}
+export interface KoaRouter extends Router<ShopfloorAppState, ShopfloorAppContext> {}

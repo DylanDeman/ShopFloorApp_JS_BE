@@ -1,11 +1,11 @@
-import Router from "@koa/router";
+import Router from '@koa/router';
 import * as productService from '../service/product';
-import { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from "../types/koa";
-import Joi from "joi";
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
+import Joi from 'joi';
 
-import type { GetAllProductResponse, GetProductByIdResponse } from "../types/product";
-import { IdParams } from "../types/common";
-import validate from "../core/validation";
+import type { GetAllProductResponse, GetProductByIdResponse } from '../types/product';
+import type { IdParams } from '../types/common';
+import validate from '../core/validation';
 
 const getAllProducts = async(ctx: KoaContext<GetAllProductResponse>) => {
   const producten = await productService.getAllProducts();
@@ -15,7 +15,6 @@ const getAllProducts = async(ctx: KoaContext<GetAllProductResponse>) => {
   };
 };
 getAllProducts.validationScheme = null;
-
 
 const getProductById = async(ctx: KoaContext<GetProductByIdResponse, IdParams>) => {
   const {id} = ctx.params;
@@ -30,22 +29,22 @@ getProductById.validationScheme = {
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/producten',
   });
 
   router.get(
     '/',
     validate(getAllProducts.validationScheme),
-    getAllProducts
+    getAllProducts,
   );
 
   router.get(
     '/:id',
     validate(getProductById.validationScheme),
-    getProductById
+    getProductById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());
 
-}
+};

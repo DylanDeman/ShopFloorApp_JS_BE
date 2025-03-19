@@ -7,8 +7,8 @@ import installMiddlewares from './core/installMiddleware';
 import installRest from './rest';
 import type {
   KoaApplication,
-  BudgetAppContext,
-  BudgetAppState,
+  ShopfloorAppContext,
+  ShopfloorAppState,
 } from './types/koa';
 
 const PORT = config.get<number>('port');
@@ -20,7 +20,7 @@ export interface Server {
 }
 
 export default async function createServer(): Promise<Server> {
-  const app = new Koa<BudgetAppState, BudgetAppContext>();
+  const app = new Koa<ShopfloorAppState, ShopfloorAppContext>();
 
   installMiddlewares(app);
   await initializeData();

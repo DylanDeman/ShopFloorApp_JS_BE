@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as onderhoudService from '../service/onderhoud';
-import type { BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import validate from '../core/validation';
 import { requireAuthentication } from '../core/auth';
@@ -52,7 +52,7 @@ createOnderhoud.validationScheme = {
 };
 
 export default function installOnderhoudRoutes(parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/onderhouden',
   });
 

@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import Joi from 'joi';
 import * as kpiService from '../service/kpi';
 import * as kpiwaardenService from '../service/kpiwaarden';
-import type { BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   GetAllKPIsReponse,
@@ -69,7 +69,7 @@ getKPIByRole.validationScheme = {
 };
 
 export default function installKPIRoutes(parent: KoaRouter) {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/kpi',
   });
 

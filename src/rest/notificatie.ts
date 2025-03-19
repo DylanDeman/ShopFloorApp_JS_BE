@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as notificatieService from '../service/notificatie';
-import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import validate from '../core/validation';
 import type {GetAllNotificatiesResponse, GetNotificatieByIdResponse, 
   CreateNotificatieRequest, CreateNotificatieResponse} from '../types/notificatie';
@@ -60,7 +60,7 @@ updateNotificatieById.validationScheme = {
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/notificaties',
   });
 
