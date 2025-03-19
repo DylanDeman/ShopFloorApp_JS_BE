@@ -88,29 +88,33 @@ model Site {
 }
 
 model Product {
-  id       Int       @id @default(autoincrement()) @db.UnsignedInt
-  naam     String    @db.VarChar(255)
-  machines Machine[]
+  id                        Int       @id @default(autoincrement()) @db.UnsignedInt
+  productie_informatie      String    @db.VarChar(255)
+  machines                  Machine[]
 
   @@map("producten")
 }
 
 model Machine {
-  id                      Int              @id @default(autoincrement()) @db.UnsignedInt
-  site_id                 Int              @db.UnsignedInt
-  product_id              Int              @db.UnsignedInt
-  technieker_gebruiker_id Int              @db.UnsignedInt
-  code                    String           @db.VarChar(255)
-  locatie                 String           @db.VarChar(255)
-  status                  Machine_Status
-  productie_status        Productie_Status
-  product_informatie      String           @db.VarChar(512)
-  technieker              Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
-  product                 Product          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
-  site                    Site             @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
-  onderhouden             Onderhoud[]
+  id                        Int              @id @default(autoincrement()) @db.UnsignedInt
+  status_sinds              DateTime
+  site_id                   Int              @db.UnsignedInt
+  product_id                Int              @db.UnsignedInt
+  technieker_id             Int              @db.UnsignedInt
+  code                      String           @db.VarChar(255)
+  locatie                   String           @db.VarChar(255)
+  status                    Machine_Status
+  productie_status          Productie_Status
+  aantal_goede_producten    Int              @db.UnsignedInt
+  aantal_slechte_producten  Int              @db.UnsignedInt
+  limit_voor_onderhoud      Int              @db.UnsignedInt
 
-  @@index([technieker_gebruiker_id], map: "fk_gebruiker_machine")
+  technieker                Gebruiker        @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
+  product                   Product          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
+  site                      Site             @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
+  onderhouden               Onderhoud[]
+
+  @@index([technieker_id], map: "fk_gebruiker_machine")
   @@index([product_id], map: "fk_product_machine")
   @@index([site_id], map: "fk_site_machine")
   @@map("machines")
@@ -150,7 +154,7 @@ enum Status {
 
 enum Machine_Status {
   DRAAIT
-  MANUEEL_GESTOPT
+  MANUEEL_GESTOPTf
   AUTOMATISCH_GESTOPT
   IN_ONDERHOUD
   STARTBAAR

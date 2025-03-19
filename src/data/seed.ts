@@ -315,7 +315,7 @@ async function seedProducten(aantal: number) {
   const producten: any = [];
   for (let i = 0; i < aantal; i++) {
     producten.push({
-      naam: faker.commerce.product(),
+      productie_informatie: faker.commerce.product(),
     });
   }
   return producten;
@@ -325,7 +325,7 @@ async function seedMachines(aantal: number) {
   const machines: any = [];
   const bestaandeSites: any = await prisma.site.findMany();
   const bestaansdeProducten: any = await prisma.product.findMany();
-  const bestaandeGebruikers: any = await prisma.gebruiker.findMany({
+  const bestaandeTechniekers: any = await prisma.gebruiker.findMany({
     where: {
       rol: {
         equals: Rol.TECHNIEKER,
@@ -333,17 +333,36 @@ async function seedMachines(aantal: number) {
     },
   });
   for (let i = 0; i < aantal; i++) {
+    const aantal_goede_producten = faker.number.int({ min: 0, max: 1000 });
+    const aantal_slechte_producten = faker.number.int({ min: 0, max: 1000 });
+    const limit_voor_onderhoud = faker.number.int({ min: 0, max: 800 });
+    
+    // hulp-constanten
+    const totaal_producten : number = aantal_goede_producten + aantal_slechte_producten;
+    const productie_graad : number = aantal_goede_producten/totaal_producten;
+    let productie_status: Productie_Status = Productie_Status.GEZOND;
+
+    // Als het limit heeft overschreden, dan is het status altijd nood_onderhoud
+    // productie_graad van boven 49% is gezond
+    if(totaal_producten > limit_voor_onderhoud || totaal_producten >= limit_voor_onderhoud){
+      productie_status = Productie_Status.NOOD_ONDERHOUD;
+    } else if(productie_graad < 0.50){
+      productie_status = Productie_Status.FALEND;
+    }
+    
     machines.push({
+      status_sinds: faker.date.past({years: 0.5}), // elke 6 maanden automatisch stop voor onderhoud
       site_id: Number(bestaandeSites[Math.floor(Math.random() * bestaandeSites.length)].id),
       product_id: Number(bestaansdeProducten[Math.floor(Math.random() * bestaansdeProducten.length)].id),
-      technieker_gebruiker_id:
-        Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
+      technieker_id:
+        Number(bestaandeTechniekers[Math.floor(Math.random() * bestaandeTechniekers.length)].id),
       code: String(faker.commerce.isbn()),
       locatie: String(faker.location.street()),
       status: Object.values(Machine_Status)[Math.floor(Math.random() * Object.values(Machine_Status).length)],
-      product_informatie: faker.lorem.sentence(),
-      productie_status:
-        Object.values(Productie_Status)[Math.floor(Math.random() * Object.values(Productie_Status).length)],
+      productie_status,
+      aantal_goede_producten,
+      aantal_slechte_producten,
+      limit_voor_onderhoud,
     });
   }
   return machines;
