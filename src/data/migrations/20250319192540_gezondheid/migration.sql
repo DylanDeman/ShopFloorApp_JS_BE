@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `kpis` MODIFY `grafiek` ENUM('LINE', 'BAR', 'SINGLE', 'LIST', 'TOP5', 'SITES', 'TOP5OND', 'AANKOND', 'GEZONDHEID') NOT NULL;

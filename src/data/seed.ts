@@ -176,7 +176,7 @@ async function seedKPIs() {
   const VW_TECH_KPI_6 = {
     onderwerp: 'Mijn machines',
     roles: [Rol.VERANTWOORDELIJKE, Rol.TECHNIEKER],
-    grafiek: Grafiek.LIST,
+    grafiek: Grafiek.MACHLIST,
   };
 
   KPIs.push(

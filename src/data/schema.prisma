@@ -43,7 +43,7 @@ model Gebruiker {
 model KPI {
   id         Int         @id @default(autoincrement()) @db.UnsignedInt
   onderwerp  String
-  roles      Json     
+  roles      Json
   grafiek    Grafiek
   dashboards Dashboard[]
   kpiwaarden KPIWaarde[]
@@ -54,7 +54,7 @@ model KPI {
 model KPIWaarde {
   id      Int      @id @default(autoincrement()) @db.UnsignedInt
   datum   DateTime
-  waarde  Json   
+  waarde  Json
   site_id String?  @db.VarChar(50)
   kpi_id  Int      @db.UnsignedInt
   kpi     KPI      @relation(fields: [kpi_id], references: [id])
@@ -117,7 +117,7 @@ model Machine {
 }
 
 model Onderhoud {
-  id            Int              @id @default(autoincrement()) @db.UnsignedInt
+  id                      Int              @id @default(autoincrement()) @db.UnsignedInt
   machine_id              Int              @db.UnsignedInt
   technieker_gebruiker_id Int              @db.UnsignedInt
   datum                   DateTime         @db.DateTime(0)
@@ -178,4 +178,5 @@ enum Grafiek {
   TOP5OND
   AANKOND
   GEZONDHEID
+  MACHLIST
 }

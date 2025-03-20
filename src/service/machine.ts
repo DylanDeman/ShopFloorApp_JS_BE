@@ -127,9 +127,17 @@ export const updateMachineById = async (id: number,
 
 export const updateMachineKPIs = async () => {
   try {
-
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    await prisma.kPIWaarde.deleteMany({
+      where: {
+        datum: {
+          lt: today,
+        },
+      },
+    });
 
     //Algemene gezondheid per site
     const machinesPerSite = await prisma.machine.groupBy({
