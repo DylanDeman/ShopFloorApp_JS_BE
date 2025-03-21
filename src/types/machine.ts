@@ -2,36 +2,39 @@ import type { Entity, ListResponse } from './common';
 import type { User } from './user';
 import type { Site } from './site';
 import type { Onderhoud } from './onderhoud';
-import type { Product } from './product';
 
-// Types voor REST LAAG
+// Types voor SERVICE-LAAG
 export interface Machine extends Entity {
-  product_id: number;
   code: string;
   locatie: string;
   status: string;
-  product_informatie: string;
+  status_sinds: Date;
   productie_status: string;
-  product: Pick<Product, 'id' | 'productie_informatie'>;
+  aantal_goede_producten: number;
+  aantal_slechte_producten: number;
+  limiet_voor_onderhoud: number;
   technieker: Pick<User, 'id' |'voornaam' | 'naam'>;
   site: Pick<Site, 'id' | 'naam' | 'verantwoordelijke'>;
+  onderhouden: Onderhoud[];
 }
 
-// Types voor SERVICE LAAG
-export interface getAllMachinesResponse extends ListResponse<Machine> {
-  onderhoud: Onderhoud[]
-};
-export interface getMachineByIdResponse extends Machine {};
-
-export interface CreateMachineResponse extends getMachineByIdResponse {};
-export interface CreateMachineRequest {
+// Velden die nodig zijn om een machine aan te maken:
+export interface MachineCreateInput {
+  code: string;
+  status?: string;
+  productie_status?: string;
+  locatie: string;
+  technieker_id: number;
   site_id: number;
   product_id: number;
-  technieker_gebruiker_id: number;
-  code: string;
-  locatie: string;
-  status: 'DRAAIT' | 'MANUEEL_GESTOPT' | 'AUTOMATISCH_GESTOPT' | 'IN_ONDERHOUD' | 'STARTBAAR';
-  productie_status: 'GEZOND' | 'NOOD_ONDERHOUD' | 'FALEND';
-  product_informatie: string;
-  limit_voor_onderhoud: number;
-}
+  limiet_voor_onderhoud: number;
+};
+
+export interface MachineUpdateInput extends MachineCreateInput {};
+
+// Types voor REST-LAAG
+export interface getAllMachinesResponse extends ListResponse<Machine> {};
+export interface getMachineByIdResponse extends Machine {};
+
+export interface CreateMachineRequest extends MachineCreateInput {};
+export interface CreateMachineResponse extends getMachineByIdResponse {};

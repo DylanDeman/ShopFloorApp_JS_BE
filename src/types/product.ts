@@ -2,7 +2,7 @@ import type { Entity, ListResponse } from './common';
 import type { Machine } from './machine';
 
 export interface Product extends Entity{
-  productie_informatie: string,
+  naam: string,
   machines?: Machine[];
 }
 
