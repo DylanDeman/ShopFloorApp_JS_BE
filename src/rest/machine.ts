@@ -3,7 +3,12 @@ import * as machineService from '../service/machine';
 import * as onderhoudService from '../service/onderhoud';
 import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
 import validate from '../core/validation';
-import type { getMachineByIdResponse, getAllMachinesResponse, CreateMachineRequest, CreateMachineResponse } from '../types/machine';
+import type { 
+  getMachineByIdResponse, 
+  getAllMachinesResponse, 
+  CreateMachineRequest, 
+  CreateMachineResponse, 
+} from '../types/machine';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
@@ -35,7 +40,7 @@ updateMachineById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
   body: {
-   // site_id: Joi.number().integer().positive(),
+    // site_id: Joi.number().integer().positive(),
     product_id: Joi.number().integer().positive(),
     technieker_gebruiker_id: Joi.number().integer().positive(),
     code: Joi.string(),
@@ -58,7 +63,8 @@ createMachine.validationScheme = {
     technieker_gebruiker_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
     locatie: Joi.string().max(255).required(),
-    status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 'AUTMATISCH_GESTOPT', 'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
+    status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
+      'AUTMATISCH_GESTOPT', 'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
     product_informatie: Joi.string().allow('').optional(),
   },

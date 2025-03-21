@@ -2,9 +2,9 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import type { CreateMachineRequest, Machine } from '../types/machine';
+import type { CreateMachineRequest, Machine, getMachineByIdResponse } from '../types/machine';
 import { getKPIidPerStatus } from './kpi';
-import { Machine_Status, Productie_Status } from '@prisma/client';
+import type { Machine_Status, Productie_Status } from '@prisma/client';
 
 // Wat je wilt dat je krijgt als je een machine
 const SELECT_MACHINE = {
@@ -69,7 +69,6 @@ export const getAllMachines = async (): Promise<Machine[]> => {
   }
 };
 
-
 export const createMachine = async (data: CreateMachineRequest): Promise<Machine> => {
   try {
     // Check if the technieker exists
@@ -121,8 +120,7 @@ export const createMachine = async (data: CreateMachineRequest): Promise<Machine
   }
 };
 
-export const getMachineById = async (id: number) => {
-
+export const getMachineById = async (id: number): Promise<getMachineByIdResponse> => {
   try {
     const machine = await prisma.machine.findUnique({
       where: { id },
@@ -133,7 +131,7 @@ export const getMachineById = async (id: number) => {
       throw ServiceError.notFound('Machine niet gevonden');
     }
 
-    return machine;
+    return machine;  // This will return the machine with technieker and site included
   } catch (error) {
     throw handleDBError(error);
   }
@@ -173,6 +171,7 @@ export const updateMachineById = async (id: number,
     const machine = await prisma.machine.update({
       where: { id },
       data: updateData,
+      select: SELECT_MACHINE,
     });
 
     if (previousMachine.status !== status) {
@@ -188,7 +187,6 @@ export const updateMachineById = async (id: number,
     throw handleDBError(error);
   }
 };
-
 
 export const updateMachineKPIs = async () => {
   try {
