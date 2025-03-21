@@ -11,7 +11,7 @@ async function simulateProduction() {
 
   for (const machine of machines) {
     const randValue = Math.random();
-    const isGoodProduct = randValue < 0.7;
+    const isGoodProduct = randValue < 0.95;
 
     await prisma.machine.update({
       where: { id: machine.id },
@@ -47,7 +47,6 @@ async function updateMachineStatus(machineId: number) {
   } else {
     productie_status = 'GEZOND';
   }
-
   await prisma.machine.update({
     where: { id: machineId },
     data: { 

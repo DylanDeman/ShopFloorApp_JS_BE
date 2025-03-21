@@ -5,6 +5,7 @@ import handleDBError from './_handleDBError';
 import { getKPIidPerStatus } from './kpi';
 import { Machine_Status, Productie_Status } from '@prisma/client';
 import type { Machine, MachineCreateInput, MachineUpdateInput } from '../types/machine';
+import { getLogger } from '../core/logging';
 
 // Gegevens voor een machine die we willen ophalen
 const SELECT_MACHINE = {
@@ -80,6 +81,8 @@ export const getAllMachines = async (): Promise<Machine[]> => {
 
 export const createMachine = async (data: MachineCreateInput): Promise<Machine> => {
   try {
+
+    getLogger().info(`Creating machine with code ${data.code}`);
     // Check if the technieker/user exists 
     const technieker = await prisma.gebruiker.findUnique({
       where: { id: data.technieker_id },
@@ -113,7 +116,7 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
           connect: { id: data.site_id },
         },
         product: {
-          connect: { id: data.product_id },
+          connect: { id: data.product.id },
         },
       },
       select: SELECT_MACHINE,
@@ -161,9 +164,9 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
     const {
       code,
       locatie,
-      technieker_id, 
+      technieker_id,
       site_id,
-      product_id,
+      product,
       limiet_voor_onderhoud,
       status,
       productie_status, 
@@ -174,12 +177,29 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
     
     if (code !== undefined) updateData.code = code;
     if (locatie !== undefined) updateData.locatie = locatie;
-    if (technieker_id !== undefined) updateData.technieker_id = technieker_id;
-    if (product_id !== undefined) updateData.product_id = product_id;
-    if (site_id !== undefined) updateData.site_id = site_id;
     if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
     if (status !== undefined) updateData.status = status as Machine_Status;
     if (productie_status !== undefined) updateData.productie_status = productie_status;
+    
+    if (technieker_id !== undefined) {
+      updateData.technieker = {
+        connect: { id: technieker_id },
+      };
+    }
+    
+    if (site_id !== undefined) {
+      updateData.site = {
+        connect: { id: site_id },
+      };
+    }
+    
+    if (product !== undefined) {
+      updateData.product = {
+        connect: { 
+          id: product.id,
+        },
+      };
+    }
     
     if (status !== undefined && previousMachine.status !== status) {
       updateData.status_sinds = new Date();
@@ -187,7 +207,7 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
 
     const machine = await prisma.machine.update({
       where: { id },
-      data: updateData,
+      data: updateData, // Use the prepared updateData object here
       select: SELECT_MACHINE,
     });
 

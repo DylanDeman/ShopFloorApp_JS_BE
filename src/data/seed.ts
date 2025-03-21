@@ -342,12 +342,19 @@ async function seedMachines(aantal: number) {
     const totaal_producten : number = aantal_goede_producten + aantal_slechte_producten;
     const productie_graad : number = aantal_goede_producten/totaal_producten;
     let productie_status: Productie_Status = Productie_Status.GEZOND;
-
+    let status : Machine_Status = 
+      [
+        Machine_Status.DRAAIT, 
+        Machine_Status.MANUEEL_GESTOPT, 
+        Machine_Status.IN_ONDERHOUD, 
+        Machine_Status.STARTBAAR][Math.floor(Math.random() * 4)] as Machine_Status;
+    
     // Als het limit heeft overschreden, dan is het status altijd nood_onderhoud
     // productie_graad van boven 49% is gezond
     if(totaal_producten > limiet_voor_onderhoud || totaal_producten >= limiet_voor_onderhoud){
       productie_status = Productie_Status.NOOD_ONDERHOUD;
-    } else if(productie_graad < 0.50){
+      status = Machine_Status.AUTOMATISCH_GESTOPT;
+    } else if(productie_graad > 0.50){
       productie_status = Productie_Status.FALEND;
     }
     
@@ -359,7 +366,7 @@ async function seedMachines(aantal: number) {
         Number(bestaandeTechniekers[Math.floor(Math.random() * bestaandeTechniekers.length)].id),
       code: String(faker.commerce.isbn()),
       locatie: String(faker.location.street()),
-      status: Object.values(Machine_Status)[Math.floor(Math.random() * Object.values(Machine_Status).length)],
+      status,
       productie_status,
       aantal_goede_producten,
       aantal_slechte_producten,

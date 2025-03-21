@@ -28,8 +28,8 @@ export interface MachineCreateInput {
   locatie: string;
   technieker_id: number;
   site_id: number;
-  product_id: number;
   limiet_voor_onderhoud: number;
+  product: Pick<Product, 'id' | 'naam' | 'product_informatie'>;
 };
 
 export interface MachineUpdateInput extends MachineCreateInput {};

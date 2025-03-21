@@ -46,7 +46,11 @@ updateMachineById.validationScheme = {
     locatie: Joi.string(),
     technieker_id: Joi.number().integer().positive().allow(null),
     site_id: Joi.number().integer().positive(),
-    product_id: Joi.number().integer().positive(),
+    product: {
+      id: Joi.number().integer().positive(),
+      naam: Joi.string(),
+      product_informatie: Joi.string().allow(''),
+    },
     limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };
