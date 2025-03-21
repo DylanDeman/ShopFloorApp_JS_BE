@@ -142,7 +142,9 @@ export const getMachineById = async (id: number) => {
 };
 
 export const updateMachineById = async (id: number, changes: MachineUpdateInput) => {
+  // Assuming this function exists elsewhere in your codebase
   updateMachineKPIs();
+
   try {
     const previousMachine = await prisma.machine.findUnique({
       where: { id },
@@ -155,10 +157,30 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
       throw ServiceError.notFound('Machine niet gevonden');
     }
 
-    const updateData: any = {};
+    const {
+      code,
+      locatie,
+      technieker_id, 
+      site_id,
+      product_id,
+      limiet_voor_onderhoud,
+      status,
+      productie_status, 
+    } = changes;
 
-    // If the status is changed, update the status_sinds field
-    if (changes.status !== undefined && previousMachine.status !== changes.status) {
+    // Prepare update data with only defined fields
+    const updateData: any = {};
+    
+    if (code !== undefined) updateData.code = code;
+    if (locatie !== undefined) updateData.locatie = locatie;
+    if (technieker_id !== undefined) updateData.technieker_id = technieker_id;
+    if (product_id !== undefined) updateData.product_id = product_id;
+    if (site_id !== undefined) updateData.site_id = site_id;
+    if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
+    if (status !== undefined) updateData.status = status as Machine_Status;
+    if (productie_status !== undefined) updateData.productie_status = productie_status;
+    
+    if (status !== undefined && previousMachine.status !== status) {
       updateData.status_sinds = new Date();
     }
 
@@ -169,7 +191,7 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
     });
 
     // Create notification if status changed
-    if (changes.status !== undefined && previousMachine.status !== changes.status) {
+    if (status !== undefined && previousMachine.status !== status) {
       await prisma.notificatie.create({
         data: {
           bericht: `Machine ${machine.id} ${machine.status}`,

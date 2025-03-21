@@ -315,7 +315,8 @@ async function seedProducten(aantal: number) {
   const producten: any = [];
   for (let i = 0; i < aantal; i++) {
     producten.push({
-      productie_informatie: faker.commerce.product(),
+      naam: faker.commerce.productName(),
+      product_informatie: faker.commerce.productDescription(),
     });
   }
   return producten;
@@ -335,7 +336,7 @@ async function seedMachines(aantal: number) {
   for (let i = 0; i < aantal; i++) {
     const aantal_goede_producten = faker.number.int({ min: 0, max: 1000 });
     const aantal_slechte_producten = faker.number.int({ min: 0, max: 1000 });
-    const limit_voor_onderhoud = faker.number.int({ min: 0, max: 800 });
+    const limiet_voor_onderhoud = faker.number.int({ min: 0, max: 800 });
     
     // hulp-constanten
     const totaal_producten : number = aantal_goede_producten + aantal_slechte_producten;
@@ -344,7 +345,7 @@ async function seedMachines(aantal: number) {
 
     // Als het limit heeft overschreden, dan is het status altijd nood_onderhoud
     // productie_graad van boven 49% is gezond
-    if(totaal_producten > limit_voor_onderhoud || totaal_producten >= limit_voor_onderhoud){
+    if(totaal_producten > limiet_voor_onderhoud || totaal_producten >= limiet_voor_onderhoud){
       productie_status = Productie_Status.NOOD_ONDERHOUD;
     } else if(productie_graad < 0.50){
       productie_status = Productie_Status.FALEND;
@@ -362,7 +363,7 @@ async function seedMachines(aantal: number) {
       productie_status,
       aantal_goede_producten,
       aantal_slechte_producten,
-      limit_voor_onderhoud,
+      limiet_voor_onderhoud,
     });
   }
   return machines;
@@ -381,7 +382,7 @@ async function seedOnderhouden(aantal: number) {
   for (let i = 0; i < aantal; i++) {
     onderhouden.push({
       machine_id: Number(bestaandeMachines[Math.floor(Math.random() * bestaandeMachines.length)].id),
-      technieker_gebruiker_id:
+      technieker_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
       datum: faker.date.anytime(),
       starttijdstip: faker.date.past(),

@@ -6,7 +6,13 @@ import handleDBError from './_handleDBError';
 const ONDERHOUD_SELECT = {
   id: true,
   machine_id: true,
-  technieker_gebruiker_id: true,
+  technieker: {
+    select: {
+      id: true,
+      voornaam: true,
+      naam: true,
+    },
+  },
   datum: true,
   starttijdstip: true,
   eindtijdstip: true,
@@ -15,32 +21,28 @@ const ONDERHOUD_SELECT = {
   opmerkingen: true,
 };
 
-export const getAllOnderhouden = async (): Promise<{items: Onderhoud[]}> => {
-  const onderhouden = await prisma.onderhoud.findMany();
-
-  return {
-    items: onderhouden.map(
-      (onderhoud) => (
-        {
-          id: onderhoud.id,
-          machine_id: onderhoud.machine_id,
-          technieker_gebruiker_id: onderhoud.technieker_gebruiker_id,
-          datum: onderhoud.datum,
-          starttijdstip: onderhoud.starttijdstip,
-          eindtijdstip: onderhoud.eindtijdstip,
-          reden: onderhoud.reden,
-          status: onderhoud.status,
-          opmerkingen: onderhoud.opmerkingen,
-        }
-      ),
-    ),
-  };
+export const getAllOnderhouden = async (): Promise<Onderhoud[]> => {
+  try {
+    const onderhouden = await prisma.onderhoud.findMany({
+      select: ONDERHOUD_SELECT,
+    });
+    if (!onderhouden.length) {
+      throw ServiceError.notFound('Geen machines gevonden.');
+    }
+    return onderhouden;
+  } catch (error) {
+    if (error instanceof ServiceError) {
+      throw error;
+    }
+    throw handleDBError(error);
+  }
 };
 
 export const getOnderhoudById = async (id: number) => {
   try{
     const onderhoud = await prisma.onderhoud.findUnique({
-      where: { id: id },
+      where: { id },
+      select: ONDERHOUD_SELECT,
     });
   
     if(!onderhoud){
@@ -58,18 +60,8 @@ export const getOnderhoudById = async (id: number) => {
 
 export const createOnderhoud = async (data: OnderhoudCreateInput): Promise<Onderhoud> => {
   try {
-
     const onderhoud = await prisma.onderhoud.create({
-      data: {
-        machine_id: data.machine_id,
-        technieker_gebruiker_id: data.technieker_gebruiker_id,
-        datum: data.datum,
-        starttijdstip: data.starttijdstip,
-        eindtijdstip: data.eindtijdstip,
-        reden: data.reden,
-        status: data.status,
-        opmerkingen: data.opmerkingen,
-      },
+      data,
       select: ONDERHOUD_SELECT,
     });
 

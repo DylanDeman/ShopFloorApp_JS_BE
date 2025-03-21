@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as machineService from '../service/machine';
-import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import type { MachineUpdateInput } from '../types/machine';
 import validate from '../core/validation';
 import type { 
@@ -44,7 +44,7 @@ updateMachineById.validationScheme = {
     status: Joi.string(),
     productie_status: Joi.string(),
     locatie: Joi.string(),
-    technieker_id: Joi.number().integer().positive(),
+    technieker_id: Joi.number().integer().positive().allow(null),
     site_id: Joi.number().integer().positive(),
     product_id: Joi.number().integer().positive(),
     limiet_voor_onderhoud: Joi.number().integer().positive(),

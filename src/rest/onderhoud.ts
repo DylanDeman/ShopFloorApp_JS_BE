@@ -14,11 +14,9 @@ import type { IdParams } from '../types/common';
 import Joi from 'joi';
 
 const getAllOnderhouden = async (ctx: KoaContext<GetAllOnderhoudenReponse>) => {
-
-  const { items } = await onderhoudService.getAllOnderhouden();
-
+  const onderhouden = await onderhoudService.getAllOnderhouden();
   ctx.body = {
-    items,
+    items: onderhouden,
   };
 };
 getAllOnderhouden.validationScheme = null;
@@ -26,7 +24,6 @@ getAllOnderhouden.validationScheme = null;
 const getOnderhoudById = async (ctx: KoaContext<GetOnderhoudByIdResponse, IdParams>) => {
   ctx.body = await onderhoudService.getOnderhoudById(ctx.params.id);
 };
-
 getOnderhoudById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),

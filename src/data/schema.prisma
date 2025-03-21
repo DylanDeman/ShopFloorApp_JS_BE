@@ -89,7 +89,8 @@ model Site {
 
 model Product {
   id                        Int       @id @default(autoincrement()) @db.UnsignedInt
-  productie_informatie      String    @db.VarChar(255)
+  naam                      String    @db.VarChar(255)
+  product_informatie        String    @db.LongText
   machines                  Machine[]
 
   @@map("producten")
@@ -107,7 +108,7 @@ model Machine {
   productie_status          Productie_Status
   aantal_goede_producten    Int              @db.UnsignedInt
   aantal_slechte_producten  Int              @db.UnsignedInt
-  limit_voor_onderhoud      Int              @db.UnsignedInt
+  limiet_voor_onderhoud     Int              @db.UnsignedInt
 
   technieker                Gebruiker        @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
   product                   Product          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
@@ -121,19 +122,19 @@ model Machine {
 }
 
 model Onderhoud {
-  id            Int              @id @default(autoincrement()) @db.UnsignedInt
+  id                      Int              @id @default(autoincrement()) @db.UnsignedInt
   machine_id              Int              @db.UnsignedInt
-  technieker_gebruiker_id Int              @db.UnsignedInt
+  technieker_id           Int              @db.UnsignedInt
   datum                   DateTime         @db.DateTime(0)
   starttijdstip           DateTime         @db.DateTime(0)
   eindtijdstip            DateTime         @db.DateTime(0)
   reden                   String           @db.VarChar(255)
   status                  Onderhoud_Status
   opmerkingen             String           @db.VarChar(255)
-  technieker              Gebruiker        @relation(fields: [technieker_gebruiker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
+  technieker              Gebruiker        @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
   machine                 Machine          @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
-  @@index([technieker_gebruiker_id], map: "fk_gebruiker_onderhoud")
+  @@index([technieker_id], map: "fk_gebruiker_onderhoud")
   @@index([machine_id], map: "fk_machine_onderhoud")
   @@map("onderhouden")
 }
@@ -154,7 +155,7 @@ enum Status {
 
 enum Machine_Status {
   DRAAIT
-  MANUEEL_GESTOPTf
+  MANUEEL_GESTOPT
   AUTOMATISCH_GESTOPT
   IN_ONDERHOUD
   STARTBAAR
