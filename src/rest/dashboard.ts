@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as dashboardService from '../service/dashboard';
-import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import validate from '../core/validation';
 import type { getAllDashboardsResponse, getDashboardByIdResponse, CreateDashboardRequest, CreateDashboardResponse }
   from '../types/dashboard';
@@ -52,7 +52,7 @@ createDashboard.validationScheme = {
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/dashboard',
   });
 

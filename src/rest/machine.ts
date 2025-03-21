@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import * as machineService from '../service/machine';
-import * as onderhoudService from '../service/onderhoud';
-import type { KoaContext, KoaRouter, BudgetAppContext, BudgetAppState } from '../types/koa';
+import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
+import type { MachineUpdateInput } from '../types/machine';
 import validate from '../core/validation';
 import type { 
   getMachineByIdResponse, 
@@ -15,10 +15,8 @@ import { requireAuthentication } from '../core/auth';
 
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
   const machines = await machineService.getAllMachines();
-  const onderhoud = await onderhoudService.getAllOnderhouden();
   ctx.body = {
     items: machines,
-    onderhoud: onderhoud.items,
   };
 };
 getAllMachines.validationScheme = null;
@@ -33,21 +31,23 @@ getMachineById.validationScheme = {
 };
 
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
+  const updatedMachine = await machineService.updateMachineById(ctx.params.id, ctx.request.body as MachineUpdateInput);
+  ctx.status = 200;
+  ctx.body = updatedMachine;
 };
 updateMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
   },
   body: {
-    // site_id: Joi.number().integer().positive(),
-    product_id: Joi.number().integer().positive(),
-    technieker_gebruiker_id: Joi.number().integer().positive(),
     code: Joi.string(),
-    locatie: Joi.string(),
     status: Joi.string(),
     productie_status: Joi.string(),
-    product_informatie: Joi.string().allow('').optional(), 
+    locatie: Joi.string(),
+    technieker_id: Joi.number().integer().positive().allow(null),
+    site_id: Joi.number().integer().positive(),
+    product_id: Joi.number().integer().positive(),
+    limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };
 
@@ -64,14 +64,14 @@ createMachine.validationScheme = {
     code: Joi.string().max(255).required(),
     locatie: Joi.string().max(255).required(),
     status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
-      'AUTMATISCH_GESTOPT', 'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
+      'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
     product_informatie: Joi.string().allow('').optional(),
   },
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<BudgetAppState, BudgetAppContext>({
+  const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/machines',
   });
 
