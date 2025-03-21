@@ -8,7 +8,7 @@ import type {
   SiteUpdateInput, 
   UpdateSiteResponse, 
 } from '../types/site';
-import { Status } from '@prisma/client'; 
+import { Machine_Status, Status } from '@prisma/client'; 
 
 // Wat je wilt dat je krijgt als je een site opvraagt:
 const SITE_SELECT = {
@@ -41,10 +41,7 @@ const SITE_SELECT = {
 
 export const getAllSites = async(): Promise<Site[]> => {
   try {
-    // We gaan enkel actieve sites ophalen
-    const filters = { status: Status.ACTIEF }; 
     const sites = await prisma.site.findMany({
-      where: filters,
       select: SITE_SELECT,
     });
 
@@ -125,9 +122,25 @@ export const createSite = async (data: SiteCreateInput): Promise<Site> => {
 
 export const updateSiteById = async (id: number, changes: SiteUpdateInput): Promise<UpdateSiteResponse> => {
   try {
-    // Check of Status een geldige waarde is
-    if (!Object.values(Status).includes(changes.status as Status)) {
-      throw new Error('Invalid status');
+    const prevStatusSite = await prisma.site.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+
+    // Als de site niet bestaat, gooi een error
+    if(!prevStatusSite) {
+      throw new Error('Site not found.');
+    }
+
+    // Check of de status van de site is veranderd
+    if (changes.status && changes.status !== prevStatusSite.status) {
+      // Als de status is veranderd naar INACTIEF, moeten ook alle machines op INACTIEF worden gezet
+      if (changes.status === 'INACTIEF') {
+        await prisma.machine.updateMany({
+          where: { site_id: id },
+          data: { status: Machine_Status.AUTOMATISCH_GESTOPT },
+        });
+      }
     }
 
     // Site updaten:
