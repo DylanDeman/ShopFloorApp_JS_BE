@@ -5,7 +5,7 @@ export default {
     disabled: false,
   },
   cors: {
-    origins: ['http://localhost:5173'],
+    origins: ['http://localhost:5173', 'http://192.168.1.146:5173'],
     maxAge: 3 * 60 * 60,
   },
   auth: {
@@ -16,8 +16,8 @@ export default {
       memoryCost: 2 ** 17,
     },
     jwt: {
-      audience: 'budget.hogent.be',
-      issuer: 'budget.hogent.be',
+      audience: 'shopfloorapp.hogent.be',
+      issuer: 'shopfloorapp.hogent.be',
     },
   },
 };

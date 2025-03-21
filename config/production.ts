@@ -1,10 +1,10 @@
 export default {
-  log: {
-    level: 'info',
-    disabled: false,
-  },
   cors: {
-    origins: ['http://localhost:5173'],
-    maxAge: 3 * 60 * 60,
+    origins: ['https://novafox.duckdns.org/api/shopfloor_app'],
+  },
+  auth: {
+    jwt: {
+      expirationInterval: 7*24*60*60,
+    },
   },
 };
