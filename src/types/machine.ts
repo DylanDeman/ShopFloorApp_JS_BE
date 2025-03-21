@@ -2,6 +2,7 @@ import type { Entity, ListResponse } from './common';
 import type { User } from './user';
 import type { Site } from './site';
 import type { Onderhoud } from './onderhoud';
+import type { Product } from './product';
 
 // Types voor SERVICE-LAAG
 export interface Machine extends Entity {
@@ -14,6 +15,7 @@ export interface Machine extends Entity {
   aantal_slechte_producten: number;
   limiet_voor_onderhoud: number;
   technieker: Pick<User, 'id' |'voornaam' | 'naam'>;
+  product: Pick<Product, 'id' | 'naam' | 'product_informatie'>;
   site: Pick<Site, 'id' | 'naam' | 'verantwoordelijke'>;
   onderhouden: Onderhoud[];
 }

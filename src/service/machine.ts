@@ -35,6 +35,7 @@ const SELECT_MACHINE = {
     select: {
       id: true,
       naam: true,
+      product_informatie: true,
     },
   },
   onderhouden: {

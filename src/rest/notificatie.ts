@@ -9,9 +9,7 @@ import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
 const getAllNotificaties = async (ctx: KoaContext<GetAllNotificatiesResponse>) => {
-
   const { items, total } = await notificatieService.getAllNotificaties();
-
   ctx.body = {
     items,
     total,

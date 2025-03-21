@@ -98,17 +98,18 @@ model Product {
 
 model Machine {
   id                        Int              @id @default(autoincrement()) @db.UnsignedInt
-  status_sinds              DateTime
-  site_id                   Int              @db.UnsignedInt
-  product_id                Int              @db.UnsignedInt
-  technieker_id             Int              @db.UnsignedInt
   code                      String           @db.VarChar(255)
   locatie                   String           @db.VarChar(255)
   status                    Machine_Status
+  status_sinds              DateTime
   productie_status          Productie_Status
   aantal_goede_producten    Int              @db.UnsignedInt
   aantal_slechte_producten  Int              @db.UnsignedInt
   limiet_voor_onderhoud     Int              @db.UnsignedInt
+ 
+  technieker_id             Int              @db.UnsignedInt
+  site_id                   Int              @db.UnsignedInt
+  product_id                Int              @db.UnsignedInt
 
   technieker                Gebruiker        @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
   product                   Product          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
