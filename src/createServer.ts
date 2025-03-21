@@ -5,6 +5,8 @@ import { getLogger } from './core/logging';
 import { initializeData, shutdownData } from './data';
 import installMiddlewares from './core/installMiddleware';
 import installRest from './rest';
+import { startProductionSimulation } from './productionSimulation';
+
 import type {
   KoaApplication,
   ShopfloorAppContext,
@@ -35,6 +37,8 @@ export default async function createServer(): Promise<Server> {
       return new Promise<void>((resolve) => {
         app.listen(PORT, () => {
           getLogger().info(`🚀 Server listening on http://localhost:${PORT}`);
+
+          startProductionSimulation();
           resolve();
         });
       });

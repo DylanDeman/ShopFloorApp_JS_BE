@@ -336,7 +336,7 @@ async function seedMachines(aantal: number) {
   for (let i = 0; i < aantal; i++) {
     const aantal_goede_producten = faker.number.int({ min: 0, max: 1000 });
     const aantal_slechte_producten = faker.number.int({ min: 0, max: 1000 });
-    const limiet_voor_onderhoud = faker.number.int({ min: 500, max: 950 });
+    const limiet_voor_onderhoud = faker.number.int({ min: 500, max: 20000 });
     
     // hulp-constanten
     const totaal_producten : number = aantal_goede_producten + aantal_slechte_producten;
