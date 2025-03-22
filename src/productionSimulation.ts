@@ -1,5 +1,5 @@
 import type {Productie_Status} from '@prisma/client';
-import type { Machine_Status} from '@prisma/client';
+import { Machine_Status} from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -26,7 +26,7 @@ async function simulateProduction() {
 }
 
 // Omdat prisma geen triggers ondersteunt, hebben we een functie hiervoor geschreven:
-// Automatisch stoppen van machine bij 'NOOD_ONDERHOUD'
+// Automatisch stoppen van machines (enkel die draaiend zijn) bij 'NOOD_ONDERHOUD'
 async function updateMachineStatus(machineId: number) {
   const machine = await prisma.machine.findUnique({ where: { id: machineId } });
 
@@ -38,7 +38,8 @@ async function updateMachineStatus(machineId: number) {
   let status = machine.status;
   let productie_status = machine.productie_status;
 
-  if (totaal_producten >= machine.limiet_voor_onderhoud) {
+  if (totaal_producten >= machine.limiet_voor_onderhoud 
+    && status === Machine_Status.DRAAIT) {
     productie_status = 'NOOD_ONDERHOUD';
     // Automatisch stoppen van machine:
     status = 'AUTOMATISCH_GESTOPT';
@@ -47,6 +48,7 @@ async function updateMachineStatus(machineId: number) {
   } else {
     productie_status = 'GEZOND';
   }
+
   await prisma.machine.update({
     where: { id: machineId },
     data: { 
