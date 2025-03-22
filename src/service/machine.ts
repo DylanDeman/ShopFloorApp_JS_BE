@@ -228,11 +228,17 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
 
 export const updateMachineKPIs = async () => {
   try {
-
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Laatste 5 onderhoudsbeurten
+    await prisma.kPIWaarde.deleteMany({
+      where: {
+        datum: {
+          lt: today,
+        },
+      },
+    });
 
     //Algemene gezondheid per site
     const machinesPerSite = await prisma.machine.groupBy({
@@ -271,17 +277,16 @@ export const updateMachineKPIs = async () => {
     const totaalSites = kpiDataPerSite.length;
     const algemeneGezondheid = totaalSites === 0 ? '0' : (totaalGezond / totaalSites).toFixed(2);
 
-    await prisma.kPIWaarde.create({
-      data: {
-        kpi: {
-          connect: {
-            id: getKPIidPerStatus('ALGEMENE_GEZONDHEID'),
-          },
-        },
-        datum: today,
-        waarde: algemeneGezondheid,
-        site_id: null,
-      },
+    const KPI_data_algemeneGezondheid = {
+      kpi_id: getKPIidPerStatus('ALGEMENE_GEZONDHEID'),
+      datum: today,
+      waarde: algemeneGezondheid,
+      site_id: null,
+    };
+
+    await prisma.kPIWaarde.createMany({
+      data: KPI_data_algemeneGezondheid,
+      skipDuplicates: true,
     });
 
     // Machines per status
@@ -321,6 +326,30 @@ export const updateMachineKPIs = async () => {
 
     await prisma.kPIWaarde.createMany({
       data: aankomendeOnderhoudsbeurtenKPIData,
+      skipDuplicates: true,
+    });
+
+    // Laatste 5 onderhoudsbeurten
+    const laatsteOnderhouden = await prisma.onderhoud.findMany({
+      select: {
+        id: true,
+      },
+      orderBy: {
+        datum: 'desc',
+      },
+      take: 5,
+    });
+
+    const laatsteOnderhoudIds = laatsteOnderhouden.map((onderhoud) => onderhoud.id);
+
+    const laatste5OnderhoudenKPIData = [{
+      kpi_id: getKPIidPerStatus('LAATSTEONDERHOUDEN'),
+      datum: today,
+      waarde: laatsteOnderhoudIds.join(','),
+    }];
+
+    await prisma.kPIWaarde.createMany({
+      data: laatste5OnderhoudenKPIData,
       skipDuplicates: true,
     });
 
