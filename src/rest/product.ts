@@ -20,7 +20,7 @@ const getProductById = async(ctx: KoaContext<GetProductByIdResponse, IdParams>) 
   const {id} = ctx.params;
   const product = await productService.getProductById(Number(id));
   ctx.status = 200;
-  ctx.body = {product};
+  ctx.body = {id: product!.id, naam: product!.naam, product_informatie: product!.product_informatie};
 };
 getProductById.validationScheme = {
   params: {

@@ -8,6 +8,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
       select: {
         id: true,  
         naam: true,
+        product_informatie: true,
       },
     });
   } catch (error) {
@@ -23,6 +24,7 @@ export const getProductById = async (id: number): Promise<Product | null> => {
       select: {
         id: true,  // Select the necessary fields
         naam: true,
+        product_informatie: true,
       },
     });
   } catch (error) {
