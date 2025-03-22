@@ -33,7 +33,7 @@ CREATE TABLE `kpis` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `onderwerp` VARCHAR(191) NOT NULL,
     `roles` JSON NOT NULL,
-    `grafiek` ENUM('LINE', 'BAR', 'SINGLE', 'LIST', 'TOP5', 'SITES', 'TOP5OND') NOT NULL,
+    `grafiek` ENUM('LINE', 'BARHOOGLAAG', 'BARLAAGHOOG', 'SINGLE', 'LIST', 'TOP5', 'SITES', 'TOP5OND', 'AANKOND', 'GEZONDHEID', 'MACHLIST') NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -84,17 +84,17 @@ CREATE TABLE `producten` (
 -- CreateTable
 CREATE TABLE `machines` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    `status_sinds` DATETIME(3) NOT NULL,
-    `site_id` INTEGER UNSIGNED NOT NULL,
-    `product_id` INTEGER UNSIGNED NOT NULL,
-    `technieker_id` INTEGER UNSIGNED NOT NULL,
     `code` VARCHAR(255) NOT NULL,
     `locatie` VARCHAR(255) NOT NULL,
     `status` ENUM('DRAAIT', 'MANUEEL_GESTOPT', 'AUTOMATISCH_GESTOPT', 'IN_ONDERHOUD', 'STARTBAAR') NOT NULL,
+    `status_sinds` DATETIME(3) NOT NULL,
     `productie_status` ENUM('GEZOND', 'NOOD_ONDERHOUD', 'FALEND') NOT NULL,
     `aantal_goede_producten` INTEGER UNSIGNED NOT NULL,
     `aantal_slechte_producten` INTEGER UNSIGNED NOT NULL,
     `limiet_voor_onderhoud` INTEGER UNSIGNED NOT NULL,
+    `technieker_id` INTEGER UNSIGNED NOT NULL,
+    `site_id` INTEGER UNSIGNED NOT NULL,
+    `product_id` INTEGER UNSIGNED NOT NULL,
 
     INDEX `fk_gebruiker_machine`(`technieker_id`),
     INDEX `fk_product_machine`(`product_id`),

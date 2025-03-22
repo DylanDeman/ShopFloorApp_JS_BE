@@ -2,7 +2,7 @@ import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
-import { getKPIidPerStatus } from './kpi';
+import { getKPIid } from './kpi';
 import { Machine_Status, Productie_Status } from '@prisma/client';
 import type { Machine, MachineCreateInput, MachineUpdateInput } from '../types/machine';
 import { getLogger } from '../core/logging';
@@ -97,7 +97,7 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
     if (technieker.rol !== 'TECHNIEKER') {
       throw new Error('The gebruiker is not a valid TECHNIEKER.');
     }
-    
+
     // Create the machine
     const machine = await prisma.machine.create({
       data: {
@@ -169,38 +169,38 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
       product,
       limiet_voor_onderhoud,
       status,
-      productie_status, 
+      productie_status,
     } = changes;
 
     // Prepare update data with only defined fields
     const updateData: any = {};
-    
+
     if (code !== undefined) updateData.code = code;
     if (locatie !== undefined) updateData.locatie = locatie;
     if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
     if (status !== undefined) updateData.status = status as Machine_Status;
     if (productie_status !== undefined) updateData.productie_status = productie_status;
-    
+
     if (technieker_id !== undefined) {
       updateData.technieker = {
         connect: { id: technieker_id },
       };
     }
-    
+
     if (site_id !== undefined) {
       updateData.site = {
         connect: { id: site_id },
       };
     }
-    
+
     if (product !== undefined) {
       updateData.product = {
-        connect: { 
+        connect: {
           id: product.id,
         },
       };
     }
-    
+
     if (status !== undefined && previousMachine.status !== status) {
       updateData.status_sinds = new Date();
     }
@@ -228,16 +228,55 @@ export const updateMachineById = async (id: number, changes: MachineUpdateInput)
 
 export const updateMachineKPIs = async () => {
   try {
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    await prisma.kPIWaarde.deleteMany({
-      where: {
-        datum: {
-          lt: today,
-        },
+    await prisma.kPIWaarde.deleteMany({});
+
+    // Productiegraad per site
+    const productieDataPerSite = await prisma.machine.groupBy({
+      by: ['site_id'],
+      _sum: {
+        aantal_goede_producten: true,
+        aantal_slechte_producten: true,
       },
+    });
+
+    const kpiDataProductiegraad = productieDataPerSite.map(({ site_id, _sum }) => {
+      const goedeProducten = _sum.aantal_goede_producten || 0;
+      const slechteProducten = _sum.aantal_slechte_producten || 0;
+      const totaalProducten = goedeProducten + slechteProducten;
+
+      const productiegraad = totaalProducten === 0 ? 0 : goedeProducten / totaalProducten;
+
+      return {
+        site_id,
+        productiegraad,
+      };
+    });
+
+    const kpiDataHoogLaag = [...kpiDataProductiegraad]
+      .sort((a, b) => b.productiegraad - a.productiegraad)
+      .map(({ site_id, productiegraad }) => ({
+        kpi_id: getKPIid('PRODUCTIEGRAADHOOGLAAG'),
+        datum: today,
+        waarde: productiegraad.toFixed(2),
+        site_id: `${site_id}`,
+      }));
+
+    const kpiDataLaagHoog = [...kpiDataProductiegraad]
+      .sort((a, b) => a.productiegraad - b.productiegraad)
+      .map(({ site_id, productiegraad }) => ({
+        kpi_id: getKPIid('PRODUCTIEGRAADLAAGHOOG'),
+        datum: today,
+        waarde: productiegraad.toFixed(2),
+        site_id: `${site_id}`,
+      }));
+
+    await prisma.kPIWaarde.createMany({
+      data: [...kpiDataHoogLaag, ...kpiDataLaagHoog],
+      skipDuplicates: true,
     });
 
     //Algemene gezondheid per site
@@ -261,7 +300,7 @@ export const updateMachineKPIs = async () => {
     });
 
     const kpiDataPerSite = Object.entries(siteHealthData).map(([site_id, { gezond, falend }]) => ({
-      kpi_id: getKPIidPerStatus('SITE_GEZONDHEID'),
+      kpi_id: getKPIid('SITE_GEZONDHEID'),
       datum: today,
       waarde: falend === 0 ? '1' : (gezond / falend),
       site_id: site_id,
@@ -278,7 +317,7 @@ export const updateMachineKPIs = async () => {
     const algemeneGezondheid = totaalSites === 0 ? '0' : (totaalGezond / totaalSites).toFixed(2);
 
     const KPI_data_algemeneGezondheid = {
-      kpi_id: getKPIidPerStatus('ALGEMENE_GEZONDHEID'),
+      kpi_id: getKPIid('ALGEMENE_GEZONDHEID'),
       datum: today,
       waarde: algemeneGezondheid,
       site_id: null,
@@ -296,7 +335,7 @@ export const updateMachineKPIs = async () => {
     });
 
     const KPI_data_machinesPerStatus = machinesPerStatus.map((statusgroep) => ({
-      kpi_id: getKPIidPerStatus(statusgroep.status),
+      kpi_id: getKPIid(statusgroep.status),
       datum: today,
       waarde: statusgroep._count.id.toString(),
       site_id: null,
@@ -319,7 +358,7 @@ export const updateMachineKPIs = async () => {
     const onderhoudIds = aankomendeOnderhoudsbeurten.map((onderhoud) => onderhoud.id);
 
     const aankomendeOnderhoudsbeurtenKPIData = [{
-      kpi_id: getKPIidPerStatus('AANKOMEND_ONDERHOUD'),
+      kpi_id: getKPIid('AANKOMEND_ONDERHOUD'),
       datum: today,
       waarde: onderhoudIds.join(','),
     }];
@@ -343,7 +382,7 @@ export const updateMachineKPIs = async () => {
     const laatsteOnderhoudIds = laatsteOnderhouden.map((onderhoud) => onderhoud.id);
 
     const laatste5OnderhoudenKPIData = [{
-      kpi_id: getKPIidPerStatus('LAATSTEONDERHOUDEN'),
+      kpi_id: getKPIid('LAATSTEONDERHOUDEN'),
       datum: today,
       waarde: laatsteOnderhoudIds.join(','),
     }];
@@ -374,7 +413,7 @@ export const updateMachineKPIs = async () => {
 
     const KPI_data_machinesPerProductieStatus = Object.entries(machinesPerProductieStatusGrouped).map(
       ([productieStatus, ids]) => ({
-        kpi_id: getKPIidPerStatus(productieStatus),
+        kpi_id: getKPIid(productieStatus),
         datum: today,
         waarde: ids.join(','),
         site_id: null,

@@ -98,13 +98,13 @@ async function seedKPIs() {
   const MNGR_KPI_3 = {
     onderwerp: 'Productiegraad alle sites gesorteerd (hoog naar laag)',
     roles: Rol.MANAGER,
-    grafiek: Grafiek.BAR,
+    grafiek: Grafiek.BARHOOGLAAG,
   };
 
   const MNGR_KPI_4 = {
     onderwerp: 'Productiegraad alle sites gesorteerd (laag naar hoog)',
     roles: Rol.MANAGER,
-    grafiek: Grafiek.BAR,
+    grafiek: Grafiek.BARLAAGHOOG,
   };
 
   KPIs.push(MNGR_KPI_1, MNGR_KPI_2, MNGR_KPI_3, MNGR_KPI_4);
@@ -337,29 +337,29 @@ async function seedMachines(aantal: number) {
     const aantal_goede_producten = faker.number.int({ min: 0, max: 1000 });
     const aantal_slechte_producten = faker.number.int({ min: 0, max: 1000 });
     const limiet_voor_onderhoud = faker.number.int({ min: 500, max: 20000 });
-    
+
     // hulp-constanten
-    const totaal_producten : number = aantal_goede_producten + aantal_slechte_producten;
-    const productie_graad : number = aantal_goede_producten/totaal_producten;
+    const totaal_producten: number = aantal_goede_producten + aantal_slechte_producten;
+    const productie_graad: number = aantal_goede_producten / totaal_producten;
     let productie_status: Productie_Status = Productie_Status.GEZOND;
-    let status : Machine_Status = 
+    let status: Machine_Status =
       [
-        Machine_Status.DRAAIT, 
-        Machine_Status.MANUEEL_GESTOPT, 
-        Machine_Status.IN_ONDERHOUD, 
+        Machine_Status.DRAAIT,
+        Machine_Status.MANUEEL_GESTOPT,
+        Machine_Status.IN_ONDERHOUD,
         Machine_Status.STARTBAAR][Math.floor(Math.random() * 4)] as Machine_Status;
-    
+
     // Als het limit heeft overschreden, dan is het status altijd nood_onderhoud
     // productie_graad van boven 49% is gezond
-    if(totaal_producten > limiet_voor_onderhoud || totaal_producten >= limiet_voor_onderhoud){
+    if (totaal_producten > limiet_voor_onderhoud || totaal_producten >= limiet_voor_onderhoud) {
       productie_status = Productie_Status.NOOD_ONDERHOUD;
       status = Machine_Status.AUTOMATISCH_GESTOPT;
-    } else if(productie_graad > 0.50){
+    } else if (productie_graad > 0.50) {
       productie_status = Productie_Status.FALEND;
     }
-    
+
     machines.push({
-      status_sinds: faker.date.past({years: 0.5}), // elke 6 maanden automatisch stop voor onderhoud
+      status_sinds: faker.date.past({ years: 0.5 }), // elke 6 maanden automatisch stop voor onderhoud
       site_id: Number(bestaandeSites[Math.floor(Math.random() * bestaandeSites.length)].id),
       product_id: Number(bestaansdeProducten[Math.floor(Math.random() * bestaansdeProducten.length)].id),
       technieker_id:
