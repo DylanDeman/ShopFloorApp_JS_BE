@@ -232,13 +232,7 @@ export const updateMachineKPIs = async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    await prisma.kPIWaarde.deleteMany({
-      where: {
-        datum: {
-          lt: today,
-        },
-      },
-    });
+    await prisma.kPIWaarde.deleteMany({});
 
     // Productiegraad per site
     const productieDataPerSite = await prisma.machine.groupBy({
