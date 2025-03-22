@@ -46,6 +46,7 @@ describe('Sites API', () => {
       data: {
         id: 1,
         naam: 'Test Product',
+        product_informatie: 'test informatie',
       },
     });
     
@@ -54,12 +55,15 @@ describe('Sites API', () => {
         id: 1,
         code: 'MACHINE123',
         locatie: 'Test Location',
-        product_informatie: 'Product info for machine',
         status: Machine_Status.DRAAIT,
         productie_status: Productie_Status.GEZOND,
         site_id: 1,
         product_id: 1,
-        technieker_gebruiker_id: 1,
+        technieker_id: 1,
+        status_sinds: '2025-03-11T08:36:39.975Z',
+        aantal_goede_producten: 568,
+        aantal_slechte_producten: 890,
+        limiet_voor_onderhoud: 21000,
       },
     });
   });

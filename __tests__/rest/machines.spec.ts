@@ -70,6 +70,7 @@ describe('Machines API', () => {
       data: {
         id: 1,
         naam: 'Test Product',
+        product_informatie: 'Test product informatie',
       },
     });
 
@@ -77,12 +78,15 @@ describe('Machines API', () => {
       data: {
         code: 'MACHINE123',
         locatie: 'Test Location',
-        product_informatie: 'Product info for machine',
         status: Machine_Status.DRAAIT,
         productie_status: Productie_Status.GEZOND,
         site_id: 1,
         product_id: 1,
-        technieker_gebruiker_id: 1,
+        technieker_id: 1,
+        aantal_goede_producten: 596,
+        status_sinds: '2025-03-11T08:36:39.975Z',
+        aantal_slechte_producten: 678,
+        limiet_voor_onderhoud: 21407,
       },
     });
 
@@ -93,7 +97,7 @@ describe('Machines API', () => {
           admin: true,
           user: false,
         },
-        grafiek: 'BAR',
+        grafiek: 'LINE',
       },
     });
 
