@@ -13,6 +13,6 @@ export default {
         url: 'https://spdx.org/licenses/MIT.html',
       },
     },
-    servers: [{ url: 'http://localhost:9000/' }, {url: 'https://novafox.duckdns.org/'}],
+    servers: [{ url: 'http://localhost:9000/' }, {url: 'https://novafox.duckdns.org/shopfloor_app/api/'}],
   },
 };
