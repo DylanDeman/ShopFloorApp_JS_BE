@@ -98,7 +98,7 @@ export default function installMiddlewares(app: KoaApplication) {
     }
   });
 
-  if (isDevelopment) {
+ // if (isDevelopment) {
     const spec = swaggerJsdoc(swaggerOptions) as Record<string, unknown>;
   
     app.use(
@@ -109,7 +109,7 @@ export default function installMiddlewares(app: KoaApplication) {
         swaggerOptions: { spec },
       }),
     );
-  }
+  //}
   
   app.use(async (ctx: any, next: any) => {
     await next();
