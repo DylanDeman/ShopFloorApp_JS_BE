@@ -14,7 +14,6 @@ export interface SiteCreateInput {
   naam: string;
   status: string;
   verantwoordelijke_id: number;
-  machines_ids: number[];
 }
 
 export interface SiteUpdateInput extends SiteCreateInput {}

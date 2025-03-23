@@ -107,9 +107,6 @@ export const createSite = async (data: SiteCreateInput): Promise<Site> => {
         naam: data.naam,
         verantwoordelijke_id: data.verantwoordelijke_id,
         status: data.status as Status,
-        machines: {
-          connect: data.machines_ids.map((machineId) => ({ id: machineId })),
-        },
       },
       select: SITE_SELECT,
     });
@@ -152,9 +149,6 @@ export const updateSiteById = async (id: number, changes: SiteUpdateInput): Prom
         naam: changes.naam,
         verantwoordelijke_id: changes.verantwoordelijke_id,
         status: changes.status as Status, 
-        machines: {
-          set: changes.machines_ids.map((machineId) => ({ id: machineId })),
-        },
       },
       select: SITE_SELECT,
     });
