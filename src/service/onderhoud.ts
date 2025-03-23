@@ -58,6 +58,51 @@ export const getOnderhoudById = async (id: number) => {
   }
 };
 
+export const updateOnderhoudById = async (
+  id: number,
+  {
+    machine_id,
+    datum,
+    starttijdstip,
+    eindtijdstip,
+    reden,
+    status,
+    opmerkingen,
+    technieker_id,
+  }: any,
+) => {
+  try {
+    const technieker = await prisma.gebruiker.findUnique({
+      where: { id: technieker_id },
+    });
+
+    if (!technieker) {
+      throw ServiceError.notFound(`Technieker with id ${technieker_id} not found`);
+    }
+
+    const onderhoud = await prisma.onderhoud.update({
+      where: { id },
+      data: {
+        machine_id,
+        technieker_id,
+        datum,
+        starttijdstip,
+        eindtijdstip,
+        reden,
+        status,
+        opmerkingen,
+      },
+      include: {
+        technieker: true,
+      },
+    });
+
+    return onderhoud;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
 export const createOnderhoud = async (data: OnderhoudCreateInput): Promise<Onderhoud> => {
   try {
     const onderhoud = await prisma.onderhoud.create({
@@ -68,5 +113,17 @@ export const createOnderhoud = async (data: OnderhoudCreateInput): Promise<Onder
     return onderhoud;
   } catch (error) {
     throw handleDBError(error); 
+  }
+};
+
+export const deleteById = async (id: number): Promise<void> => {
+  try {
+    await prisma.onderhoud.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    throw handleDBError(error);
   }
 };

@@ -48,6 +48,36 @@ createOnderhoud.validationScheme = {
   },
 };
 
+const updateOnderhoudById = async (ctx: KoaContext<GetOnderhoudByIdResponse, IdParams>) => {
+  ctx.body = await onderhoudService.updateOnderhoudById(ctx.params.id, ctx.request.body);
+};
+
+updateOnderhoudById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body: {
+    machine_id: Joi.number().integer().positive(),
+    technieker_id: Joi.number().integer().positive(),
+    datum: Joi.date(),
+    starttijdstip: Joi.date(),
+    eindtijdstip: Joi.date(),
+    reden: Joi.string(),
+    status: Joi.string(),
+    opmerkingen: Joi.string(),
+  },
+};
+
+const deleteOnderhoud = async (ctx: KoaContext<void, IdParams>) => {
+  await onderhoudService.deleteById(ctx.params.id);
+  ctx.status = 204;
+};
+deleteOnderhoud.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
 export default function installOnderhoudRoutes(parent: KoaRouter) {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/onderhouden',
@@ -59,9 +89,12 @@ export default function installOnderhoudRoutes(parent: KoaRouter) {
 
   router.get('/:id', validate(getOnderhoudById.validationScheme), getOnderhoudById);
 
+  router.put('/:id', validate(updateOnderhoudById.validationScheme), updateOnderhoudById);
+
   router.post('/', validate(createOnderhoud.validationScheme), createOnderhoud);
+
+  router.delete('/:id', validate(deleteOnderhoud.validationScheme), deleteOnderhoud);
 
   parent.use(router.routes())
     .use(router.allowedMethods());
 };
-
