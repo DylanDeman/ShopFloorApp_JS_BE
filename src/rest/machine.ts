@@ -1,7 +1,6 @@
 import Router from '@koa/router';
 import * as machineService from '../service/machine';
 import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
-import type { MachineUpdateInput } from '../types/machine';
 import validate from '../core/validation';
 import type { 
   getMachineByIdResponse, 
@@ -13,14 +12,50 @@ import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Machines
+ *   description: API endpoints for managing machines
+ */
+
+/**
+ * @swagger
+ * /machines:
+ *   get:
+ *     summary: Get all machines
+ *     tags: [Machines]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of machines
+ */
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
-  const machines = await machineService.getAllMachines();
   ctx.body = {
-    items: machines,
+    items: await machineService.getAllMachines(),
   };
 };
 getAllMachines.validationScheme = null;
 
+/**
+ * @swagger
+ * /machines/{id}:
+ *   get:
+ *     summary: Get machine by ID
+ *     tags: [Machines]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Machine data
+ */
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.getMachineById(ctx.params.id);
 };
@@ -30,31 +65,43 @@ getMachineById.validationScheme = {
   },
 };
 
-const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  const updatedMachine = await machineService.updateMachineById(ctx.params.id, ctx.request.body as MachineUpdateInput);
-  ctx.status = 200;
-  ctx.body = updatedMachine;
-};
-updateMachineById.validationScheme = {
-  params: {
-    id: Joi.number().integer().positive(),
-  },
-  body: {
-    code: Joi.string(),
-    status: Joi.string(),
-    productie_status: Joi.string(),
-    locatie: Joi.string(),
-    technieker_id: Joi.number().integer().positive().allow(null),
-    site_id: Joi.number().integer().positive(),
-    product: {
-      id: Joi.number().integer().positive(),
-      naam: Joi.string(),
-      product_informatie: Joi.string().allow(''),
-    },
-    limiet_voor_onderhoud: Joi.number().integer().positive(),
-  },
-};
-
+/**
+ * @swagger
+ * /machines:
+ *   post:
+ *     summary: Create a new machine
+ *     tags: [Machines]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               site_id:
+ *                 type: integer
+ *               product_id:
+ *                 type: integer
+ *               technieker_gebruiker_id:
+ *                 type: integer
+ *               code:
+ *                 type: string
+ *               locatie:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
+ *               productie_status:
+ *                 type: string
+ *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
+ *               product_informatie:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Created machine data
+ */
 const createMachine = async(ctx: KoaContext<CreateMachineResponse, void, CreateMachineRequest>) => {
   const newMachine = await machineService.createMachine(ctx.request.body);
   ctx.status = 201;
@@ -91,13 +138,6 @@ export default (parent: KoaRouter) => {
     requireAuthentication,
     validate(getMachineById.validationScheme), 
     getMachineById,
-  );
-
-  router.put(
-    '/:id', 
-    requireAuthentication,
-    validate(updateMachineById.validationScheme),
-    updateMachineById,
   );
   
   router.post(
