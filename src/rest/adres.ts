@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import Joi from 'joi';
 import * as adresService from '../service/adres';
-import type { ShopfloorAppContext, ShopfloorAppState} from '../types/koa';
+import type { ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   CreateAdresRequest,
@@ -15,14 +15,91 @@ import type { IdParams } from '../types/common';
 import validate from '../core/validation';
 import { requireAuthentication } from '../core/auth';
 
+/**
+ * @swagger
+ * /api/adres:
+ *   get:
+ *     summary: Get all addresses
+ *     tags: [Adres]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all addresses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       straat:
+ *                         type: string
+ *                       huisnummer:
+ *                         type: string
+ *                       stadsnaam:
+ *                         type: string
+ *                       postcode:
+ *                         type: string
+ *                       land:
+ *                         type: string
+ */
 const getAllAdresses = async (ctx: KoaContext<GetAllAdressesReponse>) => {
   ctx.body = {
-    items: await adresService.getAll(
-    ),
+    items: await adresService.getAll(),
   };
 };
 getAllAdresses.validationScheme = null;
 
+/**
+ * @swagger
+ * /api/adres:
+ *   post:
+ *     summary: Create a new address
+ *     tags: [Adres]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               straat:
+ *                 type: string
+ *               huisnummer:
+ *                 type: string
+ *               stadsnaam:
+ *                 type: string
+ *               postcode:
+ *                 type: string
+ *               land:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Address created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 straat:
+ *                   type: string
+ *                 huisnummer:
+ *                   type: string
+ *                 stadsnaam:
+ *                   type: string
+ *                 postcode:
+ *                   type: string
+ *                 land:
+ *                   type: string
+ */
 const createAdres = async (ctx: KoaContext<CreateAdresResponse, void, CreateAdresRequest>) => {
   const newAdres = await adresService.create({
     ...ctx.request.body,
@@ -40,10 +117,43 @@ createAdres.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/adres/{id}:
+ *   get:
+ *     summary: Get address by ID
+ *     tags: [Adres]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Address details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 straat:
+ *                   type: string
+ *                 huisnummer:
+ *                   type: string
+ *                 stadsnaam:
+ *                   type: string
+ *                 postcode:
+ *                   type: string
+ *                 land:
+ *                   type: string
+ */
 const getAdresById = async (ctx: KoaContext<GetAdresByIdResponse, IdParams>) => {
-  ctx.body = await adresService.getById(
-    ctx.params.id,
-  );
+  ctx.body = await adresService.getById(ctx.params.id);
 };
 getAdresById.validationScheme = {
   params: {
@@ -51,11 +161,63 @@ getAdresById.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/adres/{id}:
+ *   put:
+ *     summary: Update address by ID
+ *     tags: [Adres]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               straat:
+ *                 type: string
+ *               huisnummer:
+ *                 type: string
+ *               stadsnaam:
+ *                 type: string
+ *               postcode:
+ *                 type: string
+ *               land:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 straat:
+ *                   type: string
+ *                 huisnummer:
+ *                   type: string
+ *                 stadsnaam:
+ *                   type: string
+ *                 postcode:
+ *                   type: string
+ *                 land:
+ *                   type: string
+ */
 const updateAdres = async (ctx: KoaContext<UpdateAdresResponse, IdParams, UpdateAdresRequest>) => {
   const updatedAdres = await adresService.updateById(ctx.params.id, {
     ...ctx.request.body,
   });
-  
+
   ctx.body = { id: ctx.params.id, ...updatedAdres };
 };
 updateAdres.validationScheme = {
@@ -69,6 +231,24 @@ updateAdres.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/adres/{id}:
+ *   delete:
+ *     summary: Delete address by ID
+ *     tags: [Adres]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Address successfully deleted
+ */
 const deleteAdres = async (ctx: KoaContext<void, IdParams>) => {
   await adresService.deleteById(ctx.params.id);
   ctx.status = 204;
@@ -79,7 +259,10 @@ deleteAdres.validationScheme = {
   },
 };
 
-export default function installAdresRoutes (parent: KoaRouter) {
+/**
+ * Install routes for adres-related operations
+ */
+export default function installAdresRoutes(parent: KoaRouter) {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/adres',
   });
@@ -92,6 +275,5 @@ export default function installAdresRoutes (parent: KoaRouter) {
   router.put('/:id', validate(updateAdres.validationScheme), updateAdres);
   router.delete('/:id', validate(deleteAdres.validationScheme), deleteAdres);
 
-  parent.use(router.routes())
-    .use(router.allowedMethods());
+  parent.use(router.routes()).use(router.allowedMethods());
 };

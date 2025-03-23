@@ -13,6 +13,16 @@ import type {
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 
+/**
+ * @swagger
+ * /api/onderhouden:
+ *   get:
+ *     summary: Get all onderhoud records
+ *     tags: [Onderhoud]
+ *     responses:
+ *       200:
+ *         description: List of onderhoud records
+ */
 const getAllOnderhouden = async (ctx: KoaContext<GetAllOnderhoudenReponse>) => {
   const onderhouden = await onderhoudService.getAllOnderhouden();
   ctx.body = {
@@ -21,6 +31,22 @@ const getAllOnderhouden = async (ctx: KoaContext<GetAllOnderhoudenReponse>) => {
 };
 getAllOnderhouden.validationScheme = null;
 
+/**
+ * @swagger
+ * /api/onderhouden/{id}:
+ *   get:
+ *     summary: Get onderhoud by ID
+ *     tags: [Onderhoud]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Onderhoud details by ID
+ */
 const getOnderhoudById = async (ctx: KoaContext<GetOnderhoudByIdResponse, IdParams>) => {
   ctx.body = await onderhoudService.getOnderhoudById(ctx.params.id);
 };
@@ -30,6 +56,42 @@ getOnderhoudById.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/onderhouden:
+ *   post:
+ *     summary: Create a new onderhoud record
+ *     tags: [Onderhoud]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               machine_id:
+ *                 type: integer
+ *               technieker_gebruiker_id:
+ *                 type: integer
+ *               datum:
+ *                 type: string
+ *                 format: date
+ *               starttijdstip:
+ *                 type: string
+ *                 format: date-time
+ *               eindtijdstip:
+ *                 type: string
+ *                 format: date-time
+ *               reden:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               opmerkingen:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Onderhoud record created
+ */
 const createOnderhoud = async (ctx: KoaContext<CreateOnderhoudResponse, void, CreateOnderhoudRequest>) => {
   const newOnderhoud = await onderhoudService.createOnderhoud(ctx.request.body);
   ctx.status = 201;
@@ -48,6 +110,48 @@ createOnderhoud.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/onderhouden/{id}:
+ *   put:
+ *     summary: Update onderhoud by ID
+ *     tags: [Onderhoud]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               machine_id:
+ *                 type: integer
+ *               technieker_id:
+ *                 type: integer
+ *               datum:
+ *                 type: string
+ *                 format: date
+ *               starttijdstip:
+ *                 type: string
+ *                 format: date-time
+ *               eindtijdstip:
+ *                 type: string
+ *                 format: date-time
+ *               reden:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               opmerkingen:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Onderhoud record updated
+ */
 const updateOnderhoudById = async (ctx: KoaContext<GetOnderhoudByIdResponse, IdParams>) => {
   ctx.body = await onderhoudService.updateOnderhoudById(ctx.params.id, ctx.request.body);
 };
@@ -68,10 +172,27 @@ updateOnderhoudById.validationScheme = {
   },
 };
 
+/**
+ * @swagger
+ * /api/onderhouden/{id}:
+ *   delete:
+ *     summary: Delete onderhoud by ID
+ *     tags: [Onderhoud]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Onderhoud record deleted
+ */
 const deleteOnderhoud = async (ctx: KoaContext<void, IdParams>) => {
   await onderhoudService.deleteById(ctx.params.id);
   ctx.status = 204;
 };
+
 deleteOnderhoud.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
