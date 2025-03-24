@@ -87,14 +87,14 @@ model Site {
   @@map("sites")
 }
 
-model Product {
-  id                 Int       @id @default(autoincrement()) @db.UnsignedInt
-  naam               String    @db.VarChar(255)
-  product_informatie String    @db.LongText
-  machines           Machine[]
+// model Product {
+//   id                 Int       @id @default(autoincrement()) @db.UnsignedInt
+//   naam               String    @db.VarChar(255)
+//   product_informatie String    @db.LongText
+//   machines           Machine[]
 
-  @@map("producten")
-}
+//   @@map("producten")
+// }
 
 model Machine {
   id                       Int              @id @default(autoincrement()) @db.UnsignedInt
@@ -106,18 +106,17 @@ model Machine {
   aantal_goede_producten   Int              @db.UnsignedInt
   aantal_slechte_producten Int              @db.UnsignedInt
   limiet_voor_onderhoud    Int              @db.UnsignedInt
+  product_naam             String           @db.VarChar(255)
+  product_informatie       String           @db.LongText
 
   technieker_id Int @db.UnsignedInt
   site_id       Int @db.UnsignedInt
-  product_id    Int @db.UnsignedInt
 
   technieker  Gebruiker   @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
-  product     Product     @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_machine")
   site        Site        @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
   onderhouden Onderhoud[]
 
   @@index([technieker_id], map: "fk_gebruiker_machine")
-  @@index([product_id], map: "fk_product_machine")
   @@index([site_id], map: "fk_site_machine")
   @@map("machines")
 }

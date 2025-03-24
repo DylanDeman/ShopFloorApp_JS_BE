@@ -32,13 +32,8 @@ const SELECT_MACHINE = {
       verantwoordelijke: true,
     },
   },
-  product: {
-    select: {
-      id: true,
-      naam: true,
-      product_informatie: true,
-    },
-  },
+  product_naam: true,
+  product_informatie: true,
   onderhouden: {
     select: {
       id: true,
@@ -81,7 +76,6 @@ export const getAllMachines = async (): Promise<Machine[]> => {
 
 export const createMachine = async (data: MachineCreateInput): Promise<Machine> => {
   try {
-
     getLogger().info(`Creating machine with code ${data.code}`);
     // Check if the technieker/user exists 
     const technieker = await prisma.gebruiker.findUnique({
@@ -115,9 +109,8 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
         site: {
           connect: { id: data.site_id },
         },
-        product: {
-          connect: { id: data.product.id },
-        },
+        product_naam: data.product_naam,
+        product_informatie: data.product_informatie,
       },
       select: SELECT_MACHINE,
     });
@@ -166,7 +159,8 @@ export const updateMachineById = async (id: number, changes: any) => {
       locatie,
       technieker_id,
       site_id,
-      product,
+      product_naam,
+      product_informatie,
       limiet_voor_onderhoud,
       status,
       productie_status,
@@ -180,6 +174,8 @@ export const updateMachineById = async (id: number, changes: any) => {
     if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
     if (status !== undefined) updateData.status = status as Machine_Status;
     if (productie_status !== undefined) updateData.productie_status = productie_status;
+    if (product_naam !== undefined) updateData.product_naam = product_naam;
+    if (product_informatie !== undefined) updateData.product_informatie = product_informatie;
 
     if (technieker_id !== undefined) {
       updateData.technieker = {
@@ -190,14 +186,6 @@ export const updateMachineById = async (id: number, changes: any) => {
     if (site_id !== undefined) {
       updateData.site = {
         connect: { id: site_id },
-      };
-    }
-
-    if (product !== undefined) {
-      updateData.product = {
-        connect: {
-          id: product.id,
-        },
       };
     }
 

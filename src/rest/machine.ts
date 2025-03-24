@@ -59,8 +59,8 @@ getAllMachines.validationScheme = null;
  *             properties:
  *               site_id:
  *                 type: integer
- *               product_id:
- *                 type: integer
+ *               product_naam:
+ *                 type: string
  *               technieker_gebruiker_id:
  *                 type: integer
  *               code:
@@ -89,14 +89,14 @@ updateMachineById.validationScheme = {
   },
   body:{
     site_id: Joi.number().integer().positive().required(),
-    product_id: Joi.number().integer().positive().required(),
+    product_naam: Joi.string(),
+    product_informatie: Joi.string().allow('').optional(),
     technieker_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
     locatie: Joi.string().max(255).required(),
     status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
       'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
-    product_informatie: Joi.string().allow('').optional(),
   },
 };
 
@@ -123,8 +123,8 @@ updateMachineById.validationScheme = {
  *             properties:
  *               site_id:
  *                 type: integer
- *               product_id:
- *                 type: integer
+ *               product_naam:
+ *                 type: string
  *               technieker_gebruiker_id:
  *                 type: integer
  *               code:
@@ -169,8 +169,8 @@ getMachineById.validationScheme = {
  *             properties:
  *               site_id:
  *                 type: integer
- *               product_id:
- *                 type: integer
+ *               product_naam:
+ *                 type: string
  *               technieker_gebruiker_id:
  *                 type: integer
  *               code:
@@ -197,13 +197,13 @@ const createMachine = async(ctx: KoaContext<CreateMachineResponse, void, CreateM
 createMachine.validationScheme = {
   body:{
     site_id: Joi.number().integer().positive().required(),
-    product_id: Joi.number().integer().positive().required(),
     technieker_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
     locatie: Joi.string().max(255).required(),
     status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
       'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
+    product_naam: Joi.string(),
     product_informatie: Joi.string().allow('').optional(),
   },
 };

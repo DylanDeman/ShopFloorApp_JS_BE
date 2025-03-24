@@ -15,9 +15,6 @@ async function main() {
   await prisma.site.createMany({
     data: await seedSites(100),
   });
-  await prisma.product.createMany({
-    data: await seedProducten(100),
-  });
   await prisma.machine.createMany({
     data: await seedMachines(100),
   });
@@ -311,21 +308,9 @@ async function seedSites(aantal: number) {
   return sites;
 }
 
-async function seedProducten(aantal: number) {
-  const producten: any = [];
-  for (let i = 0; i < aantal; i++) {
-    producten.push({
-      naam: faker.commerce.productName(),
-      product_informatie: faker.commerce.productDescription(),
-    });
-  }
-  return producten;
-}
-
 async function seedMachines(aantal: number) {
   const machines: any = [];
   const bestaandeSites: any = await prisma.site.findMany();
-  const bestaansdeProducten: any = await prisma.product.findMany();
   const bestaandeTechniekers: any = await prisma.gebruiker.findMany({
     where: {
       rol: {
@@ -361,7 +346,8 @@ async function seedMachines(aantal: number) {
     machines.push({
       status_sinds: faker.date.past({ years: 0.5 }), // elke 6 maanden automatisch stop voor onderhoud
       site_id: Number(bestaandeSites[Math.floor(Math.random() * bestaandeSites.length)].id),
-      product_id: Number(bestaansdeProducten[Math.floor(Math.random() * bestaansdeProducten.length)].id),
+      product_naam: String(faker.commerce.product()),
+      product_informatie: String(faker.commerce.productDescription()),
       technieker_id:
         Number(bestaandeTechniekers[Math.floor(Math.random() * bestaandeTechniekers.length)].id),
       code: String(faker.commerce.isbn()),
