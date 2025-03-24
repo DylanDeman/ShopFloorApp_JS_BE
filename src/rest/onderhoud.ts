@@ -100,7 +100,7 @@ const createOnderhoud = async (ctx: KoaContext<CreateOnderhoudResponse, void, Cr
 createOnderhoud.validationScheme = {
   body: {
     machine_id: Joi.number().integer().positive(),
-    technieker_gebruiker_id: Joi.number().integer().positive(),
+    technieker_id: Joi.number().integer().positive(),
     datum: Joi.date(),
     starttijdstip: Joi.date(),
     eindtijdstip: Joi.date(),

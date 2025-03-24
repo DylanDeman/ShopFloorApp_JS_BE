@@ -111,7 +111,7 @@ createMachine.validationScheme = {
   body:{
     site_id: Joi.number().integer().positive().required(),
     product_id: Joi.number().integer().positive().required(),
-    technieker_gebruiker_id: Joi.number().integer().positive().required(),
+    technieker_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
     locatie: Joi.string().max(255).required(),
     status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 

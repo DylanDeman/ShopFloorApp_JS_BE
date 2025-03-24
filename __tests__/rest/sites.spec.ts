@@ -16,7 +16,6 @@ describe('Sites API', () => {
   beforeAll(async () => {
     adminAuthHeader = await loginAdmin(request);
 
-    // Clean the database
     await prisma.machine.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
@@ -25,7 +24,6 @@ describe('Sites API', () => {
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
 
-    // Set up initial data
     await prisma.adres.createMany({
       data: [
         { id: 1, straat: 'Teststraat', huisnummer: '1A', stadsnaam: 'Teststad', postcode: '1234', land: 'Testland' },
@@ -69,7 +67,6 @@ describe('Sites API', () => {
   });
 
   afterAll(async () => {
-    // Clean up after tests
     await prisma.machine.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
@@ -83,7 +80,6 @@ describe('Sites API', () => {
     naam: 'New Site',
     verantwoordelijke_id: 1,
     status: Status.ACTIEF,
-    machines_ids: [1],
   };
 
   describe('GET /api/sites', () => {
@@ -112,7 +108,7 @@ describe('Sites API', () => {
 
   describe('PUT /api/sites/:id', () => {
     it('should update a site', async () => {
-      const updateData = { naam: 'Updated Site', verantwoordelijke_id: 1 , status: 'ACTIEF', machines_ids: [1] };
+      const updateData = { naam: 'Updated Site', verantwoordelijke_id: 1 , status: 'ACTIEF' };
       const response = await request.put(`${url}/1`).set('Authorization', adminAuthHeader).send(updateData);
       expect(response.status).toBe(200);
       expect(response.body.naam).toBe(updateData.naam);
