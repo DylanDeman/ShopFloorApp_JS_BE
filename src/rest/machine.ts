@@ -38,6 +38,47 @@ const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
 };
 getAllMachines.validationScheme = null;
 
+/**
+ * @swagger
+ * /machines/{id}:
+ *   put:
+ *     summary: Update a machine by ID
+ *     tags: [Machines]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               site_id:
+ *                 type: integer
+ *               product_id:
+ *                 type: integer
+ *               technieker_gebruiker_id:
+ *                 type: integer
+ *               code:
+ *                 type: string
+ *               locatie:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
+ *               productie_status:
+ *                 type: string
+ *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
+ *               product_informatie:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Machine updated
+ */
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
 };
@@ -73,6 +114,31 @@ updateMachineById.validationScheme = {
  *         required: true
  *         schema:
  *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               site_id:
+ *                 type: integer
+ *               product_id:
+ *                 type: integer
+ *               technieker_gebruiker_id:
+ *                 type: integer
+ *               code:
+ *                 type: string
+ *               locatie:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
+ *               productie_status:
+ *                 type: string
+ *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
+ *               product_informatie:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Machine data
