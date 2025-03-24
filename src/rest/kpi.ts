@@ -208,11 +208,35 @@ export default function installKPIRoutes(parent: KoaRouter) {
 
   router.use(requireAuthentication);
 
-  router.get('/', validate(getAllKPIs.validationScheme), getAllKPIs);
-  router.get('/:id', validate(getKPIById.validationScheme), getKPIById);
-  router.get('/:id/kpiwaarden', validate(getKPIWaardenByKPIid.validationScheme), getKPIWaardenByKPIid);
-  router.delete('/:id', validate(deleteKPI.validationScheme), deleteKPI);
-  router.get('/rol/:role', validate(getKPIByRole.validationScheme), getKPIByRole);
+  router.get(
+    '/', 
+    validate(getAllKPIs.validationScheme), 
+    getAllKPIs,
+  );
+
+  router.get(
+    '/:id', 
+    validate(getKPIById.validationScheme), 
+    getKPIById,
+  );
+
+  router.get(
+    '/:id/kpiwaarden', 
+    validate(getKPIWaardenByKPIid.validationScheme), 
+    getKPIWaardenByKPIid,
+  );
+
+  router.delete(
+    '/:id', 
+    validate(deleteKPI.validationScheme), 
+    deleteKPI,
+  );
+
+  router.get(
+    '/rol/:role', 
+    validate(getKPIByRole.validationScheme), 
+    getKPIByRole,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

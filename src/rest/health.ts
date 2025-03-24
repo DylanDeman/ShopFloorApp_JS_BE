@@ -77,8 +77,17 @@ getVersion.validationScheme = null;
 export default function installPlacesRoutes(parent: KoaRouter) {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({ prefix: '/health' });
 
-  router.get('/ping', validate(ping.validationScheme), ping);
-  router.get('/version', validate(getVersion.validationScheme), getVersion);
+  router.get(
+    '/ping', 
+    validate(ping.validationScheme), 
+    ping,
+  );
+  
+  router.get(
+    '/version', 
+    validate(getVersion.validationScheme), 
+    getVersion,
+  );
 
   parent
     .use(router.routes())

@@ -13,7 +13,8 @@ import type {
 } from '../types/adres';
 import type { IdParams } from '../types/common';
 import validate from '../core/validation';
-import { requireAuthentication } from '../core/auth';
+import { makeRequireRoles, requireAuthentication } from '../core/auth';
+import roles from '../core/roles';
 
 /**
  * @swagger
@@ -268,12 +269,38 @@ export default function installAdresRoutes(parent: KoaRouter) {
   });
 
   router.use(requireAuthentication);
+  const requireAdmin = makeRequireRoles([roles.ADMINISTRATOR]);
 
-  router.get('/', validate(getAllAdresses.validationScheme), getAllAdresses);
-  router.post('/', validate(createAdres.validationScheme), createAdres);
-  router.get('/:id', validate(getAdresById.validationScheme), getAdresById);
-  router.put('/:id', validate(updateAdres.validationScheme), updateAdres);
-  router.delete('/:id', validate(deleteAdres.validationScheme), deleteAdres);
+  router.get(
+    '/', 
+    requireAdmin,
+    validate(getAllAdresses.validationScheme), 
+    getAllAdresses,
+  );
+  router.post(
+    '/', 
+    requireAdmin,
+    validate(createAdres.validationScheme), 
+    createAdres,
+  );
+  router.get(
+    '/:id', 
+    requireAdmin,
+    validate(getAdresById.validationScheme), 
+    getAdresById,
+  );
+  router.put(
+    '/:id', 
+    requireAdmin,
+    validate(updateAdres.validationScheme), 
+    updateAdres,
+  );
+  router.delete(
+    '/:id', 
+    requireAdmin,
+    validate(deleteAdres.validationScheme), 
+    deleteAdres,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

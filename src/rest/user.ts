@@ -399,13 +399,14 @@ getDashboardByUserID.validationScheme = {
 export default function installUserRoutes(parent: KoaRouter) {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({ prefix: '/users' });
 
+  // Voor register is er geen authenticatie nodig
   router.post(
     '/',
     authDelay,
     validate(registerUser.validationScheme),
     registerUser,
   );
-
+  
   router.get(
     '/',
     requireAuthentication,

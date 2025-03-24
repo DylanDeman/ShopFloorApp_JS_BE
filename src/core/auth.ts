@@ -13,10 +13,10 @@ export const requireAuthentication = async (ctx: KoaContext, next: Next) => {
   return next();
 };
 
-export const makeRequireRole = (role: string) => async (ctx: KoaContext, next: Next) => {
+export const makeRequireRoles = (requiredRoles: string[]) => async (ctx: KoaContext, next: Next) => {
   const { roles = [] } = ctx.state.session;
 
-  userService.checkRole(role, roles);
+  userService.checkRole(requiredRoles, roles);
 
   return next();
 };

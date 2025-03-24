@@ -10,7 +10,7 @@ import type {
 } from '../types/machine';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
-import { requireAuthentication } from '../core/auth';
+import { makeRequireRoles, requireAuthentication } from '../core/auth';
 
 /**
  * @swagger
@@ -215,9 +215,12 @@ export default (parent: KoaRouter) => {
     prefix: '/machines',
   });
 
+  const requireRoleManagerVwTech = makeRequireRoles(['MANAGER', 'VERANTWOORDELIJKE', 'TECHNIEKER']);
+  const requireRoleVwTech = makeRequireRoles(['VERANTWOORDELIJKE', 'TECHNIEKER']);
   router.get(
     '/', 
     requireAuthentication, 
+    requireRoleManagerVwTech,
     validate(getAllMachines.validationScheme),
     getAllMachines,
   );
@@ -225,18 +228,26 @@ export default (parent: KoaRouter) => {
   router.get(
     '/:id', 
     requireAuthentication,
-    validate(getMachineById.validationScheme), 
+    requireRoleManagerVwTech,
+    validate(getMachineById.validationScheme),
     getMachineById,
   );
   
   router.post(
     '/',
     requireAuthentication,
+    requireRoleVwTech, // Enkel Vw en Tech mag machine aanmaken
     validate(createMachine.validationScheme),
     createMachine,
   );
 
-  router.put('/:id', requireAuthentication, validate(updateMachineById.validationScheme), updateMachineById);
+  router.put(
+    '/:id', 
+    requireAuthentication, 
+    requireRoleVwTech, // Enkel Vw en Tech mag machine updaten
+    validate(updateMachineById.validationScheme), 
+    updateMachineById,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };
