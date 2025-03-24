@@ -38,6 +38,27 @@ const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
 };
 getAllMachines.validationScheme = null;
 
+const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
+  ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
+};
+
+updateMachineById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body:{
+    site_id: Joi.number().integer().positive().required(),
+    product_id: Joi.number().integer().positive().required(),
+    technieker_id: Joi.number().integer().positive().required(),
+    code: Joi.string().max(255).required(),
+    locatie: Joi.string().max(255).required(),
+    status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
+      'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
+    productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
+    product_informatie: Joi.string().allow('').optional(),
+  },
+};
+
 /**
  * @swagger
  * /machines/{id}:
@@ -146,6 +167,8 @@ export default (parent: KoaRouter) => {
     validate(createMachine.validationScheme),
     createMachine,
   );
+
+  router.put('/:id', requireAuthentication, validate(updateMachineById.validationScheme), updateMachineById);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

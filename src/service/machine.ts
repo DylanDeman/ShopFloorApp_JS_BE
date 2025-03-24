@@ -4,7 +4,7 @@ import handleDBError from './_handleDBError';
 //import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import { getKPIid } from './kpi';
 import { Machine_Status, Productie_Status } from '@prisma/client';
-import type { Machine, MachineCreateInput, MachineUpdateInput } from '../types/machine';
+import type { Machine, MachineCreateInput } from '../types/machine';
 import { getLogger } from '../core/logging';
 
 // Gegevens voor een machine die we willen ophalen
@@ -145,7 +145,7 @@ export const getMachineById = async (id: number) => {
   }
 };
 
-export const updateMachineById = async (id: number, changes: MachineUpdateInput) => {
+export const updateMachineById = async (id: number, changes: any) => {
   // Assuming this function exists elsewhere in your codebase
   updateMachineKPIs();
 
