@@ -97,6 +97,7 @@ updateMachineById.validationScheme = {
     status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
       'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
+    limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };
 
@@ -205,6 +206,7 @@ createMachine.validationScheme = {
     productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
     product_naam: Joi.string(),
     product_informatie: Joi.string().allow('').optional(),
+    limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };
 

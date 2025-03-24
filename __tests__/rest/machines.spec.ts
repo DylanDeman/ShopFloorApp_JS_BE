@@ -66,14 +66,6 @@ describe('Machines API', () => {
       },
     });
 
-    await prisma.product.create({
-      data: {
-        id: 1,
-        naam: 'Test Product',
-        product_informatie: 'Test product informatie',
-      },
-    });
-
     createdMachine = await prisma.machine.create({
       data: {
         code: 'MACHINE123',
@@ -81,7 +73,8 @@ describe('Machines API', () => {
         status: Machine_Status.DRAAIT,
         productie_status: Productie_Status.GEZOND,
         site_id: 1,
-        product_id: 1,
+        product_naam: 'Apple M2',
+        product_informatie: '2.95 GHz processor',
         technieker_id: 1,
         aantal_goede_producten: 596,
         status_sinds: '2025-03-11T08:36:39.975Z',
@@ -114,7 +107,6 @@ describe('Machines API', () => {
   afterAll(async () => {
     await prisma.kPIWaarde.deleteMany({});
     await prisma.kPI.deleteMany({});
-    await prisma.product.deleteMany({});
   });
 
   it('should return 404 for a non-existent machine', async () => {

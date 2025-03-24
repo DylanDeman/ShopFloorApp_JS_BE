@@ -59,14 +59,6 @@ describe('Onderhoud API', () => {
       },
     });
 
-    await prisma.product.create({
-      data: {
-        id: 1,
-        naam: 'Test Product',
-        product_informatie: 'Test product informatie',
-      },
-    });
-
     await prisma.machine.create({
       data: {
         id: 1,
@@ -80,7 +72,8 @@ describe('Onderhoud API', () => {
         limiet_voor_onderhoud: 5000,
         technieker_id: 1,
         site_id: 1,
-        product_id: 1,
+        product_naam: 'RAM DDR4',
+        product_informatie: '16GB',
       },
     });
 
@@ -106,8 +99,6 @@ describe('Onderhoud API', () => {
     await prisma.onderhoud.deleteMany({});  
     await prisma.notificatie.deleteMany({}); 
     await prisma.machine.deleteMany({});
-
-    await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});

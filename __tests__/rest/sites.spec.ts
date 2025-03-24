@@ -17,9 +17,7 @@ describe('Sites API', () => {
     adminAuthHeader = await loginAdmin(request);
 
     await prisma.machine.deleteMany({});
-    await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
-    await prisma.product.deleteMany({});
     await prisma.machine.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
@@ -39,14 +37,6 @@ describe('Sites API', () => {
     await prisma.site.createMany({
       data: [{ id: 1, naam: 'Test Site', verantwoordelijke_id: 1, status: Status.ACTIEF }],
     });
-
-    await prisma.product.create({
-      data: {
-        id: 1,
-        naam: 'Test Product',
-        product_informatie: 'test informatie',
-      },
-    });
     
     await prisma.machine.create({
       data: {
@@ -56,7 +46,8 @@ describe('Sites API', () => {
         status: Machine_Status.DRAAIT,
         productie_status: Productie_Status.GEZOND,
         site_id: 1,
-        product_id: 1,
+        product_naam: 'USB sticks',
+        product_informatie: '64 GB',
         technieker_id: 1,
         status_sinds: '2025-03-11T08:36:39.975Z',
         aantal_goede_producten: 568,
@@ -68,7 +59,6 @@ describe('Sites API', () => {
 
   afterAll(async () => {
     await prisma.machine.deleteMany({});
-    await prisma.product.deleteMany({});
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
