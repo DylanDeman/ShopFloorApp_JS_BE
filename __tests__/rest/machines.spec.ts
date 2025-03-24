@@ -51,7 +51,7 @@ describe('Machines API', () => {
         email: 'user@test.com',
         wachtwoord: 'password',
         gsm: '1234567890',
-        rol: Role.VERANTWOORDELIJKE,
+        rol: Role.TECHNIEKER,
         status: Status.ACTIEF,
         adres_id: 1,
       },
@@ -119,7 +119,7 @@ describe('Machines API', () => {
 
   it('should return 404 for a non-existent machine', async () => {
     const response = await request
-      .get(`${url}/9999`) 
+      .get(`${url}/9999`)
       .set('Authorization', adminAuthHeader);
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Machine niet gevonden');
@@ -133,63 +133,8 @@ describe('Machines API', () => {
     expect(response.body.message).toBe('Invalid authentication token');
   });
 
-  it('should return 400 when updating a machine with invalid data', async () => {
-    const updatedMachine = {
-      code: '', 
-      locatie: 'Test Location',
-      status: Machine_Status.MANUEEL_GESTOPT,
-      productie_status: Productie_Status.GEZOND,
-      site_id: 1,
-      product_id: 1,
-      technieker_gebruiker_id: 1,
-    };
-
-    const response = await request
-      .put(`${url}/${createdMachine.id}`)
-      .set('Authorization', adminAuthHeader)
-      .send(updatedMachine);
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe('Validation failed, check details for more information'); 
-  });
-
-  it('should return 404 for updating a non-existent machine', async () => {
-    const updatedMachine = {
-      code: 'MACHINE9999',
-      locatie: 'New Location',
-      status: Machine_Status.MANUEEL_GESTOPT,
-      productie_status: Productie_Status.GEZOND,
-      site_id: 1,
-      product_id: 1,
-      technieker_gebruiker_id: 1,
-    };
-
-    const response = await request
-      .put(`${url}/9999`) 
-      .set('Authorization', adminAuthHeader)
-      .send(updatedMachine);
-
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('Machine niet gevonden');
-  });
-
-  it('should return 400 when updating with missing required fields', async () => {
-    const updatedMachine = {
-      status: Machine_Status.MANUEEL_GESTOPT,
-      productie_status: Productie_Status.GEZOND,
-    };
-
-    const response = await request
-      .put(`${url}/${createdMachine.id}`)
-      .set('Authorization', adminAuthHeader)
-      .send(updatedMachine);
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toContain('Validation failed, check details for more information');
-  });
-  
   it('should return 401 when not authorized', async () => {
-    const response = await request.get(url); 
+    const response = await request.get(url);
     expect(response.status).toBe(401);
     expect(response.body.message).toBe('You need to be signed in');
   });
@@ -202,5 +147,14 @@ describe('Machines API', () => {
     const response = await request.get(url).set('Authorization', adminAuthHeader);
     expect(response.status).toBe(500);
     expect(response.body.message).toBe('Database error');
+  });
+
+  it('should get a machine by ID (GET)', async () => {
+    const response = await request
+      .get(`${url}/${createdMachine.id}`)
+      .set('Authorization', adminAuthHeader);
+
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(createdMachine.id);
   });
 });

@@ -98,17 +98,17 @@ export default function installMiddlewares(app: KoaApplication) {
     }
   });
 
- // if (isDevelopment) {
-    const spec = swaggerJsdoc(swaggerOptions) as Record<string, unknown>;
+  // if (isDevelopment) {
+  const spec = swaggerJsdoc(swaggerOptions) as Record<string, unknown>;
   
-    app.use(
-      koaSwagger({
-        routePrefix: '/swagger',
-        specPrefix: '/swagger.json',
-        exposeSpec: true,
-        swaggerOptions: { spec },
-      }),
-    );
+  app.use(
+    koaSwagger({
+      routePrefix: '/swagger',
+      specPrefix: '/swagger.json',
+      exposeSpec: true,
+      swaggerOptions: { spec },
+    }),
+  );
   //}
   
   app.use(async (ctx: any, next: any) => {

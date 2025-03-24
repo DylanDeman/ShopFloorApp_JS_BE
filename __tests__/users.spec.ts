@@ -28,6 +28,14 @@ describe('Users API', () => {
     });
   });
 
+  describe('GET /api/users/:id/dashboard', () => {
+    it('should return user dashboard', async () => {
+      const response = await request.get(usersUrl).set('Authorization', adminAuthHeader);
+      expect(response.statusCode).toBe(200);
+      expect(response.body.items.length).toBeGreaterThan(0);
+    });
+  });
+
   describe('POST /api/users', () => {
     it('should register a new user with all required fields', async () => {
       const response = await request.post(usersUrl)

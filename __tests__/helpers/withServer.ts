@@ -12,8 +12,7 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
   beforeAll(async () => {
     server = await createServer();
 
-    // Clean up existing data
-    await prisma.notificatie.deleteMany({});  // Corrected the model name to 'notificatie'
+    await prisma.notificatie.deleteMany({});  
     await prisma.machine.deleteMany({});
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
@@ -21,7 +20,6 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
 
     const passwordHash = await hashPassword('UUBE4UcWvSZNaIw');
 
-    // Create an address
     await prisma.adres.create({
       data: {
         id: 1,
@@ -33,7 +31,6 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
       },
     });
 
-    // Create users
     await prisma.gebruiker.createMany({
       data: [
         {
@@ -63,29 +60,30 @@ export default function withServer(setter: (s: supertest.Agent) => void): void {
       ],
     });
 
-    // Create a site
     await prisma.site.create({
       data: {
         id: 1,
         naam: 'Test Site',
-        verantwoordelijke_id: 2, // Links to the admin user
+        verantwoordelijke_id: 2, 
         status: Status.ACTIEF,
       },
     });
 
-    // Pass the server instance to the setter function for testing
     setter(supertest(server.getApp().callback()));
   });
 
   afterAll(async () => {
-    // Clean up test data in reverse order of dependencies
-    await prisma.notificatie.deleteMany({}); // Corrected the model name to 'notificatie'
+
+    await prisma.notificatie.deleteMany({});
+    await prisma.onderhoud.deleteMany({});  
+
     await prisma.machine.deleteMany({});
+
     await prisma.site.deleteMany({});
     await prisma.gebruiker.deleteMany({});
     await prisma.adres.deleteMany({});
 
-    // Stop the server
     await server.stop();
   });
+
 }
