@@ -33,7 +33,7 @@ import { makeRequireRoles, requireAuthentication } from '../core/auth';
  */
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
   ctx.body = {
-    items: await machineService.getAllMachines(),
+    items: await machineService.getAllMachines(ctx.state.session.userId, ctx.state.session.roles),
   };
 };
 getAllMachines.validationScheme = null;
@@ -224,7 +224,6 @@ export default (parent: KoaRouter) => {
     validate(getAllMachines.validationScheme),
     getAllMachines,
   );
-
   router.get(
     '/:id', 
     requireAuthentication,

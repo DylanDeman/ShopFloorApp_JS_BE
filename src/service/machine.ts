@@ -55,14 +55,29 @@ const SELECT_MACHINE = {
   },
 };
 
-export const getAllMachines = async (): Promise<Machine[]> => {
+export const getAllMachines = async (user_id: number, user_roles: string[]): Promise<Machine[]> => {
   try {
-    const machines = await prisma.machine.findMany({
-      select: SELECT_MACHINE,
-    });
-
-    if (!machines.length) {
-      throw ServiceError.notFound('Geen machines gevonden.');
+    let machines : Machine[] = [];
+    if (user_roles.includes('MANAGER')) {
+      machines = await prisma.machine.findMany({
+        select: SELECT_MACHINE,
+      });
+    } else if (user_roles.includes('TECHNIEKER')) {
+      machines = await prisma.machine.findMany({
+        where: {
+          technieker_id: user_id,
+        },
+        select: SELECT_MACHINE,
+      });
+    } else if (user_roles.includes('VERANTWOORDELIJKE')) {
+      machines = await prisma.machine.findMany({
+        where: {
+          site: {
+            verantwoordelijke_id: user_id,
+          },
+        },
+        select: SELECT_MACHINE,
+      });
     }
 
     return machines;

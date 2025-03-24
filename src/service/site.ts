@@ -39,14 +39,14 @@ const SITE_SELECT = {
   },
 };
 
-export const getAllSites = async(user_id: number, userRoles: string[]): Promise<Site[]> => {
+export const getAllSites = async(user_id: number, user_roles: string[]): Promise<Site[]> => {
   try {
     let sites: Site[] = [];
-    if(userRoles.includes(roles.MANAGER)) {
+    if(user_roles.includes(roles.MANAGER)) {
       sites = await prisma.site.findMany({
         select: SITE_SELECT,
       });
-    } else if(userRoles.includes(roles.VERANTWOORDELIJKE)) {
+    } else if(user_roles.includes(roles.VERANTWOORDELIJKE)) {
       sites = await prisma.site.findMany({
         where: {
           verantwoordelijke_id: user_id,
@@ -64,16 +64,16 @@ export const getAllSites = async(user_id: number, userRoles: string[]): Promise<
   }
 };
 
-export const getSiteById = async (user_id: number, userRoles: string[],  id: number): Promise<Site> => {
+export const getSiteById = async (user_id: number, user_roles: string[],  id: number): Promise<Site> => {
   try {
     let site: Site | null = null;
     
-    if(userRoles.includes(roles.MANAGER)) {
+    if(user_roles.includes(roles.MANAGER)) {
       site = await prisma.site.findUnique({
         where: { id },
         select: SITE_SELECT,
       });
-    } else if(userRoles.includes(roles.VERANTWOORDELIJKE)) {
+    } else if(user_roles.includes(roles.VERANTWOORDELIJKE)) {
       site = await prisma.site.findUnique({
         where: { 
           id,
@@ -81,7 +81,7 @@ export const getSiteById = async (user_id: number, userRoles: string[],  id: num
         },
         select: SITE_SELECT,
       });
-    } else if(userRoles.includes(roles.TECHNIEKER)) {
+    } else if(user_roles.includes(roles.TECHNIEKER)) {
       site = await prisma.site.findUnique({
         where: { 
           id,
