@@ -80,9 +80,13 @@ getAllMachines.validationScheme = null;
  *         description: Machine updated
  */
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
+  ctx.body = await machineService.updateMachineById(
+    ctx.state.session.userId, 
+    ctx.state.session.roles,
+    ctx.params.id, 
+    ctx.request.body,
+  );
 };
-
 updateMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),

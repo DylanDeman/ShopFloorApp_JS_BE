@@ -177,80 +177,85 @@ export const getMachineById = async (user_id: number, user_roles: string[], id: 
   }
 };
 
-export const updateMachineById = async (id: number, changes: any) => {
-  updateMachineKPIs();
-
-  try {
-    const previousMachine = await prisma.machine.findUnique({
-      where: { id },
-      select: {
-        status: true,
-      },
-    });
-
-    if (!previousMachine) {
-      throw ServiceError.notFound('Machine niet gevonden');
-    }
-
-    const {
-      code,
-      locatie,
-      technieker_id,
-      site_id,
-      product_naam,
-      product_informatie,
-      limiet_voor_onderhoud,
-      status,
-      productie_status,
-    } = changes;
-
-    // Prepare update data with only defined fields
-    const updateData: any = {};
-
-    if (code !== undefined) updateData.code = code;
-    if (locatie !== undefined) updateData.locatie = locatie;
-    if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
-    if (status !== undefined) updateData.status = status as Machine_Status;
-    if (productie_status !== undefined) updateData.productie_status = productie_status;
-    if (product_naam !== undefined) updateData.product_naam = product_naam;
-    if (product_informatie !== undefined) updateData.product_informatie = product_informatie;
-
-    if (technieker_id !== undefined) {
-      updateData.technieker = {
-        connect: { id: technieker_id },
-      };
-    }
-
-    if (site_id !== undefined) {
-      updateData.site = {
-        connect: { id: site_id },
-      };
-    }
-
-    if (status !== undefined && previousMachine.status !== status) {
-      updateData.status_sinds = new Date();
-    }
-
-    const machine = await prisma.machine.update({
-      where: { id },
-      data: updateData, // Use the prepared updateData object here
-      select: SELECT_MACHINE,
-    });
-
-    // Create notification if status changed
-    if (status !== undefined && previousMachine.status !== status) {
-      await prisma.notificatie.create({
-        data: {
-          bericht: `Machine ${machine.id} ${machine.status}`,
+export const updateMachineById = 
+  async (user_id: number, user_roles: string[],id: number, changes: any) => {
+    updateMachineKPIs();
+    try {
+      const previousMachine = await prisma.machine.findUnique({
+        where: { id },
+        select: {
+          status: true,
         },
       });
-    }
 
-    return machine;
-  } catch (error) {
-    throw handleDBError(error);
-  }
-};
+      if (!previousMachine) {
+        throw ServiceError.notFound('Machine niet gevonden');
+      }
+
+      const {
+        code,
+        locatie,
+        technieker_id,
+        site_id,
+        product_naam,
+        product_informatie,
+        limiet_voor_onderhoud,
+        status,
+        productie_status,
+      } = changes;
+
+      // Prepare update data with only defined fields
+      const updateData: any = {};
+
+      if (code !== undefined) updateData.code = code;
+      if (locatie !== undefined) updateData.locatie = locatie;
+      if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
+      if (status !== undefined) updateData.status = status as Machine_Status;
+      if (productie_status !== undefined) updateData.productie_status = productie_status;
+      if (product_naam !== undefined) updateData.product_naam = product_naam;
+      if (product_informatie !== undefined) updateData.product_informatie = product_informatie;
+
+      if (technieker_id !== undefined) {
+        updateData.technieker = {
+          connect: { id: technieker_id },
+        };
+      }
+
+      if (site_id !== undefined) {
+        updateData.site = {
+          connect: { id: site_id },
+        };
+      }
+
+      // if status is changed:
+      if (status !== undefined && previousMachine.status !== status) {
+        if (user_roles.includes('VERANTWOORDELIJKE') || user_roles.includes('TECHNIEKER')) {
+          updateData.status_sinds = new Date();
+        } else {
+          throw ServiceError.forbidden('Deze actie is niet toegestaan!');
+        }
+      }
+
+      const machine = await prisma.machine.update({
+        where: { id },
+        data: updateData, // Use the prepared updateData object here
+        select: SELECT_MACHINE,
+      });
+
+      // Create notification if status changed
+      if (status !== undefined && previousMachine.status !== status) {
+        await prisma.notificatie.create({
+          data: {
+            bericht: `Machine ${machine.id} ${machine.status}`,
+          },
+        });
+      }
+
+      return machine;
+    } catch (error) {
+      throw handleDBError(error);
+    }
+  };
 
 async function safeCreateKPIWaarden(data: any) {
   let retries = 3;
