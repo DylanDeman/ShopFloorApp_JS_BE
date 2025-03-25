@@ -145,7 +145,8 @@ updateMachineById.validationScheme = {
  *         description: Machine data
  */
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.getMachineById(ctx.params.id);
+  ctx.body = 
+  await machineService.getMachineById(ctx.state.session.userId, ctx.state.session.roles, ctx.params.id);
 };
 getMachineById.validationScheme = {
   params: {

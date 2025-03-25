@@ -53,6 +53,17 @@ export const getAllSites = async(user_id: number, user_roles: string[]): Promise
         },
         select: SITE_SELECT,
       });
+    } else if(user_roles.includes(roles.TECHNIEKER)) {
+      sites = await prisma.site.findMany({
+        where: {
+          machines: {
+            some: {
+              technieker_id: user_id,
+            },
+          },
+        },
+        select: SITE_SELECT,
+      });
     }
 
     return sites;
@@ -96,7 +107,7 @@ export const getSiteById = async (user_id: number, user_roles: string[],  id: nu
     }
 
     if (!site) {
-      throw ServiceError.notFound('Site niet gevonden.');
+      throw ServiceError.forbidden('Site niet gevonden.');
     }
 
     return site;

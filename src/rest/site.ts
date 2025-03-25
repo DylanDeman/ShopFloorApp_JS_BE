@@ -189,8 +189,8 @@ deleteSiteById.validationScheme = {
 };
 
 const requireRoleManager = makeRequireRoles([roles.MANAGER]);
-const requireRoleManagerVw = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE]);
-const requireRoleManagerVwTech = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE, roles.TECHNIEKER]);
+//const requireRoleManagerVw = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE]);
+//const requireRoleManagerVwTech = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE, roles.TECHNIEKER]);
 export default (parent: KoaRouter) => {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/sites',
@@ -199,7 +199,6 @@ export default (parent: KoaRouter) => {
   router.get(
     '/', 
     requireAuthentication, 
-    requireRoleManagerVw,
     validate(getAllSites.validationScheme), 
     getAllSites,
   );
@@ -207,7 +206,6 @@ export default (parent: KoaRouter) => {
   router.get(
     '/:id', 
     requireAuthentication, 
-    requireRoleManagerVwTech,
     validate(getSiteById.validationScheme), 
     getSiteById,
   );

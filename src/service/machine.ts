@@ -1,7 +1,6 @@
 import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
-//import roles from '../core/roles';        nodig voor authenticatie/autorisatie later
 import { getKPIid } from './kpi';
 import { Machine_Status, Productie_Status } from '@prisma/client';
 import type { Machine, MachineCreateInput } from '../types/machine';
@@ -58,11 +57,14 @@ const SELECT_MACHINE = {
 export const getAllMachines = async (user_id: number, user_roles: string[]): Promise<Machine[]> => {
   try {
     let machines : Machine[] = [];
+
     if (user_roles.includes('MANAGER')) {
+      // Manager mag alle sites zien:
       machines = await prisma.machine.findMany({
         select: SELECT_MACHINE,
       });
     } else if (user_roles.includes('TECHNIEKER')) {
+      // Technieker mag enkel zijn eigen machines zien:
       machines = await prisma.machine.findMany({
         where: {
           technieker_id: user_id,
@@ -70,6 +72,7 @@ export const getAllMachines = async (user_id: number, user_roles: string[]): Pro
         select: SELECT_MACHINE,
       });
     } else if (user_roles.includes('VERANTWOORDELIJKE')) {
+      // Verantwoordelijke mag enkel machines van zijn sites zien:
       machines = await prisma.machine.findMany({
         where: {
           site: {
@@ -136,25 +139,45 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
   }
 };
 
-export const getMachineById = async (id: number) => {
+export const getMachineById = async (user_id: number, user_roles: string[], id: number) => {
   try {
-    const machine = await prisma.machine.findUnique({
-      where: { id },
-      select: SELECT_MACHINE,
-    });
-
-    if (!machine) {
-      throw ServiceError.notFound('Machine niet gevonden');
+    let machine: Machine | null = null;
+    if(user_roles.includes('MANAGER')) {
+      machine = await prisma.machine.findUnique({
+        where: { id },
+        select: SELECT_MACHINE,
+      });
+    } else if(user_roles.includes('TECHNIEKER')) {
+      machine = await prisma.machine.findUnique({
+        where: {
+          id,
+          technieker_id: user_id,
+        },
+        select: SELECT_MACHINE,
+      });
+    } else if(user_roles.includes('VERANTWOORDELIJKE')) {
+      machine = await prisma.machine.findUnique({
+        where: {
+          id,
+          site: {
+            verantwoordelijke_id: user_id,
+          },
+        },
+        select: SELECT_MACHINE,
+      });
     }
 
-    return machine;  // This will return the machine with technieker and site included
+    if (!machine) {
+      throw ServiceError.forbidden('Machine niet gevonden');
+    }
+
+    return machine;
   } catch (error) {
     throw handleDBError(error);
   }
 };
 
 export const updateMachineById = async (id: number, changes: any) => {
-  // Assuming this function exists elsewhere in your codebase
   updateMachineKPIs();
 
   try {
