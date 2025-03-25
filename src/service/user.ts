@@ -60,8 +60,9 @@ export const checkAndParseSession = async (
   }
 };
 
-export const checkRole = (role: string, roles: string[]): void => {
-  const hasPermission = roles.includes(role);
+export const checkRole = (requiredRoles: string[], rolesUser: string[]): void => {
+  // Check if any of the required roles are present in the user's roles
+  const hasPermission = requiredRoles.some((role) => rolesUser.includes(role));
 
   if (!hasPermission) {
     throw ServiceError.forbidden(

@@ -10,7 +10,7 @@ import type {
 } from '../types/machine';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
-import { requireAuthentication } from '../core/auth';
+import { makeRequireRoles, requireAuthentication } from '../core/auth';
 
 /**
  * @swagger
@@ -33,7 +33,7 @@ import { requireAuthentication } from '../core/auth';
  */
 const getAllMachines = async (ctx: KoaContext<getAllMachinesResponse>) => {
   ctx.body = {
-    items: await machineService.getAllMachines(),
+    items: await machineService.getAllMachines(ctx.state.session.userId, ctx.state.session.roles),
   };
 };
 getAllMachines.validationScheme = null;
@@ -80,9 +80,13 @@ getAllMachines.validationScheme = null;
  *         description: Machine updated
  */
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.updateMachineById(ctx.params.id, ctx.request.body);
+  ctx.body = await machineService.updateMachineById(
+    ctx.state.session.userId, 
+    ctx.state.session.roles,
+    ctx.params.id, 
+    ctx.request.body,
+  );
 };
-
 updateMachineById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
@@ -145,7 +149,8 @@ updateMachineById.validationScheme = {
  *         description: Machine data
  */
 const getMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
-  ctx.body = await machineService.getMachineById(ctx.params.id);
+  ctx.body = 
+  await machineService.getMachineById(ctx.state.session.userId, ctx.state.session.roles, ctx.params.id);
 };
 getMachineById.validationScheme = {
   params: {
@@ -215,28 +220,38 @@ export default (parent: KoaRouter) => {
     prefix: '/machines',
   });
 
+  const requireRoleManagerVwTech = makeRequireRoles(['MANAGER', 'VERANTWOORDELIJKE', 'TECHNIEKER']);
+  const requireRoleVwTech = makeRequireRoles(['VERANTWOORDELIJKE', 'TECHNIEKER']);
   router.get(
     '/', 
     requireAuthentication, 
+    requireRoleManagerVwTech,
     validate(getAllMachines.validationScheme),
     getAllMachines,
   );
-
   router.get(
     '/:id', 
     requireAuthentication,
-    validate(getMachineById.validationScheme), 
+    requireRoleManagerVwTech,
+    validate(getMachineById.validationScheme),
     getMachineById,
   );
   
   router.post(
     '/',
     requireAuthentication,
+    requireRoleVwTech, // Enkel Vw en Tech mag machine aanmaken
     validate(createMachine.validationScheme),
     createMachine,
   );
 
-  router.put('/:id', requireAuthentication, validate(updateMachineById.validationScheme), updateMachineById);
+  router.put(
+    '/:id', 
+    requireAuthentication, 
+    requireRoleVwTech, // Enkel Vw en Tech mag machine updaten
+    validate(updateMachineById.validationScheme), 
+    updateMachineById,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

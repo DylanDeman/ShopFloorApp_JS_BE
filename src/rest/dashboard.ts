@@ -2,7 +2,12 @@ import Router from '@koa/router';
 import * as dashboardService from '../service/dashboard';
 import type { KoaContext, KoaRouter, ShopfloorAppContext, ShopfloorAppState } from '../types/koa';
 import validate from '../core/validation';
-import type { getAllDashboardsResponse, getDashboardByIdResponse, CreateDashboardRequest, CreateDashboardResponse } from '../types/dashboard';
+import type { 
+  getAllDashboardsResponse, 
+  getDashboardByIdResponse, 
+  CreateDashboardRequest, 
+  CreateDashboardResponse, 
+} from '../types/dashboard';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import { requireAuthentication } from '../core/auth';
@@ -154,28 +159,36 @@ createDashboard.validationScheme = {
   },
 };
 
-
 export default (parent: KoaRouter) => {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/dashboard',
   });
 
+  router.use(requireAuthentication);
+
   router.get(
     '/',
-    requireAuthentication,
     validate(getAllDashboards.validationScheme),
     getAllDashboards,
   );
 
   router.get(
     '/:id',
-    requireAuthentication,
     validate(getDashboardById.validationScheme),
     getDashboardById,
   );
 
-  router.delete('/:id', validate(deleteDashboard.validationScheme), deleteDashboard);
-  router.post('/', validate(createDashboard.validationScheme), createDashboard);
+  router.delete(
+    '/:id', 
+    validate(deleteDashboard.validationScheme), 
+    deleteDashboard,
+  );
+  
+  router.post(
+    '/', 
+    validate(createDashboard.validationScheme), 
+    createDashboard,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

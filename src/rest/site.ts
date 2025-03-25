@@ -12,7 +12,7 @@ import type {
 } from '../types/site';
 import type { IdParams } from '../types/common';
 import Joi from 'joi';
-import { makeRequireRole, requireAuthentication } from '../core/auth';
+import { makeRequireRoles, requireAuthentication } from '../core/auth';
 import roles from '../core/roles';
 
 /**
@@ -36,7 +36,7 @@ import roles from '../core/roles';
  */
 const getAllSites = async (ctx: KoaContext<GetAllSitesResponse>) => {
   ctx.body = {
-    items: await siteService.getAllSites(),
+    items: await siteService.getAllSites(ctx.state.session.userId, ctx.state.session.roles),
   };
 };
 getAllSites.validationScheme = null;
@@ -60,7 +60,7 @@ getAllSites.validationScheme = null;
  *         description: Site data
  */
 const getSiteById = async (ctx: KoaContext<GetSiteByIdResponse, IdParams>) => {
-  ctx.body = await siteService.getSiteById(ctx.params.id);
+  ctx.body = await siteService.getSiteById(ctx.state.session.userId, ctx.state.session.roles, ctx.params.id);
 };
 getSiteById.validationScheme = {
   params: {
@@ -188,18 +188,51 @@ deleteSiteById.validationScheme = {
   },
 };
 
-const requireManager = makeRequireRole(roles.MANAGER);
-
+const requireRoleManager = makeRequireRoles([roles.MANAGER]);
+//const requireRoleManagerVw = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE]);
+//const requireRoleManagerVwTech = makeRequireRoles([roles.MANAGER, roles.VERANTWOORDELIJKE, roles.TECHNIEKER]);
 export default (parent: KoaRouter) => {
   const router = new Router<ShopfloorAppState, ShopfloorAppContext>({
     prefix: '/sites',
   });
 
-  router.get('/', requireAuthentication, requireManager, validate(getAllSites.validationScheme), getAllSites);
-  router.get('/:id', requireAuthentication, requireManager, validate(getSiteById.validationScheme), getSiteById);
-  router.put('/:id', requireAuthentication, requireManager, validate(updateById.validationScheme), updateById);
-  router.post('/', requireAuthentication, requireManager, validate(createSite.validationScheme), createSite);
-  router.delete('/:id', requireAuthentication, requireManager, validate(deleteSiteById.validationScheme), deleteSiteById);
+  router.get(
+    '/', 
+    requireAuthentication, 
+    validate(getAllSites.validationScheme), 
+    getAllSites,
+  );
+  
+  router.get(
+    '/:id', 
+    requireAuthentication, 
+    validate(getSiteById.validationScheme), 
+    getSiteById,
+  );
+
+  router.put(
+    '/:id', 
+    requireAuthentication, 
+    requireRoleManager,
+    validate(updateById.validationScheme), 
+    updateById,
+  );
+
+  router.post(
+    '/', 
+    requireAuthentication, 
+    requireRoleManager,
+    validate(createSite.validationScheme), 
+    createSite,
+  );
+
+  router.delete(
+    '/:id', 
+    requireAuthentication, 
+    requireRoleManager,
+    validate(deleteSiteById.validationScheme), 
+    deleteSiteById,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

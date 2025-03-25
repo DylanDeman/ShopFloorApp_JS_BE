@@ -1,7 +1,6 @@
 import { prisma } from '../data';
 import ServiceError from '../core/serviceError';
 import handleDBError from './_handleDBError';
-import roles from '../core/roles'; 
 import type { 
   SiteCreateInput,
   Site,
@@ -9,6 +8,7 @@ import type {
   UpdateSiteResponse, 
 } from '../types/site';
 import { Machine_Status, Status } from '@prisma/client'; 
+import roles from '../core/roles';
 
 // Wat je wilt dat je krijgt als je een site opvraagt:
 const SITE_SELECT = {
@@ -39,14 +39,31 @@ const SITE_SELECT = {
   },
 };
 
-export const getAllSites = async(): Promise<Site[]> => {
+export const getAllSites = async(user_id: number, user_roles: string[]): Promise<Site[]> => {
   try {
-    const sites = await prisma.site.findMany({
-      select: SITE_SELECT,
-    });
-
-    if (!sites.length) {
-      throw ServiceError.notFound('Geen sites gevonden.');
+    let sites: Site[] = [];
+    if(user_roles.includes(roles.MANAGER)) {
+      sites = await prisma.site.findMany({
+        select: SITE_SELECT,
+      });
+    } else if(user_roles.includes(roles.VERANTWOORDELIJKE)) {
+      sites = await prisma.site.findMany({
+        where: {
+          verantwoordelijke_id: user_id,
+        },
+        select: SITE_SELECT,
+      });
+    } else if(user_roles.includes(roles.TECHNIEKER)) {
+      sites = await prisma.site.findMany({
+        where: {
+          machines: {
+            some: {
+              technieker_id: user_id,
+            },
+          },
+        },
+        select: SITE_SELECT,
+      });
     }
 
     return sites;
@@ -58,15 +75,39 @@ export const getAllSites = async(): Promise<Site[]> => {
   }
 };
 
-export const getSiteById = async (id: number): Promise<Site> => {
+export const getSiteById = async (user_id: number, user_roles: string[],  id: number): Promise<Site> => {
   try {
-    const site = await prisma.site.findUnique({
-      where: { id },
-      select: SITE_SELECT,
-    });
+    let site: Site | null = null;
+    
+    if(user_roles.includes(roles.MANAGER)) {
+      site = await prisma.site.findUnique({
+        where: { id },
+        select: SITE_SELECT,
+      });
+    } else if(user_roles.includes(roles.VERANTWOORDELIJKE)) {
+      site = await prisma.site.findUnique({
+        where: { 
+          id,
+          verantwoordelijke_id: user_id,
+        },
+        select: SITE_SELECT,
+      });
+    } else if(user_roles.includes(roles.TECHNIEKER)) {
+      site = await prisma.site.findUnique({
+        where: { 
+          id,
+          machines: {
+            some: {
+              technieker_id: user_id,
+            },
+          },
+        },
+        select: SITE_SELECT,
+      });
+    }
 
     if (!site) {
-      throw ServiceError.notFound('Site niet gevonden.');
+      throw ServiceError.forbidden('Site niet gevonden.');
     }
 
     return site;
