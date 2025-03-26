@@ -3,7 +3,7 @@ Groepsleden:
 - Robin Ledoux [robin.ledoux@student.hogent.be](mailto:robin.ledoux@student.hogent.be)
 - Milan Dhondt [milan.dhondt@student.hogent.be](mailto:milan.dhondt@student.hogent.be)
 - Dogukan Uyanik [dogukan.uyanik@student.hogent.be](mailto:dogukan.uyanik@student.hogent.be)
-- Hussein Sijad Walipoor [sijad.walipoor@student.hogent.be](mailto:sijad.walipoor@student.hogent.be)
+- Sijad Walipoor [sijad.walipoor@student.hogent.be](mailto:sijad.walipoor@student.hogent.be)
 - Dylan De Man [dylan.deman@student.hogent.be](mailto:dylan.deman@student.hogent.be) 
 
 
@@ -40,7 +40,7 @@ Vul de variabelen aan met de nodige gegevens.
 # .env bestand
 ```bash
 NODE_ENV=production (of testing of development)
-DATABASE_URL="mysql://SDP2-2425-G12:bXaq7e0yoZKvGUI%23NZAFH@vichogent.be:40058/SDP2_2425_DB_G12"
+DATABASE_URL="mysql://<USERNAME>:<WACHTWOORD>@localhost:3306/<DATABASE_NAME>"
 ```
 
 ## Start up
