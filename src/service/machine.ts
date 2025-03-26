@@ -178,7 +178,7 @@ export const getMachineById = async (user_id: number, user_roles: string[], id: 
 };
 
 export const updateMachineById = 
-  async (user_id: number, user_roles: string[],id: number, changes: any) => {
+  async (user_roles: string[],id: number, changes: any) => {
     updateMachineKPIs();
     try {
       const previousMachine = await prisma.machine.findUnique({

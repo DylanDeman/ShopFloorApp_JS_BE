@@ -81,7 +81,6 @@ getAllMachines.validationScheme = null;
  */
 const updateMachineById = async (ctx: KoaContext<getMachineByIdResponse, IdParams>) => {
   ctx.body = await machineService.updateMachineById(
-    ctx.state.session.userId, 
     ctx.state.session.roles,
     ctx.params.id, 
     ctx.request.body,

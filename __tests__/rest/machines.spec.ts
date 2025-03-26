@@ -109,11 +109,11 @@ describe('Machines API', () => {
     await prisma.kPI.deleteMany({});
   });
 
-  it('should return 404 for a non-existent machine', async () => {
+  it('should return 403 for a non-existent machine', async () => {
     const response = await request
       .get(`${url}/9999`)
       .set('Authorization', adminAuthHeader);
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(403);
     expect(response.body.message).toBe('Machine niet gevonden');
   });
 
