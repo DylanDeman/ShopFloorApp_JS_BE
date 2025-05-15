@@ -73,20 +73,20 @@ getOnderhoudById.validationScheme = {
  *                 type: integer
  *               technieker_gebruiker_id:
  *                 type: integer
- *               datum:
+ *               executiondate:
  *                 type: string
  *                 format: date
- *               starttijdstip:
+ *               startdate:
  *                 type: string
  *                 format: date-time
- *               eindtijdstip:
+ *               enddate:
  *                 type: string
  *                 format: date-time
- *               reden:
+ *               reason:
  *                 type: string
  *               status:
  *                 type: string
- *               opmerkingen:
+ *               comments:
  *                 type: string
  *     responses:
  *       201:
@@ -100,13 +100,13 @@ const createOnderhoud = async (ctx: KoaContext<CreateOnderhoudResponse, void, Cr
 createOnderhoud.validationScheme = {
   body: {
     machine_id: Joi.number().integer().positive(),
-    technieker_id: Joi.number().integer().positive(),
-    datum: Joi.date(),
-    starttijdstip: Joi.date(),
-    eindtijdstip: Joi.date(),
-    reden: Joi.string(),
+    technician_id: Joi.number().integer().positive(),
+    executiondate: Joi.date(),
+    startdate: Joi.date(),
+    enddate: Joi.date(),
+    reason: Joi.string(),
     status: Joi.string(),
-    opmerkingen: Joi.string(),
+    comments: Joi.string(),
   },
 };
 
@@ -131,22 +131,22 @@ createOnderhoud.validationScheme = {
  *             properties:
  *               machine_id:
  *                 type: integer
- *               technieker_id:
+ *               technician_id:
  *                 type: integer
- *               datum:
+ *               executiondate:
  *                 type: string
  *                 format: date
- *               starttijdstip:
+ *               startdate:
  *                 type: string
  *                 format: date-time
- *               eindtijdstip:
+ *               enddate:
  *                 type: string
  *                 format: date-time
- *               reden:
+ *               reason:
  *                 type: string
  *               status:
  *                 type: string
- *               opmerkingen:
+ *               comments:
  *                 type: string
  *     responses:
  *       200:
@@ -162,13 +162,13 @@ updateOnderhoudById.validationScheme = {
   },
   body: {
     machine_id: Joi.number().integer().positive(),
-    technieker_id: Joi.number().integer().positive(),
-    datum: Joi.date(),
-    starttijdstip: Joi.date(),
-    eindtijdstip: Joi.date(),
-    reden: Joi.string(),
+    technician_id: Joi.number().integer().positive(),
+    executiondate: Joi.date(),
+    startdate: Joi.date(),
+    enddate: Joi.date(),
+    reason: Joi.string(),
     status: Joi.string(),
-    opmerkingen: Joi.string(),
+    comments: Joi.string(),
   },
 };
 

@@ -13,26 +13,26 @@ import roles from '../core/roles';
 // Wat je wilt dat je krijgt als je een site opvraagt:
 const SITE_SELECT = {
   id: true,
-  naam: true,
+  sitename: true,
   status: true,
   verantwoordelijke: {
     select: {
       id: true,
-      voornaam: true,
-      naam: true,
+      firstname: true,
+      lastname: true,
     },
   },
   machines: {
     select: {
       id: true,
-      locatie: true,
-      status: true,
-      productie_status : true,
+      location: true,
+      machinestatus: true,
+      productionstatus : true,
       technieker : {
         select: {
           id: true,
-          voornaam: true,
-          naam: true,
+          firstname: true,
+          lastname: true,
         },
       },
     },
@@ -58,7 +58,7 @@ export const getAllSites = async(user_id: number, user_roles: string[]): Promise
         where: {
           machines: {
             some: {
-              technieker_id: user_id,
+              technician_id: user_id,
             },
           },
         },
@@ -98,7 +98,7 @@ export const getSiteById = async (user_id: number, user_roles: string[],  id: nu
           id,
           machines: {
             some: {
-              technieker_id: user_id,
+              technician_id: user_id,
             },
           },
         },
@@ -124,7 +124,7 @@ export const createSite = async (data: SiteCreateInput): Promise<Site> => {
     // Vind gebruiker met verantwoordelijke_id
     const verantwoordelijke = await prisma.gebruiker.findUnique({
       where: { id: data.verantwoordelijke_id },
-      select: { rol: true }, 
+      select: { role: true }, 
     });
 
     // Als de gebruiker niet bestaat, gooi een error
@@ -133,7 +133,7 @@ export const createSite = async (data: SiteCreateInput): Promise<Site> => {
     }
 
     // Als de gebruiker geen verantwoordelijke is, gooi een error
-    const rol = verantwoordelijke.rol as string;
+    const rol = verantwoordelijke.role as string;
     if (!rol.includes(roles.VERANTWOORDELIJKE)) {
       throw new Error('The user is not a verantwoordelijke.');
     }
@@ -145,7 +145,7 @@ export const createSite = async (data: SiteCreateInput): Promise<Site> => {
 
     const site = await prisma.site.create({
       data: {
-        naam: data.naam,
+        sitename: data.sitename,
         verantwoordelijke_id: data.verantwoordelijke_id,
         status: data.status as Status,
       },
@@ -176,7 +176,7 @@ export const updateSiteById = async (id: number, changes: SiteUpdateInput): Prom
       if (changes.status === 'INACTIEF') {
         await prisma.machine.updateMany({
           where: { site_id: id },
-          data: { status: Machine_Status.AUTOMATISCH_GESTOPT },
+          data: { machinestatus: Machine_Status.AUTOMATISCH_GESTOPT },
         });
       }
     }
@@ -187,7 +187,7 @@ export const updateSiteById = async (id: number, changes: SiteUpdateInput): Prom
         id,
       },
       data: {
-        naam: changes.naam,
+        sitename: changes.sitename,
         verantwoordelijke_id: changes.verantwoordelijke_id,
         status: changes.status as Status, 
       },

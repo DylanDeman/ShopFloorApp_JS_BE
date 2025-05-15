@@ -1,18 +1,18 @@
 import type { Entity, ListResponse } from './common';
 
 export interface Adres extends Entity {
-  straat: string,
-  huisnummer: string,
-  stadsnaam: string,
-  postcode: string,
+  street: string,
+  number: string,
+  city: string,
+  postalcode: string,
   land: string,
 }
 
 export interface AdresCreateInput {
-  straat: string,
-  huisnummer: string,
-  stadsnaam: string,
-  postcode: string,
+  street: string,
+  number: string,
+  city: string,
+  postalcode: string,
   land: string,
 }
 

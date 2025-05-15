@@ -6,9 +6,9 @@ import type { Notificatie, NotificatieCreateInput } from '../types/notificatie';
 
 const NOTIFICATIE_SELECT = {
   id: true,
-  bericht: true,
-  tijdstip: true,
-  gelezen: true,
+  message: true,
+  time: true,
+  isread: true,
 };
 
 export const getAllNotificaties = async (page = 0, limit = 0): Promise<{items: Notificatie[], total: number}> => {
@@ -34,9 +34,9 @@ export const getAllNotificaties = async (page = 0, limit = 0): Promise<{items: N
       items: notificaties.map((notificatie) => 
         ({
           id: notificatie.id,
-          bericht: notificatie.bericht,
-          tijdstip: notificatie.tijdstip,
-          gelezen: notificatie.gelezen,
+          message: notificatie.message,
+          time: notificatie.time,
+          isread: notificatie.isread,
         }),
       ),
       total,
@@ -70,15 +70,15 @@ export const getNotificatieById = async (id: number) => {
 };
 
 export const updateNotificatieById = async (id: number, 
-  {tijdstip, bericht, gelezen}: any) => {
+  {time, message, isread}: any) => {
   try{
 
     const notificatie = await prisma.notificatie.update({
       where: { id },
       data: {
-        tijdstip: tijdstip,
-        bericht: bericht,
-        gelezen: gelezen,
+        time: time,
+        message: message,
+        isread: isread,
       },
     });
 
@@ -93,9 +93,9 @@ export const createNotificatie = async (data: NotificatieCreateInput): Promise<N
 
     const notificatie = await prisma.notificatie.create({
       data: {
-        bericht: data.bericht,
-        tijdstip: data.tijdstip,
-        gelezen: data.gelezen,
+        message: data.message,
+        time: data.time,
+        isread: data.isread,
       },
       select: NOTIFICATIE_SELECT,
     });

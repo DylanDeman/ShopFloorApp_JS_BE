@@ -40,15 +40,15 @@ describe('Users API', () => {
     it('should register a new user with all required fields', async () => {
       const response = await request.post(usersUrl)
         .send({ 
-          naam: 'New User', 
-          voornaam: 'Test', 
-          geboortedatum: '1990-01-01T00:00:00.000Z',
+          lastname: 'New User', 
+          firstname: 'Test', 
+          birthdate: '1990-01-01T00:00:00.000Z',
           email: 'new.user@test.com', 
-          wachtwoord: 'SecurePass123!',
-          gsm: '1234567890',
-          rol: JSON.stringify([Role.VERANTWOORDELIJKE]), 
+          password: 'SecurePass123!',
+          phonenumber: '1234567890',
+          role: JSON.stringify([Role.VERANTWOORDELIJKE]), 
           status: Status.ACTIEF, 
-          adres_id: 1, 
+          address_id: 1, 
         })
         .set('Authorization', authHeader);
       expect(response.statusCode).toBe(200);
@@ -59,13 +59,13 @@ describe('Users API', () => {
   it('should update a user with all required fields', async () => {
     const response = await request.put(`${usersUrl}/1`)
       .send({ 
-        naam: 'Changed Name',  
-        voornaam: 'Changed',
-        geboortedatum: '1991-02-02T00:00:00.000Z',
+        lastname: 'Changed Name',  
+        firstname: 'Changed',
+        birthdate: '1991-02-02T00:00:00.000Z',
         email: 'changed.user@test.com',
-        wachtwoord: 'NewSecurePass123!',
-        gsm: '0987654321',
-        rol: JSON.stringify([Role.TECHNIEKER]),
+        password: 'NewSecurePass123!',
+        phonenumber: '0987654321',
+        role: JSON.stringify([Role.TECHNIEKER]),
         status: Status.INACTIEF,
       })
       .set('Authorization', authHeader);

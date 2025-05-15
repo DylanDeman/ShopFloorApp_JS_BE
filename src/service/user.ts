@@ -11,18 +11,18 @@ import { Status } from '@prisma/client';
 
 const makeExposedUser = (
   { 
-    id, naam, voornaam, email, 
-    adres_id, gsm, geboortedatum, status, rol }
+    id, lastname, firstname, email, 
+    address_id, phonenumber, birthdate, status, role }
   : User): PublicUser => ({
   id,
-  naam,
-  voornaam,
+  lastname,
+  firstname,
   email,
-  adres_id,
-  gsm,
-  geboortedatum,
+  address_id,
+  phonenumber,
+  birthdate,
   status,
-  rol,
+  role,
 });
 
 export const checkAndParseSession = async (
@@ -84,7 +84,7 @@ export const login = async (
     );
   }
 
-  const passwordValid = await verifyPassword(password, gebruiker.wachtwoord);
+  const passwordValid = await verifyPassword(password, gebruiker.password);
 
   if (!passwordValid) {
     // DO NOT expose we know the user but an invalid password was given
@@ -97,29 +97,29 @@ export const login = async (
 };
 
 export const register = async ({
-  voornaam,
-  naam,
+  firstname,
+  lastname,
   email,
-  adres_id,
-  wachtwoord,
-  geboortedatum,
-  gsm,
-  rol,
+  address_id,
+  password,
+  birthdate,
+  phonenumber,
+  role,
 }: UserCreateInput): Promise<string> => {
   try {
-    const passwordHash = await hashPassword(wachtwoord);
+    const passwordHash = await hashPassword(password);
 
     const user = await prisma.gebruiker.create({
       data: {
         status: Status.ACTIEF,
-        naam,
-        voornaam,
+        lastname,
+        firstname,
         email,
-        adres_id,
-        wachtwoord: passwordHash,
-        geboortedatum,
-        gsm,
-        rol: rol,
+        address_id,
+        password: passwordHash,
+        birthdate,
+        phonenumber,
+        role: role,
       },
     });
 

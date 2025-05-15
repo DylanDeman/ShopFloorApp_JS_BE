@@ -10,44 +10,44 @@ import { getLogger } from '../core/logging';
 const SELECT_MACHINE = {
   id: true,
   code: true,
-  status: true,
-  status_sinds: true,
+  machinestatus: true,
+  lastmaintenance: true,
   aantal_goede_producten: true,
   aantal_slechte_producten: true,
   limiet_voor_onderhoud: true,
-  locatie: true,
-  productie_status: true,
+  location: true,
+  productionstatus: true,
   technieker: {
     select: {
       id: true,
-      voornaam: true,
-      naam: true,
+      firstname: true,
+      lastname: true,
     },
   },
   site: {
     select: {
       id: true,
-      naam: true,
+      sitename: true,
       verantwoordelijke: true,
     },
   },
   product_naam: true,
-  product_informatie: true,
+  productinfo: true,
   onderhouden: {
     select: {
       id: true,
       machine_id: true,
-      datum: true,
-      starttijdstip: true,
-      eindtijdstip: true,
-      reden: true,
+      executiondate: true,
+      startdate: true,
+      enddate: true,
+      reason: true,
       status: true,
-      opmerkingen: true,
+      comments: true,
       technieker: {
         select: {
           id: true,
-          voornaam: true,
-          naam: true,
+          firstname: true,
+          lastname: true,
         },
       },
     },
@@ -67,7 +67,7 @@ export const getAllMachines = async (user_id: number, user_roles: string[]): Pro
       // Technieker mag enkel zijn eigen machines zien:
       machines = await prisma.machine.findMany({
         where: {
-          technieker_id: user_id,
+          technician_id: user_id,
         },
         select: SELECT_MACHINE,
       });
@@ -97,8 +97,8 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
     getLogger().info(`Creating machine with code ${data.code}`);
     // Check if the technieker/user exists 
     const technieker = await prisma.gebruiker.findUnique({
-      where: { id: data.technieker_id },
-      select: { rol: true },
+      where: { id: data.technician_id },
+      select: { role: true },
     });
 
     if (!technieker) {
@@ -106,7 +106,7 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
     }
 
     // if user/technieker is not a valid TECHNIEKER:
-    if (technieker.rol !== 'TECHNIEKER') {
+    if (technieker.role !== 'TECHNIEKER') {
       throw new Error('The gebruiker is not a valid TECHNIEKER.');
     }
 
@@ -114,21 +114,21 @@ export const createMachine = async (data: MachineCreateInput): Promise<Machine> 
     const machine = await prisma.machine.create({
       data: {
         code: data.code,
-        locatie: data.locatie,
-        status: Machine_Status.DRAAIT,
-        status_sinds: new Date(),
-        productie_status: Productie_Status.GEZOND,
+        location: data.location,
+        machinestatus: Machine_Status.DRAAIT,
+        lastmaintenance: new Date(),
+        productionstatus: Productie_Status.GEZOND,
         aantal_goede_producten: 0,
         aantal_slechte_producten: 0,
         limiet_voor_onderhoud: data.limiet_voor_onderhoud,
         technieker: {
-          connect: { id: data.technieker_id },
+          connect: { id: data.technician_id },
         },
         site: {
           connect: { id: data.site_id },
         },
         product_naam: data.product_naam,
-        product_informatie: data.product_informatie,
+        productinfo: data.productinfo,
       },
       select: SELECT_MACHINE,
     });
@@ -151,7 +151,7 @@ export const getMachineById = async (user_id: number, user_roles: string[], id: 
       machine = await prisma.machine.findUnique({
         where: {
           id,
-          technieker_id: user_id,
+          technician_id: user_id,
         },
         select: SELECT_MACHINE,
       });
@@ -184,7 +184,7 @@ export const updateMachineById =
       const previousMachine = await prisma.machine.findUnique({
         where: { id },
         select: {
-          status: true,
+          machinestatus: true,
         },
       });
 
@@ -194,30 +194,30 @@ export const updateMachineById =
 
       const {
         code,
-        locatie,
-        technieker_id,
+        location,
+        technician_id,
         site_id,
         product_naam,
-        product_informatie,
+        productinfo,
         limiet_voor_onderhoud,
-        status,
-        productie_status,
+        machinestatus,
+        productionstatus,
       } = changes;
 
       // Prepare update data with only defined fields
       const updateData: any = {};
 
       if (code !== undefined) updateData.code = code;
-      if (locatie !== undefined) updateData.locatie = locatie;
+      if (location !== undefined) updateData.location = location;
       if (limiet_voor_onderhoud !== undefined) updateData.limiet_voor_onderhoud = limiet_voor_onderhoud;
-      if (status !== undefined) updateData.status = status as Machine_Status;
-      if (productie_status !== undefined) updateData.productie_status = productie_status;
+      if (machinestatus !== undefined) updateData.machinestatus = machinestatus as Machine_Status;
+      if (productionstatus !== undefined) updateData.productionstatus = productionstatus;
       if (product_naam !== undefined) updateData.product_naam = product_naam;
-      if (product_informatie !== undefined) updateData.product_informatie = product_informatie;
+      if (productinfo !== undefined) updateData.productinfo = productinfo;
 
-      if (technieker_id !== undefined) {
+      if (technician_id !== undefined) {
         updateData.technieker = {
-          connect: { id: technieker_id },
+          connect: { id: technician_id },
         };
       }
 
@@ -228,9 +228,9 @@ export const updateMachineById =
       }
 
       // if status is changed:
-      if (status !== undefined && previousMachine.status !== status) {
+      if (machinestatus !== undefined && previousMachine.machinestatus !== machinestatus) {
         if (user_roles.includes('VERANTWOORDELIJKE') || user_roles.includes('TECHNIEKER')) {
-          updateData.status_sinds = new Date();
+          updateData.lastmaintenance = new Date();
         } else {
           throw ServiceError.forbidden('Deze actie is niet toegestaan!');
         }
@@ -243,10 +243,10 @@ export const updateMachineById =
       });
 
       // Create notification if status changed
-      if (status !== undefined && previousMachine.status !== status) {
+      if (machinestatus !== undefined && previousMachine.machinestatus !== machinestatus) {
         await prisma.notificatie.create({
           data: {
-            bericht: `Machine ${machine.id} ${machine.status}`,
+            message: `Machine ${machine.id} ${machine.machinestatus}`,
           },
         });
       }
@@ -331,20 +331,20 @@ export const updateMachineKPIs = async () => {
 
     //Algemene gezondheid per site
     const machinesPerSite = await prisma.machine.groupBy({
-      by: ['site_id', 'productie_status'],
+      by: ['site_id', 'productionstatus'],
       _count: { id: true },
     });
 
     const siteHealthData: Record<number, { gezond: number; falend: number }> = {};
 
-    machinesPerSite.forEach(({ site_id, productie_status, _count }) => {
+    machinesPerSite.forEach(({ site_id, productionstatus, _count }) => {
       if (!siteHealthData[site_id]) {
         siteHealthData[site_id] = { gezond: 0, falend: 0 };
       }
 
-      if (productie_status === 'GEZOND') {
+      if (productionstatus === 'GEZOND') {
         siteHealthData[site_id].gezond += _count.id;
-      } else if (productie_status === 'FALEND' || productie_status === 'NOOD_ONDERHOUD') {
+      } else if (productionstatus === 'FALEND' || productionstatus === 'NOOD_ONDERHOUD') {
         siteHealthData[site_id].falend += _count.id;
       }
     });
@@ -374,12 +374,12 @@ export const updateMachineKPIs = async () => {
 
     // Machines per status
     const machinesPerStatus = await prisma.machine.groupBy({
-      by: ['status'],
+      by: ['machinestatus'],
       _count: { id: true },
     });
 
     const KPI_data_machinesPerStatus = machinesPerStatus.map((statusgroep) => ({
-      kpi_id: getKPIid(statusgroep.status),
+      kpi_id: getKPIid(statusgroep.machinestatus),
       datum: today,
       waarde: statusgroep._count.id.toString(),
       site_id: null,
@@ -390,7 +390,7 @@ export const updateMachineKPIs = async () => {
     // Aankomende onderhoudsbeurten
     const aankomendeOnderhoudsbeurten = await prisma.onderhoud.findMany({
       where: {
-        datum: {
+        executiondate: {
           gt: today,
         },
       },
@@ -411,7 +411,7 @@ export const updateMachineKPIs = async () => {
         id: true,
       },
       orderBy: {
-        datum: 'desc',
+        executiondate: 'desc',
       },
       take: 5,
     });
@@ -429,19 +429,19 @@ export const updateMachineKPIs = async () => {
     //Machines per productiestatus
     const machinesPerProductieStatus = await prisma.machine.findMany({
       select: {
-        productie_status: true,
+        productionstatus: true,
         id: true,
       },
       orderBy: {
-        status: 'asc',
+        machinestatus: 'asc',
       },
     });
 
     const machinesPerProductieStatusGrouped = machinesPerProductieStatus.reduce((acc, machine) => {
-      if (!acc[machine.productie_status]) {
-        acc[machine.productie_status] = [];
+      if (!acc[machine.productionstatus]) {
+        acc[machine.productionstatus] = [];
       }
-      acc[machine.productie_status]?.push(machine.id);
+      acc[machine.productionstatus]?.push(machine.id);
       return acc;
     }, {} as Record<string, number[]>);
 

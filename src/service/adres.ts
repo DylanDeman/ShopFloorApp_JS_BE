@@ -5,10 +5,10 @@ import handleDBError from './_handleDBError';
 
 const ADRES_SELECT = {
   id: true,
-  straat: true,
-  huisnummer: true,
-  stadsnaam: true,
-  postcode: true,
+  street: true,
+  number: true,
+  city: true,
+  postalcode: true,
   land: true,
 };
 
@@ -32,18 +32,18 @@ export const getById = async (id: number): Promise<Adres> => {
 };
 
 export const create = async ({
-  straat,
-  huisnummer,
-  stadsnaam,
-  postcode,
+  street,
+  number,
+  city,
+  postalcode,
   land,
 }: AdresCreateInput): Promise<Adres> => {
   try {
     return await prisma.adres.create({
       data: {
-        straat, huisnummer,
-        stadsnaam,
-        postcode,
+        street, number,
+        city,
+        postalcode,
         land,
       },
       select: ADRES_SELECT,
@@ -54,10 +54,10 @@ export const create = async ({
 };
 
 export const updateById = async (id: number, {
-  straat,
-  huisnummer,
-  stadsnaam,
-  postcode,
+  street,
+  number,
+  city,
+  postalcode,
   land,
 }: AdresUpdateInput): Promise<AdresUpdateInput> => {
   try {
@@ -66,10 +66,10 @@ export const updateById = async (id: number, {
         id,
       },
       data: {
-        straat,
-        huisnummer,
-        stadsnaam,
-        postcode,
+        street,
+        number,
+        city,
+        postalcode,
         land,
       },
       select: ADRES_SELECT,

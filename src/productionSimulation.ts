@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function simulateProduction() {
   const machines = await prisma.machine.findMany({
-    where: { status: 'DRAAIT' },
+    where: { machinestatus: 'DRAAIT' },
   });
 
   for (const machine of machines) {
@@ -35,8 +35,8 @@ async function updateMachineStatus(machineId: number) {
   const totaal_producten = machine.aantal_goede_producten + machine.aantal_slechte_producten;
   const productie_graad = machine.aantal_goede_producten / (totaal_producten || 1);
 
-  let status = machine.status;
-  let productie_status = machine.productie_status;
+  let status = machine.machinestatus;
+  let productie_status = machine.productionstatus;
 
   if (totaal_producten >= machine.limiet_voor_onderhoud 
     && status === Machine_Status.DRAAIT) {
@@ -52,8 +52,8 @@ async function updateMachineStatus(machineId: number) {
   await prisma.machine.update({
     where: { id: machineId },
     data: { 
-      productie_status : productie_status as Productie_Status,
-      status: status as Machine_Status,
+      productionstatus : productie_status as Productie_Status,
+      machinestatus: status as Machine_Status,
     },
   });
 }

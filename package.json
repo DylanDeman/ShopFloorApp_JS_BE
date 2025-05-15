@@ -14,7 +14,7 @@
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@koa/router": "^13.1.0",
-    "@prisma/client": "^6.4.0",
+    "@prisma/client": "^6.5.0",
     "argon2": "^0.41.1",
     "config": "^3.3.12",
     "dotenv": "^16.4.7",

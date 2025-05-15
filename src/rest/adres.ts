@@ -37,13 +37,13 @@ import roles from '../core/roles';
  *                   items:
  *                     type: object
  *                     properties:
- *                       straat:
+ *                       street:
  *                         type: string
- *                       huisnummer:
+ *                       number:
  *                         type: string
- *                       stadsnaam:
+ *                       city:
  *                         type: string
- *                       postcode:
+ *                       postalcode:
  *                         type: string
  *                       land:
  *                         type: string
@@ -70,13 +70,13 @@ getAllAdresses.validationScheme = null;
  *           schema:
  *             type: object
  *             properties:
- *               straat:
+ *               street:
  *                 type: string
- *               huisnummer:
+ *               number:
  *                 type: string
- *               stadsnaam:
+ *               city:
  *                 type: string
- *               postcode:
+ *               postalcode:
  *                 type: string
  *               land:
  *                 type: string
@@ -90,13 +90,13 @@ getAllAdresses.validationScheme = null;
  *               properties:
  *                 id:
  *                   type: integer
- *                 straat:
+ *                 street:
  *                   type: string
- *                 huisnummer:
+ *                 number:
  *                   type: string
- *                 stadsnaam:
+ *                 city:
  *                   type: string
- *                 postcode:
+ *                 postalcode:
  *                   type: string
  *                 land:
  *                   type: string
@@ -110,10 +110,10 @@ const createAdres = async (ctx: KoaContext<CreateAdresResponse, void, CreateAdre
 };
 createAdres.validationScheme = {
   body: {
-    straat: Joi.string(),
-    huisnummer: Joi.string(),
-    stadsnaam: Joi.string(),
-    postcode: Joi.string(),
+    street: Joi.string(),
+    number: Joi.string(),
+    city: Joi.string(),
+    postalcode: Joi.string(),
     land: Joi.string(),
   },
 };
@@ -142,13 +142,13 @@ createAdres.validationScheme = {
  *               properties:
  *                 id:
  *                   type: integer
- *                 straat:
+ *                 street:
  *                   type: string
- *                 huisnummer:
+ *                 number:
  *                   type: string
- *                 stadsnaam:
+ *                 city:
  *                   type: string
- *                 postcode:
+ *                 postalcode:
  *                   type: string
  *                 land:
  *                   type: string
@@ -183,13 +183,13 @@ getAdresById.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               straat:
+ *               street:
  *                 type: string
- *               huisnummer:
+ *               number:
  *                 type: string
- *               stadsnaam:
+ *               city:
  *                 type: string
- *               postcode:
+ *               postalcode:
  *                 type: string
  *               land:
  *                 type: string
@@ -203,13 +203,13 @@ getAdresById.validationScheme = {
  *               properties:
  *                 id:
  *                   type: integer
- *                 straat:
+ *                 street:
  *                   type: string
- *                 huisnummer:
+ *                 number:
  *                   type: string
- *                 stadsnaam:
+ *                 city:
  *                   type: string
- *                 postcode:
+ *                 postalcode:
  *                   type: string
  *                 land:
  *                   type: string
@@ -224,10 +224,10 @@ const updateAdres = async (ctx: KoaContext<UpdateAdresResponse, IdParams, Update
 updateAdres.validationScheme = {
   params: { id: Joi.number().integer().positive() },
   body: {
-    straat: Joi.string(),
-    huisnummer: Joi.string(),
-    stadsnaam: Joi.string(),
-    postcode: Joi.string(),
+    street: Joi.string(),
+    number: Joi.string(),
+    city: Joi.string(),
+    postalcode: Joi.string(),
     land: Joi.string(),
   },
 };

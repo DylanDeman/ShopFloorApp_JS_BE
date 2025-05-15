@@ -67,12 +67,12 @@ getNotificatieById.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               bericht:
+ *               message:
  *                 type: string
- *               tijdstip:
+ *               time:
  *                 type: string
  *                 format: date-time
- *               gelezen:
+ *               isread:
  *                 type: boolean
  *     responses:
  *       201:
@@ -85,9 +85,9 @@ const createNotificatie = async (ctx: KoaContext<CreateNotificatieResponse, void
 };
 createNotificatie.validationScheme = {
   body: {
-    bericht: Joi.string(),
-    tijdstip: Joi.date(),
-    gelezen: Joi.bool().optional().default(false),
+    message: Joi.string(),
+    time: Joi.date(),
+    isread: Joi.bool().optional().default(false),
   },
 };
 
@@ -110,12 +110,12 @@ createNotificatie.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               bericht:
+ *               message:
  *                 type: string
- *               tijdstip:
+ *               time:
  *                 type: string
  *                 format: date-time
- *               gelezen:
+ *               isread:
  *                 type: boolean
  *     responses:
  *       200:
@@ -129,9 +129,9 @@ updateNotificatieById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
   body: {
-    tijdstip: Joi.date(),
-    bericht: Joi.string(),
-    gelezen: Joi.bool(),
+    time: Joi.date(),
+    message: Joi.string(),
+    isread: Joi.bool(),
   },
 };
 

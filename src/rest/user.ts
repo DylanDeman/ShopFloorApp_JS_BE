@@ -76,19 +76,19 @@ getAllUsers.validationScheme = null;
  *             type: object
  *             required:
  *               - email
- *               - wachtwoord
+ *               - password
  *             properties:
- *               adres_id:
+ *               address_id:
  *                 type: integer
  *                 description: Address ID reference
- *               voornaam:
+ *               firstname:
  *                 type: string
  *                 maxLength: 255
  *                 description: First name
- *               naam:
+ *               lastname:
  *                 type: string
  *                 description: Last name
- *               geboortedatum:
+ *               birthdate:
  *                 type: string
  *                 format: date
  *                 description: Date of birth
@@ -96,15 +96,15 @@ getAllUsers.validationScheme = null;
  *                 type: string
  *                 format: email
  *                 description: Email address
- *               wachtwoord:
+ *               password:
  *                 type: string
  *                 minLength: 12
  *                 maxLength: 255
  *                 description: Password (minimum 12 characters)
- *               gsm:
+ *               phonenumber:
  *                 type: string
  *                 description: Mobile phone number
- *               rol:
+ *               role:
  *                 type: string
  *                 description: User role
  *               status:
@@ -129,14 +129,14 @@ const registerUser = async (ctx: KoaContext<LoginResponse, void, RegisterUserReq
 };
 registerUser.validationScheme = {
   body: {
-    adres_id: Joi.number().integer().positive(),
-    voornaam: Joi.string().max(255),
-    naam: Joi.string(),
-    geboortedatum: Joi.date(),
+    address_id: Joi.number().integer().positive(),
+    firstname: Joi.string().max(255),
+    lastname: Joi.string(),
+    birthdate: Joi.date(),
     email: Joi.string().email(),
-    wachtwoord: Joi.string().min(12).max(255),
-    gsm: Joi.string(),
-    rol: Joi.string(),
+    password: Joi.string().min(12).max(255),
+    phonenumber: Joi.string(),
+    role: Joi.string(),
     status: Joi.string(),
   },
 };
@@ -219,22 +219,22 @@ getUserById.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               voornaam:
+ *               firstname:
  *                 type: string
  *                 maxLength: 255
- *               naam:
+ *               lastname:
  *                 type: string
  *                 maxLength: 255
- *               geboortedatum:
+ *               birthdate:
  *                 type: string
  *                 format: date
- *               wachtwoord:
+ *               password:
  *                 type: string
  *                 minLength: 12
  *                 maxLength: 255
- *               gsm:
+ *               phonenumber:
  *                 type: string
- *               rol:
+ *               role:
  *                 type: string
  *               status:
  *                 type: string
@@ -259,13 +259,13 @@ const updateUserById = async (ctx: KoaContext<UpdateUserResponse, IdParams, Upda
 updateUserById.validationScheme = {
   params: { id: Joi.number().integer().positive() },
   body: {
-    voornaam: Joi.string().max(255),
-    geboortedatum: Joi.date(),
-    wachtwoord: Joi.string().min(12).max(255),
-    gsm: Joi.string(),
-    rol: Joi.string(),
+    firstname: Joi.string().max(255),
+    birthdate: Joi.date(),
+    password: Joi.string().min(12).max(255),
+    phonenumber: Joi.string(),
+    role: Joi.string(),
     status: Joi.string(),
-    naam: Joi.string().max(255),
+    lastname: Joi.string().max(255),
     email: Joi.string().email(),
   },
 };
@@ -363,13 +363,13 @@ getDashboardByUserID.validationScheme = {
  *         id:
  *           type: integer
  *           description: Unique identifier for the user
- *         voornaam:
+ *         firstname:
  *           type: string
  *           description: First name
- *         naam:
+ *         lastname:
  *           type: string
  *           description: Last name
- *         geboortedatum:
+ *         birthdate:
  *           type: string
  *           format: date
  *           description: Date of birth
@@ -377,10 +377,10 @@ getDashboardByUserID.validationScheme = {
  *           type: string
  *           format: email
  *           description: Email address
- *         gsm:
+ *         phonenumber:
  *           type: string
  *           description: Mobile phone number
- *         rol:
+ *         role:
  *           type: string
  *           description: User role
  *         status:

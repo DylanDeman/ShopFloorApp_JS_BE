@@ -34,10 +34,10 @@ describe('Machines API', () => {
     await prisma.adres.create({
       data: {
         id: 1,
-        straat: 'Teststraat',
-        huisnummer: '1A',
-        stadsnaam: 'Teststad',
-        postcode: '1234',
+        street: 'Teststraat',
+        number: '1A',
+        city: 'Teststad',
+        postalcode: '1234',
         land: 'Testland',
       },
     });
@@ -45,22 +45,22 @@ describe('Machines API', () => {
     await prisma.gebruiker.create({
       data: {
         id: 1,
-        naam: 'Test User',
-        voornaam: 'Test',
-        geboortedatum: new Date(1990, 1, 1),
+        lastname: 'Test User',
+        firstname: 'Test',
+        birthdate: new Date(1990, 1, 1),
         email: 'user@test.com',
-        wachtwoord: 'password',
-        gsm: '1234567890',
-        rol: Role.TECHNIEKER,
+        password: 'password',
+        phonenumber: '1234567890',
+        role: Role.TECHNIEKER,
         status: Status.ACTIEF,
-        adres_id: 1,
+        address_id: 1,
       },
     });
 
     await prisma.site.create({
       data: {
         id: 1,
-        naam: 'Test Site',
+        sitename: 'Test Site',
         verantwoordelijke_id: 1,
         status: Status.ACTIEF,
       },
@@ -69,15 +69,15 @@ describe('Machines API', () => {
     createdMachine = await prisma.machine.create({
       data: {
         code: 'MACHINE123',
-        locatie: 'Test Location',
-        status: Machine_Status.DRAAIT,
-        productie_status: Productie_Status.GEZOND,
+        location: 'Test Location',
+        machinestatus: Machine_Status.DRAAIT,
+        productionstatus: Productie_Status.GEZOND,
         site_id: 1,
         product_naam: 'Apple M2',
-        product_informatie: '2.95 GHz processor',
-        technieker_id: 1,
+        productinfo: '2.95 GHz processor',
+        technician_id: 1,
         aantal_goede_producten: 596,
-        status_sinds: '2025-03-11T08:36:39.975Z',
+        lastmaintenance: '2025-03-11T08:36:39.975Z',
         aantal_slechte_producten: 678,
         limiet_voor_onderhoud: 21407,
       },

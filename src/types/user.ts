@@ -1,31 +1,31 @@
 import type { Prisma, Status } from '@prisma/client';
 import type { Entity, ListResponse } from './common';
 export interface User extends Entity {
-  voornaam: string,
-  naam: string;
-  adres_id: number,
+  firstname: string,
+  lastname: string;
+  address_id: number,
   email: string;
-  wachtwoord: string;
-  geboortedatum: Date,
-  gsm: string,
-  rol: Prisma.JsonValue;
+  password: string;
+  birthdate: Date,
+  phonenumber: string,
+  role: Prisma.JsonValue;
   status: Status
 }
 
 export interface UserCreateInput {
-  voornaam: string,
-  naam: string;
+  firstname: string,
+  lastname: string;
   email: string;
-  adres_id: number;
-  wachtwoord: string;
-  geboortedatum: Date;
-  gsm: string,
-  rol: any,
+  address_id: number;
+  password: string;
+  birthdate: Date;
+  phonenumber: string,
+  role: any,
 }
 
-export interface PublicUser extends Omit<User, 'wachtwoord'> {}
+export interface PublicUser extends Omit<User, 'password'> {}
 
-export interface UserUpdateInput extends Pick<UserCreateInput, 'voornaam' | 'email'> {}
+export interface UserUpdateInput extends Pick<UserCreateInput, 'firstname' | 'email'> {}
 
 export interface LoginRequest {
   email: string;
@@ -36,17 +36,17 @@ export interface GetUserRequest {
   id: number | 'me';
 }
 export interface RegisterUserRequest {
-  adres_id: number;
-  naam: string;
-  voornaam: string;
-  geboortedatum: Date;
+  address_id: number;
+  lastname: string;
+  firstname: string;
+  birthdate: Date;
   email: string;
-  wachtwoord: string;
-  gsm: string;
-  rol: any;
+  password: string;
+  phonenumber: string;
+  role: any;
   status: Status
 }
-export interface UpdateUserRequest extends Omit<RegisterUserRequest, 'wachtwoord' | 'rol'> {}
+export interface UpdateUserRequest extends Omit<RegisterUserRequest, 'password' | 'role'> {}
 
 export interface GetAllUsersResponse extends ListResponse<PublicUser> {}
 export interface GetUserByIdResponse extends PublicUser {}

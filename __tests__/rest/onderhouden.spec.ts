@@ -27,10 +27,10 @@ describe('Onderhoud API', () => {
     await prisma.adres.create({
       data: {
         id: 1,
-        straat: 'Onderhoudstraat',
-        huisnummer: '10B',
-        stadsnaam: 'Onderhoudstad',
-        postcode: '4321',
+        street: 'Onderhoudstraat',
+        number: '10B',
+        city: 'Onderhoudstad',
+        postalcode: '4321',
         land: 'Onderhoudland',
       },
     });
@@ -38,22 +38,22 @@ describe('Onderhoud API', () => {
     await prisma.gebruiker.create({
       data: {
         id: 1,
-        naam: 'Onderhoud Technieker',
-        voornaam: 'Technieker',
-        geboortedatum: new Date(1990, 5, 15),
+        lastname: 'Onderhoud Technieker',
+        firstname: 'Technieker',
+        birthdate: new Date(1990, 5, 15),
         email: 'technieker@onderhoud.com',
-        wachtwoord: 'password123',
-        gsm: '9876543210',
-        rol: Role.TECHNIEKER,
+        password: 'password123',
+        phonenumber: '9876543210',
+        role: Role.TECHNIEKER,
         status: Status.ACTIEF,
-        adres_id: 1,
+        address_id: 1,
       },
     });
     
     await prisma.site.create({
       data: {
         id: 1,
-        naam: 'Test Site',
+        sitename: 'Test Site',
         verantwoordelijke_id: 1,
         status: Status.ACTIEF,
       },
@@ -63,17 +63,17 @@ describe('Onderhoud API', () => {
       data: {
         id: 1,
         code: 'MACHINE456',
-        locatie: 'Onderhoud Location',
-        status: 'DRAAIT',
-        productie_status: 'GEZOND',
-        status_sinds: new Date('2025-03-11T08:36:39.975Z'),
+        location: 'Onderhoud Location',
+        machinestatus: 'DRAAIT',
+        productionstatus: 'GEZOND',
+        lastmaintenance: new Date('2025-03-11T08:36:39.975Z'),
         aantal_goede_producten: 1000,
         aantal_slechte_producten: 50,
         limiet_voor_onderhoud: 5000,
-        technieker_id: 1,
+        technician_id: 1,
         site_id: 1,
         product_naam: 'RAM DDR4',
-        product_informatie: '16GB',
+        productinfo: '16GB',
       },
     });
 
@@ -81,13 +81,13 @@ describe('Onderhoud API', () => {
       data: {
         id: 1,
         machine_id: 1,
-        technieker_id: 1,
-        datum: new Date(),
-        starttijdstip: new Date(),
-        eindtijdstip: new Date(),
-        reden: 'Preventief onderhoud',
+        technician_id: 1,
+        executiondate: new Date(),
+        startdate: new Date(),
+        enddate: new Date(),
+        reason: 'Preventief onderhoud',
         status: Onderhoud_Status.IN_UITVOERING,
-        opmerkingen: 'Alles gaat goed',
+        comments: 'Alles gaat goed',
       },
     });
   });
@@ -108,13 +108,13 @@ describe('Onderhoud API', () => {
 
   const newOnderhoud = {
     machine_id: 1,
-    technieker_id: 1,
-    datum: new Date(),
-    starttijdstip: new Date(),
-    eindtijdstip: new Date(),
-    reden: 'Nieuw onderhoud',
+    technician_id: 1,
+    executiondate: new Date(),
+    startdate: new Date(),
+    enddate: new Date(),
+    reason: 'Nieuw onderhoud',
     status: Onderhoud_Status.INGEPLAND,
-    opmerkingen: 'Planning for new maintenance',
+    comments: 'Planning for new maintenance',
   };
 
   describe('GET /api/onderhouden', () => {
@@ -129,7 +129,7 @@ describe('Onderhoud API', () => {
     it('should create a new onderhoud', async () => {
       const response = await request.post(url).set('Authorization', adminAuthHeader).send(newOnderhoud);
       expect(response.status).toBe(201);
-      expect(response.body.reden).toBe(newOnderhoud.reden);
+      expect(response.body.reason).toBe(newOnderhoud.reason);
     });
   });
 
@@ -143,11 +143,11 @@ describe('Onderhoud API', () => {
 
   describe('PUT /api/onderhouden/:id', () => {
     it('should update an onderhoud', async () => {
-      const updateData = { reden: 'Updated Onderhoud', status: Onderhoud_Status.VOLTOOID, machine_id: 1, technieker_id:
-         1, datum: new Date(), starttijdstip: new Date(), eindtijdstip: new Date(), opmerkingen: 'Updated onderhoud' };
+      const updateData = { reason: 'Updated Onderhoud', status: Onderhoud_Status.VOLTOOID, machine_id: 1, technician_id:
+         1, executiondate: new Date(), startdate: new Date(), enddate: new Date(), comments: 'Updated onderhoud' };
       const response = await request.put(`${url}/1`).set('Authorization', adminAuthHeader).send(updateData);
       expect(response.status).toBe(200);
-      expect(response.body.reden).toBe(updateData.reden);
+      expect(response.body.reason).toBe(updateData.reason);
     });
   });
 

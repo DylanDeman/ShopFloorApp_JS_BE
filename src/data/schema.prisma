@@ -9,35 +9,35 @@ datasource db {
 
 model Adres {
   id         Int         @id @default(autoincrement()) @db.UnsignedInt
-  straat     String      @db.VarChar(255)
-  huisnummer String      @db.VarChar(50)
-  stadsnaam  String      @db.VarChar(100)
-  postcode   String      @db.VarChar(10)
+  street     String      @db.VarChar(255)
+  number String      @db.VarChar(50)
+  city  String      @db.VarChar(100)
+  postalcode   String      @db.VarChar(10)
   land       String      @db.VarChar(255)
   gebruikers Gebruiker[]
 
-  @@map("adressen")
+  @@map("addresses")
 }
 
 model Gebruiker {
   id            Int         @id @default(autoincrement()) @db.UnsignedInt
-  adres_id      Int         @db.UnsignedInt
-  naam          String      @db.VarChar(255)
-  voornaam      String      @db.VarChar(255)
-  geboortedatum DateTime    @db.DateTime(0)
+  address_id      Int         @db.UnsignedInt
+  lastname          String      @db.VarChar(255)
+  firstname      String      @db.VarChar(255)
+  birthdate DateTime    @db.DateTime(0)
   email         String      @unique @db.VarChar(255)
-  wachtwoord    String      @db.VarChar(255)
-  gsm           String      @db.VarChar(255)
-  rol           String      @db.LongText
+  password    String      @db.VarChar(255)
+  phonenumber           String      @db.VarChar(255)
+  role           String      @db.LongText
   status        Status
   Dashboard     Dashboard[]
-  adres         Adres       @relation(fields: [adres_id], references: [id], onDelete: NoAction, map: "fk_adres_gebruiker")
+  adres         Adres       @relation(fields: [address_id], references: [id], onDelete: NoAction, map: "fk_adres_gebruiker")
   machines      Machine[]
   onderhouden   Onderhoud[]
   sites         Site[]
 
-  @@index([adres_id], map: "fk_adres_gebruiker")
-  @@map("gebruikers")
+  @@index([address_id], map: "fk_adres_gebruiker")
+  @@map("users")
 }
 
 model KPI {
@@ -77,46 +77,38 @@ model Dashboard {
 
 model Site {
   id                   Int       @id @default(autoincrement()) @db.UnsignedInt
-  naam                 String    @db.VarChar(255)
+  sitename                 String    @db.VarChar(255)
   verantwoordelijke_id Int       @db.UnsignedInt
   status               Status
   machines             Machine[]
   verantwoordelijke    Gebruiker @relation(fields: [verantwoordelijke_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
+  address_id      Int?        @db.UnsignedInt
 
   @@index([verantwoordelijke_id], map: "fk_gebruiker_site")
   @@map("sites")
 }
 
-// model Product {
-//   id                 Int       @id @default(autoincrement()) @db.UnsignedInt
-//   naam               String    @db.VarChar(255)
-//   product_informatie String    @db.LongText
-//   machines           Machine[]
-
-//   @@map("producten")
-// }
-
 model Machine {
   id                       Int              @id @default(autoincrement()) @db.UnsignedInt
   code                     String           @db.VarChar(255)
-  locatie                  String           @db.VarChar(255)
-  status                   Machine_Status
-  status_sinds             DateTime
-  productie_status         Productie_Status
+  location                  String           @db.VarChar(255)
+  machinestatus                   Machine_Status
+  lastmaintenance             DateTime
+  productionstatus         Productie_Status
   aantal_goede_producten   Int              @db.UnsignedInt
   aantal_slechte_producten Int              @db.UnsignedInt
   limiet_voor_onderhoud    Int              @db.UnsignedInt
   product_naam             String           @db.VarChar(255)
-  product_informatie       String           @db.LongText
+  productinfo       String           @db.LongText
 
-  technieker_id Int @db.UnsignedInt
+  technician_id Int @db.UnsignedInt
   site_id       Int @db.UnsignedInt
 
-  technieker  Gebruiker   @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
+  technieker  Gebruiker   @relation(fields: [technician_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_machine")
   site        Site        @relation(fields: [site_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_site_machine")
   onderhouden Onderhoud[]
 
-  @@index([technieker_id], map: "fk_gebruiker_machine")
+  @@index([technician_id], map: "fk_gebruiker_machine")
   @@index([site_id], map: "fk_site_machine")
   @@map("machines")
 }
@@ -124,28 +116,28 @@ model Machine {
 model Onderhoud {
   id            Int              @id @default(autoincrement()) @db.UnsignedInt
   machine_id    Int              @db.UnsignedInt
-  technieker_id Int              @db.UnsignedInt
-  datum         DateTime         @db.DateTime(0)
-  starttijdstip DateTime         @db.DateTime(0)
-  eindtijdstip  DateTime         @db.DateTime(0)
-  reden         String           @db.VarChar(255)
+  technician_id Int              @db.UnsignedInt
+  executiondate         DateTime         @db.DateTime(0)
+  startdate DateTime         @db.DateTime(0)
+  enddate  DateTime         @db.DateTime(0)
+  reason         String           @db.VarChar(255)
   status        Onderhoud_Status
-  opmerkingen   String           @db.VarChar(255)
-  technieker    Gebruiker        @relation(fields: [technieker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
+  comments   String           @db.VarChar(255)
+  technieker    Gebruiker        @relation(fields: [technician_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
   machine       Machine          @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
-  @@index([technieker_id], map: "fk_gebruiker_onderhoud")
+  @@index([technician_id], map: "fk_gebruiker_onderhoud")
   @@index([machine_id], map: "fk_machine_onderhoud")
-  @@map("onderhouden")
+  @@map("maintenances")
 }
 
 model Notificatie {
   id       Int      @id @default(autoincrement()) @db.UnsignedInt
-  tijdstip DateTime @default(now())
-  bericht  String   @db.VarChar(510)
-  gelezen  Boolean  @default(false)
+  time DateTime @default(now())
+  message  String   @db.VarChar(510)
+  isread  Boolean  @default(false)
 
-  @@map("notificaties")
+  @@map("notification")
 }
 
 enum Status {

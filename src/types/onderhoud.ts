@@ -5,24 +5,24 @@ import type { User } from './user';
 // Types voor SERVICE LAAG
 export interface Onderhoud extends Entity {
   machine_id: number;
-  datum: Date;
-  starttijdstip: Date;
-  eindtijdstip: Date;
-  reden: string;
+  executiondate: Date;
+  startdate: Date;
+  enddate: Date;
+  reason: string;
   status: Onderhoud_Status;
-  opmerkingen: string;
-  technieker: Pick<User, 'id' | 'voornaam' | 'naam'>;
+  comments: string;
+  technieker: Pick<User, 'id' | 'firstname' | 'lastname'>;
 }
 
 export interface OnderhoudCreateInput {
   machine_id: number;
-  technieker_id: number;
-  datum: Date;
-  starttijdstip: Date;
-  eindtijdstip: Date;
-  reden: string;
+  technician_id: number;
+  executiondate: Date;
+  startdate: Date;
+  enddate: Date;
+  reason: string;
   status: Onderhoud_Status;
-  opmerkingen: string;
+  comments: string;
 };
 
 // Types voor REST LAAG

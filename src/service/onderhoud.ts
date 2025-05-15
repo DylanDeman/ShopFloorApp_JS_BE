@@ -9,16 +9,16 @@ const ONDERHOUD_SELECT = {
   technieker: {
     select: {
       id: true,
-      voornaam: true,
-      naam: true,
+      firstname: true,
+      lastname: true,
     },
   },
-  datum: true,
-  starttijdstip: true,
-  eindtijdstip: true,
-  reden: true,
+  executiondate: true,
+  startdate: true,
+  enddate: true,
+  reason: true,
   status: true,
-  opmerkingen: true,
+  comments: true,
 };
 
 export const getAllOnderhouden = async (): Promise<Onderhoud[]> => {
@@ -62,35 +62,35 @@ export const updateOnderhoudById = async (
   id: number,
   {
     machine_id,
-    datum,
-    starttijdstip,
-    eindtijdstip,
-    reden,
+    executiondate,
+    startdate,
+    enddate,
+    reason,
     status,
-    opmerkingen,
-    technieker_id,
+    comments,
+    technician_id,
   }: any,
 ) => {
   try {
     const technieker = await prisma.gebruiker.findUnique({
-      where: { id: technieker_id },
+      where: { id: technician_id },
     });
 
     if (!technieker) {
-      throw ServiceError.notFound(`Technieker with id ${technieker_id} not found`);
+      throw ServiceError.notFound(`Technieker with id ${technician_id} not found`);
     }
 
     const onderhoud = await prisma.onderhoud.update({
       where: { id },
       data: {
         machine_id,
-        technieker_id,
-        datum,
-        starttijdstip,
-        eindtijdstip,
-        reden,
+        technician_id,
+        executiondate,
+        startdate,
+        enddate,
+        reason,
         status,
-        opmerkingen,
+        comments,
       },
       include: {
         technieker: true,

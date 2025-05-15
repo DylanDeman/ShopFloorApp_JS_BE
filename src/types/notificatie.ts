@@ -1,9 +1,9 @@
 import type { Entity, ListResponse } from './common';
 
 export interface Notificatie extends Entity {
-  bericht: string;
-  tijdstip: Date;
-  gelezen: boolean;
+  message: string;
+  time: Date;
+  isread: boolean;
 }
 
 export interface GetAllNotificatiesResponse extends ListResponse<Notificatie> {
@@ -12,9 +12,9 @@ export interface GetAllNotificatiesResponse extends ListResponse<Notificatie> {
 }
 
 export interface NotificatieCreateInput {
-  bericht: string;
-  tijdstip: Date;
-  gelezen: boolean;
+  message: string;
+  time: Date;
+  isread: boolean;
 }
 
 export interface GetNotificatieByIdResponse extends Notificatie {};

@@ -6,31 +6,31 @@ import type { Onderhoud } from './onderhoud';
 // Types voor SERVICE-LAAG
 export interface Machine extends Entity {
   code: string;
-  locatie: string;
-  status: string;
-  status_sinds: Date;
-  productie_status: string;
+  location: string;
+  machinestatus: string;
+  lastmaintenance: Date;
+  productionstatus: string;
   aantal_goede_producten: number;
   aantal_slechte_producten: number;
   limiet_voor_onderhoud: number;
-  technieker: Pick<User, 'id' |'voornaam' | 'naam'>;
+  technieker: Pick<User, 'id' |'firstname' | 'lastname'>;
   product_naam: string;
-  product_informatie: string;
-  site: Pick<Site, 'id' | 'naam' | 'verantwoordelijke'>;
+  productinfo: string;
+  site: Pick<Site, 'id' | 'sitename' | 'verantwoordelijke'>;
   onderhouden: Onderhoud[];
 }
 
 // Velden die nodig zijn om een machine aan te maken:
 export interface MachineCreateInput {
   code: string;
-  status?: string;
-  productie_status?: string;
-  locatie: string;
-  technieker_id: number;
+  machinestatus?: string;
+  productionstatus?: string;
+  location: string;
+  technician_id: number;
   site_id: number;
   limiet_voor_onderhoud: number;
   product_naam: string;
-  product_informatie: string;
+  productinfo: string;
 };
 
 export interface MachineUpdateInput extends MachineCreateInput {};

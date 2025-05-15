@@ -4,14 +4,14 @@ import type { User } from './user';
 
 // Types voor de REST laag
 export interface Site extends Entity {
-  naam: string;
+  sitename: string;
   status: string;
-  verantwoordelijke: Pick<User, 'id' | 'voornaam' | 'naam'>;
-  machines: Pick<Machine, 'id' | 'locatie' | 'status' | 'productie_status' | 'technieker'>[];
+  verantwoordelijke: Pick<User, 'id' | 'firstname' | 'lastname'>;
+  machines: Pick<Machine, 'id' | 'location' | 'machinestatus' | 'productionstatus' | 'technieker'>[];
 }
 
 export interface SiteCreateInput {
-  naam: string;
+  sitename: string;
   status: string;
   verantwoordelijke_id: number;
 }

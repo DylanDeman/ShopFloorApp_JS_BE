@@ -65,15 +65,15 @@ getAllMachines.validationScheme = null;
  *                 type: integer
  *               code:
  *                 type: string
- *               locatie:
+ *               location:
  *                 type: string
- *               status:
+ *               machinestatus:
  *                 type: string
  *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
- *               productie_status:
+ *               productionstatus:
  *                 type: string
  *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
- *               product_informatie:
+ *               productinfo:
  *                 type: string
  *     responses:
  *       200:
@@ -93,13 +93,13 @@ updateMachineById.validationScheme = {
   body:{
     site_id: Joi.number().integer().positive().required(),
     product_naam: Joi.string(),
-    product_informatie: Joi.string().allow('').optional(),
-    technieker_id: Joi.number().integer().positive().required(),
+    productinfo: Joi.string().allow('').optional(),
+    technician_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
-    locatie: Joi.string().max(255).required(),
-    status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
+    location: Joi.string().max(255).required(),
+    machinestatus: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
       'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
-    productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
+    productionstatus: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
     limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };
@@ -133,15 +133,15 @@ updateMachineById.validationScheme = {
  *                 type: integer
  *               code:
  *                 type: string
- *               locatie:
+ *               location:
  *                 type: string
- *               status:
+ *               machinestatus:
  *                 type: string
  *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
- *               productie_status:
+ *               productionstatus:
  *                 type: string
  *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
- *               product_informatie:
+ *               productinfo:
  *                 type: string
  *     responses:
  *       200:
@@ -180,15 +180,15 @@ getMachineById.validationScheme = {
  *                 type: integer
  *               code:
  *                 type: string
- *               locatie:
+ *               location:
  *                 type: string
- *               status:
+ *               machinestatus:
  *                 type: string
  *                 enum: [DRAAIT, MANUEEL_GESTOPT, IN_ONDERHOUD, AUTOMATISCH_GESTOPT, STARTBAAR]
- *               productie_status:
+ *               productionstatus:
  *                 type: string
  *                 enum: [GEZOND, NOOD_ONDERHOUD, FALEND]
- *               product_informatie:
+ *               productinfo:
  *                 type: string
  *     responses:
  *       201:
@@ -202,14 +202,14 @@ const createMachine = async(ctx: KoaContext<CreateMachineResponse, void, CreateM
 createMachine.validationScheme = {
   body:{
     site_id: Joi.number().integer().positive().required(),
-    technieker_id: Joi.number().integer().positive().required(),
+    technician_id: Joi.number().integer().positive().required(),
     code: Joi.string().max(255).required(),
-    locatie: Joi.string().max(255).required(),
-    status: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
+    location: Joi.string().max(255).required(),
+    machinestatus: Joi.string().valid('DRAAIT', 'MANUEEL_GESTOPT', 
       'IN_ONDERHOUD', 'AUTOMATISCH_GESTOPT', 'STARTBAAR').required(),
-    productie_status: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
+    productionstatus: Joi.string().valid('GEZOND', 'NOOD_ONDERHOUD', 'FALEND').required(),
     product_naam: Joi.string(),
-    product_informatie: Joi.string().allow('').optional(),
+    productinfo: Joi.string().allow('').optional(),
     limiet_voor_onderhoud: Joi.number().integer().positive(),
   },
 };

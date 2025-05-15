@@ -89,7 +89,7 @@ getSiteById.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               naam:
+ *               sitename:
  *                 type: string
  *               verantwoordelijke_id:
  *                 type: integer
@@ -113,7 +113,7 @@ updateById.validationScheme = {
     id: Joi.number().integer().positive().required(),
   },
   body: {
-    naam: Joi.string().max(255),
+    sitename: Joi.string().max(255),
     verantwoordelijke_id: Joi.number().integer().positive().required(),
     status: Joi.string().valid('ACTIEF', 'INACTIEF').required(),
   },
@@ -134,7 +134,7 @@ updateById.validationScheme = {
  *           schema:
  *             type: object
  *             properties:
- *               naam:
+ *               sitename:
  *                 type: string
  *               verantwoordelijke_id:
  *                 type: integer
@@ -152,7 +152,7 @@ const createSite = async (ctx: KoaContext<CreateSiteResponse, void, CreateSiteRe
 };
 createSite.validationScheme = {
   body: {
-    naam: Joi.string().max(255).required(),
+    sitename: Joi.string().max(255).required(),
     verantwoordelijke_id: Joi.number().integer().positive().required(),
     status: Joi.string().valid('ACTIEF', 'INACTIEF').required(),
   },
