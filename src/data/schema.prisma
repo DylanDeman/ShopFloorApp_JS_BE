@@ -10,31 +10,31 @@ datasource db {
 model Adres {
   id         Int         @id @default(autoincrement()) @db.UnsignedInt
   street     String      @db.VarChar(255)
-  number String      @db.VarChar(50)
-  city  String      @db.VarChar(100)
-  postalcode   String      @db.VarChar(10)
-  land       String      @db.VarChar(255)
+  number     String      @db.VarChar(50)
+  city       String      @db.VarChar(100)
+  postalcode String      @db.VarChar(10)
+  land       String?     @db.VarChar(255)
   gebruikers Gebruiker[]
 
   @@map("addresses")
 }
 
 model Gebruiker {
-  id            Int         @id @default(autoincrement()) @db.UnsignedInt
-  address_id      Int         @db.UnsignedInt
-  lastname          String      @db.VarChar(255)
-  firstname      String      @db.VarChar(255)
-  birthdate DateTime    @db.DateTime(0)
-  email         String      @unique @db.VarChar(255)
+  id          Int         @id @default(autoincrement()) @db.UnsignedInt
+  address_id  Int         @db.UnsignedInt
+  lastname    String      @db.VarChar(255)
+  firstname   String      @db.VarChar(255)
+  birthdate   DateTime    @db.DateTime(0)
+  email       String      @unique @db.VarChar(255)
   password    String      @db.VarChar(255)
-  phonenumber           String      @db.VarChar(255)
-  role           String      @db.LongText
-  status        Status
-  Dashboard     Dashboard[]
-  adres         Adres       @relation(fields: [address_id], references: [id], onDelete: NoAction, map: "fk_adres_gebruiker")
-  machines      Machine[]
-  onderhouden   Onderhoud[]
-  sites         Site[]
+  phonenumber String      @db.VarChar(255)
+  role        String      @db.LongText
+  status      Status
+  Dashboard   Dashboard[]
+  adres       Adres       @relation(fields: [address_id], references: [id], onDelete: NoAction, map: "fk_adres_gebruiker")
+  machines    Machine[]
+  onderhouden Onderhoud[]
+  sites       Site[]
 
   @@index([address_id], map: "fk_adres_gebruiker")
   @@map("users")
@@ -77,29 +77,31 @@ model Dashboard {
 
 model Site {
   id                   Int       @id @default(autoincrement()) @db.UnsignedInt
-  sitename                 String    @db.VarChar(255)
+  sitename             String    @db.VarChar(255)
   verantwoordelijke_id Int       @db.UnsignedInt
   status               Status
   machines             Machine[]
   verantwoordelijke    Gebruiker @relation(fields: [verantwoordelijke_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_site")
-  address_id      Int?        @db.UnsignedInt
+  address_id           Int?      @db.UnsignedInt
 
   @@index([verantwoordelijke_id], map: "fk_gebruiker_site")
   @@map("sites")
 }
 
 model Machine {
-  id                       Int              @id @default(autoincrement()) @db.UnsignedInt
-  code                     String           @db.VarChar(255)
-  location                  String           @db.VarChar(255)
-  machinestatus                   Machine_Status
-  lastmaintenance             DateTime
-  productionstatus         Productie_Status
-  aantal_goede_producten   Int              @db.UnsignedInt
-  aantal_slechte_producten Int              @db.UnsignedInt
-  limiet_voor_onderhoud    Int              @db.UnsignedInt
-  product_naam             String           @db.VarChar(255)
-  productinfo       String           @db.LongText
+  id                             Int              @id @default(autoincrement()) @db.UnsignedInt
+  code                           String           @db.VarChar(255)
+  location                       String           @db.VarChar(255)
+  machinestatus                  Machine_Status
+  lastmaintenance                DateTime?
+  futuremaintenance              DateTime?
+  productionstatus               Productie_Status
+  aantal_goede_producten         Int?             @db.UnsignedInt
+  aantal_slechte_producten       Int?             @db.UnsignedInt
+  limiet_voor_onderhoud          Int?             @db.UnsignedInt
+  product_naam                   String?          @db.VarChar(255)
+  productinfo                    String           @db.LongText
+  numberdayssincelastmaintenance Int?             @db.UnsignedInt
 
   technician_id Int @db.UnsignedInt
   site_id       Int @db.UnsignedInt
@@ -117,12 +119,12 @@ model Onderhoud {
   id            Int              @id @default(autoincrement()) @db.UnsignedInt
   machine_id    Int              @db.UnsignedInt
   technician_id Int              @db.UnsignedInt
-  executiondate         DateTime         @db.DateTime(0)
-  startdate DateTime         @db.DateTime(0)
-  enddate  DateTime         @db.DateTime(0)
-  reason         String           @db.VarChar(255)
+  executiondate DateTime         @db.DateTime(0)
+  startdate     DateTime         @db.DateTime(0)
+  enddate       DateTime         @db.DateTime(0)
+  reason        String           @db.VarChar(255)
   status        Onderhoud_Status
-  comments   String           @db.VarChar(255)
+  comments      String           @db.VarChar(255)
   technieker    Gebruiker        @relation(fields: [technician_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_gebruiker_onderhoud")
   machine       Machine          @relation(fields: [machine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_machine_onderhoud")
 
@@ -132,9 +134,9 @@ model Onderhoud {
 }
 
 model Notificatie {
-  id       Int      @id @default(autoincrement()) @db.UnsignedInt
-  time DateTime @default(now())
-  message  String   @db.VarChar(510)
+  id      Int      @id @default(autoincrement()) @db.UnsignedInt
+  time    DateTime @default(now())
+  message String   @db.VarChar(510)
   isread  Boolean  @default(false)
 
   @@map("notification")

@@ -195,7 +195,7 @@ async function seedAdressen(aantal: number) {
       street: String(faker.location.street()),
       number: String(faker.location.buildingNumber()),
       city: String(faker.location.city()),
-      postalcode: String(faker.location.zipCode()),
+      postalcode: String(faker.location.countryCode('numeric')),
       land: String(faker.location.country()),
     });
   }
@@ -290,6 +290,7 @@ async function seedGebruikers(aantal: number) {
 
 async function seedSites(aantal: number) {
   const sites: any = [];
+  const bestaandeAdressen: any = await prisma.adres.findMany();
   const bestaandeGebruikers: any = await prisma.gebruiker.findMany({
     where: {
       role: {
@@ -303,6 +304,7 @@ async function seedSites(aantal: number) {
       verantwoordelijke_id:
         Number(bestaandeGebruikers[Math.floor(Math.random() * bestaandeGebruikers.length)].id),
       status: Status.ACTIEF,
+      address_id: Number(bestaandeAdressen[Math.floor(Math.random() * bestaandeAdressen.length)].id),
     });
   }
   return sites;
@@ -346,6 +348,7 @@ async function seedMachines(aantal: number) {
     machines.push({
       lastmaintenance: faker.date.past({ years: 0.5 }), // elke 6 maanden automatisch stop voor onderhoud
       site_id: Number(bestaandeSites[Math.floor(Math.random() * bestaandeSites.length)].id),
+      futuremaintenance: faker.date.future(),
       product_naam: String(faker.commerce.product()),
       productinfo: String(faker.commerce.productDescription()),
       technician_id:

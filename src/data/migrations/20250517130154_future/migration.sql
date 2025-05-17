@@ -5,7 +5,7 @@ CREATE TABLE `addresses` (
     `number` VARCHAR(50) NOT NULL,
     `city` VARCHAR(100) NOT NULL,
     `postalcode` VARCHAR(10) NOT NULL,
-    `land` VARCHAR(255) NOT NULL,
+    `land` VARCHAR(255) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,13 +79,15 @@ CREATE TABLE `machines` (
     `code` VARCHAR(255) NOT NULL,
     `location` VARCHAR(255) NOT NULL,
     `machinestatus` ENUM('DRAAIT', 'MANUEEL_GESTOPT', 'AUTOMATISCH_GESTOPT', 'IN_ONDERHOUD', 'STARTBAAR') NOT NULL,
-    `lastmaintenance` DATETIME(3) NOT NULL,
+    `lastmaintenance` DATETIME(3) NULL,
+    `futuremaintenance` DATETIME(3) NULL,
     `productionstatus` ENUM('GEZOND', 'NOOD_ONDERHOUD', 'FALEND') NOT NULL,
-    `aantal_goede_producten` INTEGER UNSIGNED NOT NULL,
-    `aantal_slechte_producten` INTEGER UNSIGNED NOT NULL,
-    `limiet_voor_onderhoud` INTEGER UNSIGNED NOT NULL,
-    `product_naam` VARCHAR(255) NOT NULL,
+    `aantal_goede_producten` INTEGER UNSIGNED NULL,
+    `aantal_slechte_producten` INTEGER UNSIGNED NULL,
+    `limiet_voor_onderhoud` INTEGER UNSIGNED NULL,
+    `product_naam` VARCHAR(255) NULL,
     `productinfo` LONGTEXT NOT NULL,
+    `numberdayssincelastmaintenance` INTEGER UNSIGNED NULL,
     `technician_id` INTEGER UNSIGNED NOT NULL,
     `site_id` INTEGER UNSIGNED NOT NULL,
 
