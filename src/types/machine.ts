@@ -8,14 +8,14 @@ export interface Machine extends Entity {
   code: string;
   location: string;
   machinestatus: string;
-  lastmaintenance: Date;
+  lastmaintenance: Date | null;
   productionstatus: string;
-  aantal_goede_producten: number;
-  aantal_slechte_producten: number;
-  limiet_voor_onderhoud: number;
-  technieker: Pick<User, 'id' |'firstname' | 'lastname'>;
-  product_naam: string;
-  productinfo: string;
+  aantal_goede_producten?: number | null;
+  aantal_slechte_producten?: number | null;
+  limiet_voor_onderhoud: number | null;
+  technieker: Pick<User, 'id' | 'firstname' | 'lastname'>;
+  product_naam: string | null;
+  productinfo: string | null;
   site: Pick<Site, 'id' | 'sitename' | 'verantwoordelijke'>;
   onderhouden: Onderhoud[];
 }
@@ -33,11 +33,11 @@ export interface MachineCreateInput {
   productinfo: string;
 };
 
-export interface MachineUpdateInput extends MachineCreateInput {};
+export interface MachineUpdateInput extends MachineCreateInput { };
 
 // Types voor REST-LAAG
-export interface getAllMachinesResponse extends ListResponse<Machine> {};
-export interface getMachineByIdResponse extends Machine {};
+export interface getAllMachinesResponse extends ListResponse<Machine> { };
+export interface getMachineByIdResponse extends Machine { };
 
-export interface CreateMachineRequest extends MachineCreateInput {};
-export interface CreateMachineResponse extends getMachineByIdResponse {};
+export interface CreateMachineRequest extends MachineCreateInput { };
+export interface CreateMachineResponse extends getMachineByIdResponse { };
