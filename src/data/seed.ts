@@ -385,7 +385,7 @@ async function seedOnderhouden(aantal: number) {
       enddate: faker.date.future(),
       reason: faker.lorem.sentence(),
       status: Object.values(Onderhoud_Status)[Math.floor(Math.random() * Object.values(Onderhoud_Status).length)],
-      comments: faker.lorem.paragraph(),
+      comments: faker.lorem.sentence(),
     });
   }
   return onderhouden;

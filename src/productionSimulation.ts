@@ -13,13 +13,16 @@ async function simulateProduction() {
     const randValue = Math.random();
     const isGoodProduct = randValue < 0.95;
 
-    await prisma.machine.update({
-      where: { id: machine.id },
-      data: {
-        aantal_goede_producten: machine.aantal_goede_producten + (isGoodProduct ? 1 : 0),
-        aantal_slechte_producten: machine.aantal_slechte_producten + (!isGoodProduct ? 1 : 0),
-      },
-    });
+    if(machine.aantal_goede_producten && machine.aantal_slechte_producten){
+
+      await prisma.machine.update({
+        where: { id: machine.id },
+        data: {
+          aantal_goede_producten: machine.aantal_goede_producten + (isGoodProduct ? 1 : 0),
+          aantal_slechte_producten: machine.aantal_slechte_producten + (!isGoodProduct ? 1 : 0),
+        },
+      });
+    }
 
     await updateMachineStatus(machine.id);
   }
@@ -32,13 +35,18 @@ async function updateMachineStatus(machineId: number) {
 
   if (!machine) return;
 
-  const totaal_producten = machine.aantal_goede_producten + machine.aantal_slechte_producten;
-  const productie_graad = machine.aantal_goede_producten / (totaal_producten || 1);
+  let totaal_producten = 0;
+  let productie_graad = 0;
+
+  if(machine.aantal_goede_producten && machine.aantal_slechte_producten && machine.aantal_goede_producten){
+    totaal_producten = machine.aantal_goede_producten + machine.aantal_slechte_producten;
+    productie_graad = machine.aantal_goede_producten / (totaal_producten || 1);
+  }
 
   let status = machine.machinestatus;
   let productie_status = machine.productionstatus;
 
-  if (totaal_producten >= machine.limiet_voor_onderhoud 
+  if (machine.limiet_voor_onderhoud && totaal_producten >= machine.limiet_voor_onderhoud 
     && status === Machine_Status.DRAAIT) {
     productie_status = 'NOOD_ONDERHOUD';
     // Automatisch stoppen van machine:
