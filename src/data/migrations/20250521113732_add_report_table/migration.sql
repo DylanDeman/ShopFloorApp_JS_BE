@@ -1,0 +1,24 @@
+-- CreateTable
+CREATE TABLE `REPORT` (
+    `REPORTID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `site_id` INTEGER UNSIGNED NOT NULL,
+    `maintenance_id` INTEGER UNSIGNED NOT NULL,
+    `technician_id` INTEGER UNSIGNED NOT NULL,
+    `startDate` DATETIME(3) NOT NULL,
+    `startTime` VARCHAR(191) NOT NULL,
+    `endDate` DATETIME(3) NOT NULL,
+    `endTime` VARCHAR(191) NOT NULL,
+    `reason` VARCHAR(191) NOT NULL,
+    `remarks` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`REPORTID`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `REPORT` ADD CONSTRAINT `REPORT_site_id_fkey` FOREIGN KEY (`site_id`) REFERENCES `sites`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `REPORT` ADD CONSTRAINT `REPORT_maintenance_id_fkey` FOREIGN KEY (`maintenance_id`) REFERENCES `maintenances`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `REPORT` ADD CONSTRAINT `REPORT_technician_id_fkey` FOREIGN KEY (`technician_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -38,6 +38,7 @@ model Gebruiker {
 
   @@index([address_id], map: "fk_adres_gebruiker")
   @@map("users")
+  Report Report[]
 }
 
 model KPI {
@@ -86,6 +87,7 @@ model Site {
 
   @@index([verantwoordelijke_id], map: "fk_gebruiker_site")
   @@map("sites")
+  Report Report[]
 }
 
 model Machine {
@@ -131,6 +133,26 @@ model Onderhoud {
   @@index([technician_id], map: "fk_gebruiker_onderhoud")
   @@index([machine_id], map: "fk_machine_onderhoud")
   @@map("maintenances")
+  Report Report[]
+}
+
+model Report {
+  reportId     Int       @id @default(autoincrement()) @db.UnsignedInt @map("REPORTID")
+  site_id      Int       @db.UnsignedInt
+  maintenance_id Int     @db.UnsignedInt
+  technician_id Int      @db.UnsignedInt
+  startDate    DateTime
+  startTime    String
+  endDate      DateTime
+  endTime      String
+  reason       String
+  remarks      String?
+  
+  site         Site      @relation(fields: [site_id], references: [id])
+  maintenance  Onderhoud @relation(fields: [maintenance_id], references: [id])
+  technician   Gebruiker @relation(fields: [technician_id], references: [id])
+
+  @@map("REPORT")
 }
 
 model Notificatie {
