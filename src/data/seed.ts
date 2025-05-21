@@ -11,6 +11,7 @@ async function main() {
   });
   await prisma.gebruiker.createMany({
     data: await seedGebruikers(100),
+    skipDuplicates: true
   });
   await prisma.site.createMany({
     data: await seedSites(100),
