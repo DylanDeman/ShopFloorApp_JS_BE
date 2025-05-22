@@ -1,11 +1,11 @@
 # 2025-nodejs-gent12
 ## Disclaimer: This is not an official Delaware product! The use of the Delaware logo is just for layout purposes, because Delaware was the "client"
 Groepsleden:
-- Robin Ledoux [robin.ledoux@student.hogent.be](mailto:robin.ledoux@student.hogent.be)
-- Milan Dhondt [milan.dhondt@student.hogent.be](mailto:milan.dhondt@student.hogent.be)
-- Dogukan Uyanik [dogukan.uyanik@student.hogent.be](mailto:dogukan.uyanik@student.hogent.be)
-- Sijad Walipoor [sijad.walipoor@student.hogent.be](mailto:sijad.walipoor@student.hogent.be)
-- Dylan De Man [dylan.deman@student.hogent.be](mailto:dylan.deman@student.hogent.be) 
+- [Robin Ledoux](https://github.com/RobinLedoux)
+- [Milan Dhont](https://github.com/milandhondt)
+- [Dogukan Uyanik](https://github.com/DogukanUyanik)
+- [Sijad Walipoor](https://github.com/sijadwalipoor)
+- [Dylan De Man](https://github.com/DylanDeman) 
 
 
 Inloggegevens testaccounts:
