@@ -1,4 +1,5 @@
 # 2025-nodejs-gent12
+## Disclaimer: This is not an official Delaware product! The use of the Delaware logo is just for layout purposes, because Delaware was the "client"
 Groepsleden:
 - Robin Ledoux [robin.ledoux@student.hogent.be](mailto:robin.ledoux@student.hogent.be)
 - Milan Dhondt [milan.dhondt@student.hogent.be](mailto:milan.dhondt@student.hogent.be)
